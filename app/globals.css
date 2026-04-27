@@ -1,0 +1,116 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+}
+
+@layer utilities {
+  .text-glow-cyan {
+    text-shadow: 0 0 10px rgba(0, 255, 255, 0.6), 0 0 20px rgba(0, 255, 255, 0.4);
+  }
+  .box-glow-cyan {
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.2), inset 0 0 10px rgba(0, 255, 255, 0.1);
+  }
+  .bg-grid-white {
+    background-size: 30px 30px;
+    background-image: linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  }
+}
+
+.scanlines {
+  background: linear-gradient(
+    to bottom,
+    rgba(255,255,255,0),
+    rgba(255,255,255,0) 50%,
+    rgba(0,0,0,0.1) 50%,
+    rgba(0,0,0,0.1)
+  );
+  background-size: 100% 4px;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  pointer-events: none;
+  z-index: 50;
+  opacity: 1;
+}
+
+/* Hologram foil effect for the card */
+.holo-foil {
+  background-image: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0) 40%,
+    rgba(255, 255, 255, 0.6) 50%,
+    rgba(255, 255, 255, 0) 60%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  background-size: 250% 250%;
+  animation: shine 4s infinite linear;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+}
+
+@keyframes shine {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.noise-bg {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  opacity: 0.03;
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.bg-starburst {
+  position: absolute;
+  inset: -50%;
+  background: repeating-conic-gradient(
+    transparent 0 10deg,
+    rgba(255, 215, 0, 0.15) 10deg 20deg
+  );
+  animation: spin-slow 20s linear infinite;
+  pointer-events: none;
+}
+
+.gold-foil {
+  background-image: linear-gradient(
+    135deg,
+    rgba(255, 215, 0, 0) 0%,
+    rgba(255, 215, 0, 0) 20%,
+    rgba(255, 215, 0, 0.4) 40%,
+    rgba(255, 255, 255, 0.9) 50%,
+    rgba(255, 215, 0, 0.4) 60%,
+    rgba(255, 215, 0, 0) 80%,
+    rgba(255, 215, 0, 0) 100%
+  );
+  background-size: 300% 300%;
+  animation: shine 3s infinite linear;
+  mix-blend-mode: color-dodge;
+  pointer-events: none;
+}
+
+@keyframes glitch-skew {
+  0% { transform: skew(0deg); }
+  20% { transform: skew(0deg); }
+  21% { transform: skew(5deg) scaleX(1.05); filter: hue-rotate(90deg); }
+  25% { transform: skew(0deg); filter: none; }
+  50% { transform: skew(0deg); }
+  51% { transform: skew(-5deg); filter: invert(0.2); }
+  52% { transform: skew(0deg); filter: none; }
+  100% { transform: skew(0deg); }
+}
+
+.glitch-anim {
+  animation: glitch-skew 3s infinite linear alternate-reverse;
+}
