@@ -13,6 +13,7 @@ export default function NPCStatCardApp() {
   const [userName, setUserName] = useState('');
   const [scores, setScores] = useState<Record<string, number>>({});
   const [finalRole, setFinalRole] = useState<string | null>(null);
+  const [secondaryRole, setSecondaryRole] = useState<string | null>(null);
 
   const activeQuiz = QUIZZES.find(q => q.id === activeQuizId);
 
@@ -51,16 +52,16 @@ export default function NPCStatCardApp() {
   const calculateResult = () => {
     setGameState('calculating');
     setTimeout(() => {
-      let maxScore = -1;
-      let winningRole = Object.keys(scores)[0] || 'BACKGROUND_EXTRA';
+      const sorted = Object.entries(scores).sort((a, b) => b[1] - a[1]);
+      let winningRole = sorted[0]?.[0] || 'BACKGROUND_EXTRA';
+      let secRole = null;
       
-      for (const [role, score] of Object.entries(scores)) {
-        if (score > maxScore) {
-          maxScore = score;
-          winningRole = role;
-        }
+      if (sorted.length > 1 && sorted[0][1] - sorted[1][1] <= 2 && sorted[1][1] > 0) {
+        secRole = sorted[1][0];
       }
+      
       setFinalRole(winningRole);
+      setSecondaryRole(secRole);
       setGameState('result');
     }, 3000);
   };
@@ -72,6 +73,7 @@ export default function NPCStatCardApp() {
     setScores(initialScores);
     setCurrentQuestionIdx(0);
     setFinalRole(null);
+    setSecondaryRole(null);
     setUserName('');
     setGameState('intro');
   };
@@ -79,6 +81,7 @@ export default function NPCStatCardApp() {
   const backToSelect = () => {
     setActiveQuizId(null);
     setFinalRole(null);
+    setSecondaryRole(null);
     setUserName('');
     setGameState('select');
   };
@@ -174,6 +177,7 @@ export default function NPCStatCardApp() {
           <ResultScreen 
             key="result" 
             roleDef={activeQuiz.roles[finalRole]} 
+            secondaryRoleDef={secondaryRole ? activeQuiz.roles[secondaryRole] : null}
             quizName={activeQuiz.title}
             userName={userName} 
             onRestart={restartQuiz} 
@@ -349,7 +353,7 @@ function TerminalCalculationScreen() {
   );
 }
 
-function ResultScreen({ roleDef, quizName, userName, onRestart }: { roleDef: RoleDef, quizName: string, userName: string, onRestart: () => void }) {
+function ResultScreen({ roleDef, secondaryRoleDef, quizName, userName, onRestart }: { roleDef: RoleDef, secondaryRoleDef: RoleDef | null, quizName: string, userName: string, onRestart: () => void }) {
   const cardRef = useRef<HTMLDivElement>(null);
   const [cardId] = useState(() => Math.random().toString(36).substring(7).toUpperCase());
 
@@ -454,7 +458,10 @@ function ResultScreen({ roleDef, quizName, userName, onRestart }: { roleDef: Rol
               </div>
               <div className="text-right">
                 <div className="text-[10px] sm:text-xs font-mono text-white/50 tracking-widest uppercase">Entity: {userName.substring(0, 15)}</div>
-                <div className={`text-xs font-mono font-bold ${roleDef.textClass}`}>{roleDef.subtitle}</div>
+                <div className={`text-xs font-mono font-bold ${roleDef.textClass}`}>
+                  {roleDef.subtitle}
+                  {secondaryRoleDef && <><br/>Hybrid: {secondaryRoleDef.title}</>}
+                </div>
                 <div className="text-[8px] sm:text-[9px] font-mono text-white/30 uppercase tracking-widest mt-0.5">{quizName}</div>
               </div>
             </div>
@@ -467,6 +474,15 @@ function ResultScreen({ roleDef, quizName, userName, onRestart }: { roleDef: Rol
                 {roleDef.description}
               </p>
             </div>
+            
+            {secondaryRoleDef && (
+              <div className="mb-3">
+                <div className="text-[9px] text-white/50 uppercase font-mono mb-1 tracking-widest">Detected Anomalies:</div>
+                <div className={`text-[10px] sm:text-xs font-bold ${secondaryRoleDef.textClass} bg-black/40 p-2 rounded border border-white/10 shadow-inner`}>
+                  Traces of [{secondaryRoleDef.title}]: {secondaryRoleDef.passive}
+                </div>
+              </div>
+            )}
 
             <div className="flex-grow"></div>
 
