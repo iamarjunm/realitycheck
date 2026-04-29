@@ -17,7 +17,7 @@ const QuizVibeBackground = ({ quizId, gameState }: { quizId: string | null, game
           {/* Matrix rain effect via CSS */}
           <div className="matrix-rain-container opacity-40">
              {Array.from({ length: 20 }).map((_, i) => (
-                <div key={i} className="matrix-drop" style={{ left: `${i * 5}%`, animationDelay: `${Math.random() * 5}s`, animationDuration: `${2 + Math.random() * 3}s` }}>
+                <div key={i} className="matrix-drop" style={{ left: `${i * 5}%`, animationDelay: `${((i * 13) % 50) / 10}s`, animationDuration: `${2 + ((i * 7) % 30) / 10}s` }}>
                   10101011010<br/>010101001<br/>10111101<br/>01010101
                 </div>
              ))}
@@ -110,7 +110,7 @@ const QuizVibeBackground = ({ quizId, gameState }: { quizId: string | null, game
 };
 
 export default function NPCStatCardApp() {
-  const [gameState, setGameState] = useState<'select' | 'intro' | 'quiz' | 'calculating' | 'result'>('select');
+  const [gameState, setGameState] = useState<'select' | 'intro' | 'quiz' | 'calculating' | 'result' | 'collection'>('select');
   const [activeQuizId, setActiveQuizId] = useState<string | null>(null);
   const [currentQuestionIdx, setCurrentQuestionIdx] = useState(0);
   const [userName, setUserName] = useState('');
@@ -166,6 +166,27 @@ export default function NPCStatCardApp() {
       setFinalRole(winningRole);
       setSecondaryRole(secRole);
       setGameState('result');
+      
+      try {
+        const unlockedStr = localStorage.getItem('unlockedCards');
+        const unlocked = unlockedStr ? JSON.parse(unlockedStr) : [];
+        let updated = false;
+        
+        if (!unlocked.includes(winningRole)) {
+          unlocked.push(winningRole);
+          updated = true;
+        }
+        if (secRole && !unlocked.includes(secRole)) {
+          unlocked.push(secRole);
+          updated = true;
+        }
+        
+        if (updated) {
+          localStorage.setItem('unlockedCards', JSON.stringify(unlocked));
+        }
+      } catch (e) {
+        console.error('Could not access localStorage', e);
+      }
     }, 3000);
   };
 
@@ -190,7 +211,7 @@ export default function NPCStatCardApp() {
   };
 
   return (
-    <main className="h-[100dvh] w-screen bg-grid-white relative flex flex-col items-center justify-center p-4 overflow-hidden">
+    <main className="min-h-[100dvh] w-screen bg-grid-white relative flex flex-col items-center justify-start p-4 overflow-x-hidden overflow-y-auto pt-16 sm:pt-4">
       <QuizVibeBackground quizId={activeQuizId} gameState={gameState} />
       <div className="absolute inset-0 noise-bg pointer-events-none"></div>
 
@@ -207,7 +228,11 @@ export default function NPCStatCardApp() {
 
       <AnimatePresence mode="wait">
         {gameState === 'select' && (
-          <QuizSelectScreen key="select" onSelect={selectQuiz} />
+          <QuizSelectScreen key="select" onSelect={selectQuiz} onViewCollection={() => setGameState('collection')} />
+        )}
+
+        {gameState === 'collection' && (
+          <CollectionScreen key="collection" />
         )}
 
         {gameState === 'intro' && activeQuiz && (
@@ -216,22 +241,22 @@ export default function NPCStatCardApp() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, filter: "blur(10px)" }}
-            className="z-10 flex flex-col items-center max-w-xl text-center space-y-8"
+            className="z-10 flex flex-col items-center max-w-xl text-center space-y-8 my-auto"
           >
             <div className="space-y-4">
-              <div className="inline-flex items-center space-x-2 border border-cyan-500/50 bg-cyan-500/10 px-3 py-1 rounded-full text-cyan-400 font-mono text-sm mb-4">
-                <AlertTriangle className="w-4 h-4" />
+              <div className="inline-flex items-center space-x-2 border border-cyan-500/50 bg-cyan-500/10 px-3 py-1 rounded-full text-cyan-400 font-mono text-xs sm:text-sm mb-2 sm:mb-4">
+                <AlertTriangle className="w-3 h-3 sm:w-4 sm:h-4" />
                 <span>WARNING: TRUTH PROTOCOL INITIATED</span>
               </div>
-              <h1 className="text-5xl md:text-7xl font-bold tracking-tighter text-glow-cyan uppercase">
+              <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold tracking-tighter text-glow-cyan uppercase">
                 {activeQuiz.title}
               </h1>
-              <p className="text-xl md:text-2xl font-mono text-cyan-200/70 tracking-widest uppercase">
+              <p className="text-lg sm:text-xl md:text-2xl font-mono text-cyan-200/70 tracking-widest uppercase">
                 {activeQuiz.subtitle}
               </p>
             </div>
             
-            <p className="text-zinc-400 text-lg max-w-md">
+            <p className="text-zinc-400 text-sm sm:text-lg max-w-md px-4">
               {activeQuiz.description}
             </p>
 
@@ -293,25 +318,25 @@ export default function NPCStatCardApp() {
   );
 }
 
-function QuizSelectScreen({ onSelect }: { onSelect: (id: string) => void }) {
+function QuizSelectScreen({ onSelect, onViewCollection }: { onSelect: (id: string) => void, onViewCollection: () => void }) {
   return (
     <motion.div 
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="z-10 flex flex-col items-center w-full max-w-5xl py-8"
+      className="z-10 flex flex-col items-center w-full max-w-5xl py-4 sm:py-8 pt-10 sm:pt-8 my-auto"
     >
-      <div className="text-center mb-10 relative">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-cyan-500/20 blur-[100px] rounded-full point-events-none"></div>
-        <h1 className="relative text-4xl md:text-6xl lg:text-7xl font-black tracking-tighter text-glow-cyan uppercase mb-3 drop-shadow-[0_0_15px_rgba(34,211,238,0.5)]">
+      <div className="text-center mb-8 sm:mb-10 relative">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 sm:w-64 h-48 sm:h-64 bg-cyan-500/20 blur-[80px] sm:blur-[100px] rounded-full point-events-none"></div>
+        <h1 className="relative text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tighter text-glow-cyan uppercase mb-2 sm:mb-3 drop-shadow-[0_0_15px_rgba(34,211,238,0.5)] px-4">
           REALITY CHECK
         </h1>
-        <p className="relative text-cyan-200/50 text-xs md:text-sm font-mono tracking-[0.3em] uppercase">
+        <p className="relative text-cyan-200/50 text-[10px] sm:text-xs md:text-sm font-mono tracking-[0.2em] sm:tracking-[0.3em] uppercase">
           Select Evaluation Module
         </p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 w-full px-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 w-full px-4 sm:px-6">
         {QUIZZES.map((quiz, i) => (
           <motion.button
             key={quiz.id}
@@ -321,7 +346,7 @@ function QuizSelectScreen({ onSelect }: { onSelect: (id: string) => void }) {
             whileHover={{ scale: 1.02, y: -4 }}
             whileTap={{ scale: 0.98 }}
             onClick={() => onSelect(quiz.id)}
-            className="group relative flex flex-col items-start text-left p-6 bg-black/40 border border-cyan-500/20 hover:border-cyan-400 rounded-xl overflow-hidden backdrop-blur-xl shadow-md transition-all hover:shadow-[0_0_20px_rgba(34,211,238,0.15)]"
+            className="group relative flex flex-col items-start text-left p-5 sm:p-6 bg-black/40 border border-cyan-500/20 hover:border-cyan-400 rounded-xl overflow-hidden backdrop-blur-xl shadow-md transition-all hover:shadow-[0_0_20px_rgba(34,211,238,0.15)]"
           >
             {/* Hover light effect */}
             <div className="absolute -inset-24 bg-gradient-to-tr from-cyan-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity blur-2xl z-0"></div>
@@ -338,11 +363,11 @@ function QuizSelectScreen({ onSelect }: { onSelect: (id: string) => void }) {
                   <List className="w-3 h-3" />
                 </div>
               </div>
-              <h3 className="text-xl font-black text-white mb-1 uppercase tracking-tight group-hover:text-glow-cyan transition-all">{quiz.title}</h3>
-              <p className="text-cyan-400/80 text-[10px] font-mono uppercase tracking-widest mb-3 border-b border-white/10 pb-2 w-full">{quiz.subtitle}</p>
-              <p className="text-zinc-400 text-xs sm:text-sm leading-relaxed line-clamp-2">{quiz.description}</p>
+              <h3 className="text-lg sm:text-xl font-black text-white mb-1 uppercase tracking-tight group-hover:text-glow-cyan transition-all">{quiz.title}</h3>
+              <p className="text-cyan-400/80 text-[9px] sm:text-[10px] font-mono uppercase tracking-widest mb-2 sm:mb-3 border-b border-white/10 pb-2 w-full">{quiz.subtitle}</p>
+              <p className="text-zinc-400 text-[11px] sm:text-xs leading-relaxed line-clamp-2">{quiz.description}</p>
               
-              <div className="mt-4 flex items-center text-[10px] font-mono text-cyan-500/70 group-hover:text-cyan-400 transition-colors uppercase">
+              <div className="mt-3 sm:mt-4 flex items-center text-[10px] font-mono text-cyan-500/70 group-hover:text-cyan-400 transition-colors uppercase">
                 <span className="mr-2">Initialize Sequence</span>
                 <ChevronRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
               </div>
@@ -350,6 +375,17 @@ function QuizSelectScreen({ onSelect }: { onSelect: (id: string) => void }) {
           </motion.button>
         ))}
       </div>
+
+      <motion.button
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.6, type: "spring", stiffness: 100 }}
+        onClick={onViewCollection}
+        className="mt-8 sm:mt-12 px-6 sm:px-8 py-3 bg-zinc-900/50 border border-zinc-700 hover:border-fuchsia-500/50 hover:bg-zinc-800 text-zinc-300 hover:text-fuchsia-400 font-mono text-xs sm:text-sm uppercase tracking-widest rounded-lg flex items-center gap-3 transition-all group shadow-md"
+      >
+        <span className="w-1.5 sm:w-2 h-1.5 sm:h-2 rounded-full bg-fuchsia-500 group-hover:animate-pulse"></span>
+        View Card Collection
+      </motion.button>
     </motion.div>
   );
 }
@@ -360,7 +396,7 @@ function QuizScreen({ question, progress, onAnswer }: { question: Question, prog
       initial={{ opacity: 0, x: 50 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -50 }}
-      className="z-10 w-full max-w-2xl px-4"
+      className="z-10 w-full max-w-2xl px-4 my-auto pt-16 sm:pt-0"
     >
       <div className="w-full h-1 bg-zinc-800 mb-12 rounded-full overflow-hidden">
         <motion.div 
@@ -371,7 +407,7 @@ function QuizScreen({ question, progress, onAnswer }: { question: Question, prog
       </div>
 
       <div className="space-y-8">
-        <h2 className="text-3xl md:text-4xl font-semibold leading-tight text-white mb-8">
+        <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold leading-tight text-white mb-8">
           {question.text}
         </h2>
         <div className="space-y-4">
@@ -381,7 +417,7 @@ function QuizScreen({ question, progress, onAnswer }: { question: Question, prog
               whileHover={{ scale: 1.02, x: 5 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => onAnswer(ans.points)}
-              className="w-full text-left p-6 border border-zinc-800 bg-zinc-900/50 hover:bg-zinc-800 hover:border-cyan-500/50 rounded-lg text-lg text-zinc-300 hover:text-white transition-all font-mono"
+              className="w-full text-left p-4 sm:p-6 border border-zinc-800 bg-zinc-900/50 hover:bg-zinc-800 hover:border-cyan-500/50 rounded-lg text-sm sm:text-lg text-zinc-300 hover:text-white transition-all font-mono"
             >
               <span className="text-cyan-500/50 mr-4">[{String.fromCharCode(65 + i)}]</span>
               {ans.text}
@@ -425,7 +461,7 @@ function TerminalCalculationScreen() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="z-10 flex flex-col items-start w-full max-w-lg font-mono bg-black/60 p-6 rounded-lg border border-cyan-500/30 mx-4"
+      className="z-10 flex flex-col items-start w-full max-w-lg font-mono bg-black/60 p-6 rounded-lg border border-cyan-500/30 mx-4 my-auto"
     >
       <div className="flex items-center space-x-3 mb-6">
         <div className="w-6 h-6 border-2 border-cyan-500/30 border-t-cyan-400 rounded-full animate-spin"></div>
@@ -589,7 +625,7 @@ function ResultScreen({ roleDef, secondaryRoleDef, quizName, quizId, userName, o
         delay: 0.25, 
         ease: "easeInOut" 
       }}
-      className="z-10 flex flex-col items-center w-full max-w-sm px-4 relative"
+      className="z-10 flex flex-col items-center w-full max-w-sm px-4 relative my-auto mt-16 sm:mt-auto"
     >
       <div className="mb-6 text-center z-10">
         <motion.h3 
@@ -665,7 +701,7 @@ function ResultScreen({ roleDef, secondaryRoleDef, quizName, quizId, userName, o
             id="stat-card"
             ref={cardRef}
             style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
-            className={`w-full h-full relative rounded-2xl border-2 bg-gradient-to-b ${roleDef.theme} p-6 flex flex-col overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.6)] backdrop-blur-md ${roleDef.rarity === 'glitched' ? 'glitch-anim' : ''}`}
+            className={`w-full h-full relative rounded-2xl border-2 bg-gradient-to-b ${roleDef.theme} p-4 sm:p-6 flex flex-col overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.6)] backdrop-blur-md ${roleDef.rarity === 'glitched' ? 'glitch-anim' : ''}`}
           >
             {roleDef.rarity === 'legendary' && <div className="bg-starburst z-0"></div>}
 
@@ -677,8 +713,8 @@ function ResultScreen({ roleDef, secondaryRoleDef, quizName, quizId, userName, o
           <div className={`absolute inset-0 ${getFoilClass(roleDef.rarity)} z-10`}></div>
           
           <div className="relative z-30 h-full flex flex-col" style={{ transform: 'translateZ(30px)' }}>
-            <div className="flex justify-between items-start mb-4">
-              <div className={`p-3 rounded-lg bg-black/40 border border-white/10 shadow-lg ${roleDef.textClass}`}>
+            <div className="flex justify-between items-start mb-3 sm:mb-4">
+              <div className={`p-2 sm:p-3 rounded-lg bg-black/40 border border-white/10 shadow-lg ${roleDef.textClass}`}>
                 {roleDef.icon}
               </div>
               <div className="text-right">
@@ -691,8 +727,8 @@ function ResultScreen({ roleDef, secondaryRoleDef, quizName, quizId, userName, o
               </div>
             </div>
 
-            <div className="mb-4">
-              <h2 className={`text-3xl font-black uppercase tracking-tighter leading-none mb-2 ${roleDef.textClass}`} style={{ textShadow: '0 2px 10px rgba(0,0,0,0.5)' }}>
+            <div className="mb-3 sm:mb-4">
+              <h2 className={`text-2xl sm:text-3xl font-black uppercase tracking-tighter leading-none mb-2 ${roleDef.textClass}`} style={{ textShadow: '0 2px 10px rgba(0,0,0,0.5)' }}>
                 {roleDef.title}
               </h2>
               <p className="text-xs sm:text-sm text-white/90 leading-relaxed font-sans drop-shadow-md bg-black/20 p-2 rounded-md border border-white/5">
@@ -701,9 +737,9 @@ function ResultScreen({ roleDef, secondaryRoleDef, quizName, quizId, userName, o
             </div>
             
             {secondaryRoleDef && (
-              <div className="mb-3">
+              <div className="mb-2 sm:mb-3">
                 <div className="text-[9px] text-white/50 uppercase font-mono mb-1 tracking-widest">Detected Anomalies:</div>
-                <div className={`text-[10px] sm:text-xs font-bold ${secondaryRoleDef.textClass} bg-black/40 p-2 rounded border border-white/10 shadow-inner`}>
+                <div className={`text-[9px] sm:text-[10px] font-bold ${secondaryRoleDef.textClass} bg-black/40 p-1.5 sm:p-2 rounded border border-white/10 shadow-inner`}>
                   Traces of [{secondaryRoleDef.title}]: {secondaryRoleDef.passive}
                 </div>
               </div>
@@ -711,7 +747,7 @@ function ResultScreen({ roleDef, secondaryRoleDef, quizName, quizId, userName, o
 
             <div className="flex-grow"></div>
 
-            <div className="space-y-3 bg-black/60 p-4 rounded-xl border border-white/10 backdrop-blur-md shadow-inner">
+            <div className="space-y-2 sm:space-y-3 bg-black/60 p-3 sm:p-4 rounded-xl border border-white/10 backdrop-blur-md shadow-inner">
               {roleDef.stats.map((stat, i) => (
                 <div key={i} className="flex flex-col gap-1.5">
                   <div className="flex justify-between text-[10px] sm:text-xs font-mono uppercase tracking-widest">
@@ -778,6 +814,163 @@ function ResultScreen({ roleDef, secondaryRoleDef, quizName, quizId, userName, o
           <RotateCcw className="w-4 h-4" />
         </button>
       </motion.div>
+    </motion.div>
+  );
+}
+
+function CollectionScreen() {
+  const [unlockedCards, setUnlockedCards] = React.useState<string[]>([]);
+  const [isMounted, setIsMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    try {
+      const unlocked = JSON.parse(localStorage.getItem('unlockedCards') || '[]');
+      setUnlockedCards(unlocked);
+    } catch (e) {
+      console.error('Could not access localStorage', e);
+    }
+    
+    const timeoutId = setTimeout(() => {
+      setIsMounted(true);
+    }, 0);
+    
+    return () => clearTimeout(timeoutId);
+  }, []);
+
+  const allCards = React.useMemo(() => {
+    let cards: { quizId: string, quizTitle: string, roleId: string, role: RoleDef }[] = [];
+    QUIZZES.forEach(quiz => {
+      Object.entries(quiz.roles).forEach(([roleId, role]) => {
+        cards.push({ quizId: quiz.id, quizTitle: quiz.title, roleId, role });
+      });
+    });
+    
+    // Rarity map for sorting and styling
+    const rarityOrder: Record<string, number> = { 
+      'common': 1, 
+      'rare': 2, 
+      'epic': 3, 
+      'legendary': 4, 
+      'mythic': 5, 
+      'abyssal': 6, 
+      'glitched': 7 
+    };
+    
+    return cards.sort((a, b) => rarityOrder[b.role.rarity as keyof typeof rarityOrder] - rarityOrder[a.role.rarity as keyof typeof rarityOrder]);
+  }, []);
+
+  const getRarityColor = (rarity: string) => {
+    switch (rarity) {
+      case 'common': return 'text-zinc-400 border-zinc-500/30 bg-zinc-500/10';
+      case 'rare': return 'text-blue-400 border-blue-500/30 bg-blue-500/10';
+      case 'epic': return 'text-purple-400 border-purple-500/30 bg-purple-500/10';
+      case 'legendary': return 'text-amber-400 border-amber-500/30 bg-amber-500/10 shadow-[0_0_15px_rgba(251,191,36,0.2)]';
+      case 'mythic': return 'text-rose-400 border-rose-500/30 bg-rose-500/10 shadow-[0_0_20px_rgba(244,63,94,0.3)] animate-pulse';
+      case 'abyssal': return 'text-red-600 border-red-600 bg-red-900/20 shadow-[0_0_30px_rgba(220,38,38,0.5)]';
+      case 'glitched': return 'text-green-400 border-green-500/50 bg-green-500/10 shadow-[0_0_25px_rgba(34,197,94,0.4)] mix-blend-screen';
+      default: return 'text-white border-white/20 bg-white/5';
+    }
+  };
+
+  return (
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      className="z-10 w-full max-w-6xl w-full pb-10 pt-16 sm:pt-20 flex flex-col items-center px-2 sm:px-4 flex-1"
+    >
+      <div className="text-center mb-0 mt-4 sm:mt-8 shrink-0">
+        <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-glow-cyan uppercase mb-2 drop-shadow-[0_0_15px_rgba(34,211,238,0.3)]">
+          Card Codex
+        </h1>
+        <p className="text-zinc-400 font-mono text-xs sm:text-sm uppercase tracking-widest mb-4">
+          Unlocked: {isMounted ? unlockedCards.length : 0} / {allCards.length}
+        </p>
+      </div>
+
+      <div className="flex-1 w-full p-2 sm:p-4 rounded-xl border border-white/5 bg-black/40 backdrop-blur-md">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+          {allCards.map((card, i) => {
+            const isUnlocked = unlockedCards.includes(card.roleId);
+            const displayTitle = isUnlocked ? card.role.title : '???';
+            const displayDescription = isUnlocked ? card.role.description : 'Undiscovered anomaly. Take more tests to unlock this entity.';
+            const displayPassive = isUnlocked ? card.role.passive : '???';
+            
+            return (
+              <motion.div
+                key={`${card.quizId}-${card.roleId}`}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: i * 0.02 }}
+                whileHover={{ scale: isUnlocked ? 1.02 : 1 }}
+                className={`relative flex flex-col p-4 rounded-xl border ${
+                  isUnlocked 
+                    ? `bg-gradient-to-b ${card.role.theme.split(' ')[0]} ${card.role.theme.split(' ')[1] || 'to-zinc-900/80'} ${getRarityColor(card.role.rarity)}`
+                    : 'bg-black border-white/5 text-zinc-600'
+                } backdrop-blur-xl overflow-hidden transition-all duration-300 ${isUnlocked ? 'cursor-pointer group shadow-lg' : 'opacity-70 grayscale'}`}
+              >
+                {isUnlocked && <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors z-0"></div>}
+                
+                <div className="relative z-10 flex flex-col h-full">
+                  <div className="flex justify-between items-start mb-4">
+                    <div className={`p-2 rounded-lg border ${isUnlocked ? 'bg-black/50 border-white/10' : 'bg-black border-white/5'}`}>
+                      {isUnlocked ? card.role.icon : <div className="w-8 h-8 flex items-center justify-center text-zinc-700 font-black">?</div>}
+                    </div>
+                    <div className={`text-[10px] uppercase font-bold tracking-widest px-2 py-1 rounded ${isUnlocked ? `bg-black/60 border ${getRarityColor(card.role.rarity)}` : 'bg-white/5 text-zinc-500 border-white/10'}`}>
+                      {card.role.rarity}
+                    </div>
+                  </div>
+                  
+                  <h3 className={`text-lg font-black uppercase tracking-tight mb-1 ${isUnlocked ? card.role.textClass : 'text-zinc-500'} drop-shadow-md`}>
+                    {displayTitle}
+                  </h3>
+                  <div className="text-[9px] font-mono text-white/40 uppercase tracking-widest mb-3 border-b border-white/10 pb-2">
+                    Origin: {card.quizTitle}
+                  </div>
+                  
+                  <p className={`text-xs line-clamp-4 mb-4 flex-1 drop-shadow ${isUnlocked ? 'text-white/80' : 'text-zinc-600 italic font-mono'}`}>
+                    {displayDescription}
+                  </p>
+  
+                  <div className="mt-auto bg-black/40 p-2 rounded border border-white/5">
+                    <div className="text-[8px] text-white/30 uppercase font-mono mb-1 tracking-widest">Passive Ability</div>
+                    <div className={`text-[10px] font-bold ${isUnlocked ? card.role.textClass : 'text-zinc-500'}`}>{displayPassive}</div>
+                  </div>
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
+      </div>
+      
+      {/* Required style for valid rendering, no imports needed */}
+      <style dangerouslySetInnerHTML={{__html: `
+        @media (min-width: 768px) {
+          .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+          }
+          .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.2);
+            border-radius: 4px;
+          }
+          .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+          }
+          .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: rgba(255,255,255,0.2);
+          }
+        }
+        @media (max-width: 767px) {
+          .custom-scrollbar::-webkit-scrollbar {
+            display: none;
+          }
+          .custom-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+          }
+        }
+      `}} />
     </motion.div>
   );
 }
