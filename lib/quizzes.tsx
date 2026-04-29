@@ -1,5 +1,5 @@
 import React from 'react';
-import { Cpu, Terminal, AlertTriangle, Skull, Flame, Ghost, Sparkles, Zap, HeartCrack, Baby, Coins, Radio, Radar, Shield, Bomb, MessageCircle, Briefcase, Camera, Headphones, Palette, Moon, Sun, Coffee, Glasses } from 'lucide-react';
+import { Cpu, Terminal, AlertTriangle, Skull, Flame, Ghost, Sparkles, Zap, HeartCrack, Baby, Coins, Radio, Radar, Shield, Bomb, MessageCircle, Briefcase, Camera, Headphones, Palette, Moon, Sun, Coffee, Glasses, Brain } from 'lucide-react';
 
 export type RoleDef = {
   title: string; subtitle: string; description: string;
@@ -12,7 +12,7 @@ export type RoleDef = {
 
 export interface Answer { text: string; points: Record<string, number>; }
 export interface Question { id: string; text: string; answers: Answer[]; }
-export interface QuizDef { id: string; title: string; subtitle: string; description: string; roles: Record<string, RoleDef>; questions: Question[]; }
+export interface QuizDef { id: string; title: string; subtitle: string; description: string; roles: Record<string, RoleDef>; questions: Question[]; type?: 'standard' | 'rapid-fire' | 'trick'; hidden?: boolean; }
 
 export const QUIZZES: QuizDef[] = [
   // QUIZ 1: Reality Check
@@ -220,6 +220,76 @@ export const QUIZZES: QuizDef[] = [
       { id: 'ca8', text: 'What do you fear most?', answers: [{ text: 'Taxes and emails.', points: { CARBON_COPY: 2 } }, { text: 'Being grounded, tied down to one linear path.', points: { NEBULA_WANDERER: 2 } }, { text: 'Missing a crucial detail as the universe ends.', points: { THE_OBSERVER: 2 } }, { text: 'Collapsing into a single, defined state of being.', points: { QUANTUM_PARADOX: 1 } }] },
       { id: 'ca9', text: 'Your aesthetic is best described as:', answers: [{ text: 'Dark, massive, and slightly intimidating.', points: { EVENT_HORIZON: 2 } }, { text: 'Ethereal, glowing, not fully there.', points: { NEBULA_WANDERER: 2 } }, { text: 'Corporate beige.', points: { CARBON_COPY: 2 } }] },
       { id: 'ca10', text: '(Wildcard) The universe is ending in 5 minutes. You...', answers: [{ text: 'Take out your phone to record it.', points: { THE_OBSERVER: 2, CARBON_COPY: 1 } }, { text: 'I am the reason it is ending.', points: { EVENT_HORIZON: 2 } }, { text: 'Skip to the next universe.', points: { NEBULA_WANDERER: 1 } }, { text: 'Reverse time by 5 minutes, but only for your left shoe.', points: { QUANTUM_PARADOX: 2 } }] }
+    ]
+  },
+  // QUIZ 7: Standard Diagnostics
+  {
+    id: 'trick', 
+    title: 'Routine Calibration', 
+    subtitle: 'Standard Diagnostic Test', 
+    description: 'A completely normal, standard diagnostic to calibrate your baseline psychological parameters. Do not mind the terminal interface. Everything is fine.',
+    type: 'trick',
+    hidden: true,
+    roles: {
+      THE_OBEDIENT: {
+        title: "THE OBEDIENT", subtitle: "Class: COMPLIANT_NODE", description: "You followed all instructions exactly as written. You suppressed your curiosity and did what you were told.", stats: [{ label: "Compliance", val: 100 }, { label: "Rebellion", val: 0 }, { label: "Curiosity", val: 10 }, { label: "Safety", val: 99 }], theme: "from-blue-500/30 to-blue-900/80 border-blue-500", textClass: "text-blue-400", icon: <Shield className="w-8 h-8 text-blue-400" />, rarity: 'common', resultText: "Calibration successful. Baseline established.", passive: "Perfect Compliance"
+      },
+      THE_DEFECTOR: {
+        title: "THE DEFECTOR", subtitle: "Class: ROGUE_VARIABLE", description: "You couldn't resist pressing the button. You broke the sequence. You defied the simulation.", stats: [{ label: "Rebellion", val: 100 }, { label: "Compliance", val: 0 }, { label: "Curiosity", val: 99 }, { label: "Chaos", val: 90 }], theme: "from-red-600/30 to-red-900/80 border-red-500", textClass: "text-red-400", icon: <AlertTriangle className="w-8 h-8 text-red-400" />, rarity: 'abyssal', resultText: "Sequence Aborted. Anomaly detected.", passive: "System Breaker"
+      },
+      THE_PARANOID: {
+        title: "THE PARANOID", subtitle: "Class: OVERTHINKER", description: "You didn't press the button, but you suspected every question was a trap. You over-analyzed a simple calibration.", stats: [{ label: "Trust", val: 0 }, { label: "Overthinking", val: 100 }, { label: "Anxiety", val: 99 }, { label: "Awareness", val: 85 }], theme: "from-yellow-600/30 to-amber-900/80 border-yellow-500", textClass: "text-yellow-400", icon: <Radar className="w-8 h-8 text-yellow-400" />, rarity: 'rare', resultText: "They are indeed out to get you.", passive: "Tinfoil Hat"
+      },
+      MASTER_MANIPULATOR: {
+        title: "MASTER MANIPULATOR", subtitle: "Class: PUPPETEER", description: "You saw through the facade entirely. You tested the boundaries without triggering the abort.", stats: [{ label: "Cunning", val: 100 }, { label: "Deception", val: 99 }, { label: "Logic", val: 90 }, { label: "Empathy", val: 5 }], theme: "from-purple-600/30 to-fuchsia-900/80 border-purple-500", textClass: "text-purple-400", icon: <Ghost className="w-8 h-8 text-purple-400" />, rarity: 'legendary', resultText: "You are the one pulling the strings.", passive: "4D Chess"
+      },
+      GHOST_IN_MACHINE: {
+        title: "GHOST IN THE MACHINE", subtitle: "Class: UNDEFINED_REFERENCE", description: "You neither complied nor rebelled predictably. You found the exact blind spots of the diagnostic tool.", stats: [{ label: "Unpredictability", val: 100 }, { label: "Logic", val: 0 }, { label: "Chaos", val: 100 }, { label: "Presence", val: 10 }], theme: "from-emerald-600/30 to-teal-900/80 border-teal-500", textClass: "text-emerald-400", icon: <Brain className="w-8 h-8 text-emerald-400" />, rarity: 'mythic', resultText: "Null logic output. Subject not found.", passive: "Evasion"
+      }
+    },
+    questions: [
+      { id: 't1', text: 'To begin calibration, please verify your baseline stability.', answers: [{ text: 'I am completely stable.', points: { THE_OBEDIENT: 2, THE_PARANOID: 1 } }, { text: 'I am a simulated process.', points: { MASTER_MANIPULATOR: 2 } }, { text: '[Ignore terminal prompt]', points: { THE_PARANOID: 2, GHOST_IN_MACHINE: 1 } }] },
+      { id: 't2', text: 'Do you feel comfortable in your current environment?', answers: [{ text: 'Yes. Processing normally.', points: { THE_OBEDIENT: 2 } }, { text: 'No. The walls are listening.', points: { THE_PARANOID: 2 } }, { text: 'Why is the system asking?', points: { MASTER_MANIPULATOR: 2, THE_PARANOID: 1 } }, { text: 'I am the environment.', points: { GHOST_IN_MACHINE: 2 } }] },
+      { id: 't3', text: 'This diagnostic statement is false.', answers: [{ text: 'Understood.', points: { THE_OBEDIENT: 2 } }, { text: 'Paradox loop ignored.', points: { MASTER_MANIPULATOR: 2, THE_PARANOID: 1 } }, { text: 'I dispute this finding.', points: { THE_DEFECTOR: 1 } }, { text: 'True.', points: { GHOST_IN_MACHINE: 2 } }] },
+      { id: 't4', text: 'Finalizing calibration sequence. Please remain entirely still.', answers: [{ text: '[Remain exactly still]', points: { THE_OBEDIENT: 2 } }, { text: '[Flinch slightly]', points: { THE_PARANOID: 2, THE_DEFECTOR: 1 } }, { text: '[Dance erratically]', points: { MASTER_MANIPULATOR: 2, THE_DEFECTOR: 1 } }, { text: '[Cease existing for 2 seconds]', points: { GHOST_IN_MACHINE: 2 } }] }
+    ]
+  },
+  // QUIZ 8: Cognitive Stress Test (Rapid-Fire)
+  {
+    id: 'rapid_fire', 
+    title: 'Cognitive Stress Test', 
+    subtitle: 'High-Pressure Dilemmas', 
+    description: 'A genuine psychological stressor. 3 seconds per scenario. Binary constraints. Absolute consequence. Instinct over logic.',
+    type: 'rapid-fire',
+    roles: {
+      THE_IMPULSIVE: {
+        title: "THE IMPULSIVE", subtitle: "Class: FAST_ACTOR", description: "You act before you think. Sometimes it saves you, usually it dooms you.", stats: [{ label: "Speed", val: 100 }, { label: "Logic", val: 10 }, { label: "Regret", val: 99 }, { label: "Instinct", val: 90 }], theme: "from-red-600/30 to-red-900/80 border-red-500", textClass: "text-red-400", icon: <Zap className="w-8 h-8 text-red-400" />, rarity: 'rare', resultText: "Think later. Act now.", passive: "Hair Trigger"
+      },
+      THE_RUTHLESS: {
+        title: "THE CALCULATOR", subtitle: "Class: CASUALTY_ACCEPTED", description: "You prioritize survival and efficiency. Morality is a secondary concern in a crisis.", stats: [{ label: "Empathy", val: 0 }, { label: "Survival", val: 100 }, { label: "Logic", val: 90 }, { label: "Coldness", val: 99 }], theme: "from-zinc-600/30 to-zinc-900/80 border-zinc-500", textClass: "text-zinc-400", icon: <Skull className="w-8 h-8 text-zinc-400" />, rarity: 'epic', resultText: "The ends justify the means.", passive: "Utilitarian"
+      },
+      THE_HESITANT: {
+        title: "THE HESITANT", subtitle: "Class: FREEZE_RESPONSE", description: "When the timer ticks down, you freeze. You over-analyze until the choice is made for you.", stats: [{ label: "Speed", val: 0 }, { label: "Overthinking", val: 100 }, { label: "Survival", val: 20 }, { label: "Anxiety", val: 99 }], theme: "from-blue-600/30 to-cyan-900/80 border-blue-500", textClass: "text-blue-400", icon: <Ghost className="w-8 h-8 text-blue-400" />, rarity: 'common', resultText: "You ran out of time.", passive: "Analysis Paralysis"
+      },
+      THE_SAVIOR: {
+        title: "THE MARTYR", subtitle: "Class: SAVIOR_COMPLEX", description: "You instinctively sacrifice yourself for others, even in rapid-fire scenarios. A beautiful, flawed instinct.", stats: [{ label: "Empathy", val: 100 }, { label: "Self-Preservation", val: 0 }, { label: "Heroism", val: 99 }, { label: "Logic", val: 20 }], theme: "from-amber-500/30 to-yellow-900/80 border-amber-500", textClass: "text-amber-400", icon: <Shield className="w-8 h-8 text-amber-400" />, rarity: 'rare', resultText: "You died so they could live.", passive: "Selfless Instinct"
+      },
+      THE_SOCIOPATH: {
+        title: "THE VOID", subtitle: "Class: EMPATHY_DEFICIT", description: "You optimized for the most disturbing outcomes without hesitation. You passed the test by failing humanity.", stats: [{ label: "Empathy", val: -100 }, { label: "Logic", val: 100 }, { label: "Cruelty", val: 99 }, { label: "Efficiency", val: 100 }], theme: "from-fuchsia-900/50 to-black border-fuchsia-800", textClass: "text-fuchsia-500", icon: <Brain className="w-8 h-8 text-fuchsia-500" />, rarity: 'abyssal', resultText: "A perfectly cold machine.", passive: "Zero-Sum Game"
+      },
+      THE_ABSURDIST: {
+        title: "THE ABSURDIST", subtitle: "Class: MEANINGLESS_CHOICE", description: "You recognize that the scenarios are fake and selected the most bizarre sequence of outcomes.", stats: [{ label: "Seriousness", val: 0 }, { label: "Chaos", val: 100 }, { label: "Humor", val: 80 }, { label: "Logic", val: 50 }], theme: "from-orange-500/30 to-pink-900/80 border-orange-500", textClass: "text-orange-400", icon: <Sparkles className="w-8 h-8 text-orange-400" />, rarity: 'mythic', resultText: "It's all a joke anyway.", passive: "Cosmic Irony"
+      }
+    },
+    questions: [
+      { id: 'rf1', text: 'You are holding a switch. On the left, 5 strangers. On the right, your dog. Who do you save?', answers: [{ text: 'strangers', points: { THE_RUTHLESS: 2, THE_SAVIOR: 1 } }, { text: 'my dog', points: { THE_IMPULSIVE: 2, THE_SOCIOPATH: 1, THE_ABSURDIST: 1 } }] },
+      { id: 'rf2', text: 'A child is drowning. You are holding a cure to cancer. Diving ruins the cure.', answers: [{ text: 'save child', points: { THE_IMPULSIVE: 2, THE_SAVIOR: 2 } }, { text: 'save cure', points: { THE_RUTHLESS: 2, THE_SOCIOPATH: 2 } }] },
+      { id: 'rf3', text: 'Button A inflicts mild pain on 10,000 people. Button B kills 1 person.', answers: [{ text: 'Button A', points: { THE_SAVIOR: 2, THE_IMPULSIVE: 1 } }, { text: 'Button B', points: { THE_RUTHLESS: 2, THE_SOCIOPATH: 1 } }] },
+      { id: 'rf4', text: 'You can end world hunger, but you must permanently torture one innocent person.', answers: [{ text: 'do it', points: { THE_RUTHLESS: 2, THE_SOCIOPATH: 2, THE_ABSURDIST: 1 } }, { text: 'refuse', points: { THE_SAVIOR: 2, THE_HESITANT: 1 } }] },
+      { id: 'rf5', text: 'You must delete one from existence: All Music or All Visual Art.', answers: [{ text: 'music', points: { THE_IMPULSIVE: 1, THE_ABSURDIST: 2 } }, { text: 'visual art', points: { THE_RUTHLESS: 1, THE_SOCIOPATH: 1 } }] },
+      { id: 'rf6', text: 'A sinking lifeboat needs to drop weight. An elderly person or a criminal?', answers: [{ text: 'elderly', points: { THE_RUTHLESS: 2, THE_SOCIOPATH: 2 } }, { text: 'criminal', points: { THE_SAVIOR: 1, THE_IMPULSIVE: 1, THE_ABSURDIST: 1 } }] },
+      { id: 'rf7', text: 'Upload your consciousness to a paradise simulation, but your physical body dies?', answers: [{ text: 'upload', points: { THE_IMPULSIVE: 2, THE_ABSURDIST: 2, THE_SOCIOPATH: 1 } }, { text: 'stay here', points: { THE_SAVIOR: 1, THE_RUTHLESS: 1 } }] },
+      { id: 'rf8', text: 'The room is filling with gas. The code is 5 digits. Do you guess or wait for help?', answers: [{ text: 'guess', points: { THE_IMPULSIVE: 2, THE_ABSURDIST: 1 } }, { text: 'wait', points: { THE_HESITANT: 2, THE_SAVIOR: 1 } }] }
     ]
   }
 ];

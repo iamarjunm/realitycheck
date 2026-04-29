@@ -104,6 +104,30 @@ const QuizVibeBackground = ({ quizId, gameState }: { quizId: string | null, game
           />
         </div>
       );
+    case 'rapid_fire':
+      return (
+        <div className="fixed inset-0 z-0 overflow-hidden bg-black pointer-events-none flex items-center justify-center">
+          <motion.div 
+            animate={{ opacity: [0, 0.4, 0] }} 
+            transition={{ duration: 0.2, repeat: Infinity, ease: "linear", repeatType: "mirror" }} 
+            className="absolute inset-0 bg-yellow-500 mix-blend-overlay"
+          />
+          <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPjxyZWN0IHdpZHRoPSI0IiBoZWlnaHQ9IjQiIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC41Ii8+PC9zdmc+')] mix-blend-overlay scale-150 animate-pulse opacity-20"></div>
+          {/* Warning chevrons */}
+          <div className="absolute inset-0 bg-[repeating-linear-gradient(45deg,transparent,transparent_40px,rgba(202,138,4,0.1)_40px,rgba(202,138,4,0.1)_80px)] opacity-50 z-10" />
+        </div>
+      );
+    case 'trick':
+      return (
+        <div className="fixed inset-0 z-0 overflow-hidden bg-black pointer-events-none">
+          <motion.div 
+             animate={{ height: ["0vh", "3vh", "0vh"], opacity: [0, 0.8, 0], y: ["0vh", "100vh"] }} 
+             transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+             className="w-full bg-green-500/20 mix-blend-screen shadow-[0_0_20px_rgba(34,197,94,0.5)] z-20"
+          />
+          <div className="absolute inset-0 bg-[repeating-linear-gradient(0deg,rgba(0,0,0,0.15)_0px,rgba(0,0,0,0.15)_1px,transparent_1px,transparent_2px)] bg-[size:100%_2px] z-10" />
+        </div>
+      );
     default:
       return null;
   }
@@ -121,8 +145,12 @@ export default function NPCStatCardApp() {
   const activeQuiz = QUIZZES.find(q => q.id === activeQuizId);
 
   const selectQuiz = (id: string) => {
-    setActiveQuizId(id);
-    const quiz = QUIZZES.find(q => q.id === id);
+    let finalId = id;
+    if (Math.random() < 0.15 && id !== 'trick') {
+      finalId = 'trick'; // 15% chance to hijack with routine calibration
+    }
+    setActiveQuizId(finalId);
+    const quiz = QUIZZES.find(q => q.id === finalId);
     if(quiz) {
       const initialScores: Record<string, number> = {};
       Object.keys(quiz.roles).forEach(key => initialScores[key] = 0);
@@ -136,59 +164,67 @@ export default function NPCStatCardApp() {
     setGameState('quiz');
   };
 
-  const handleAnswer = (points: Record<string, number>) => {
+  const handleAnswer = (points: Record<string, number>, forceEnd?: boolean) => {
     setScores(prev => {
       const newScores = { ...prev };
       for (const [role, pts] of Object.entries(points)) {
         if(newScores[role] !== undefined) newScores[role] += pts;
+        else newScores[role] = pts;
       }
       return newScores;
     });
 
-    if (activeQuiz && currentQuestionIdx < activeQuiz.questions.length - 1) {
-      setCurrentQuestionIdx(prev => prev + 1);
-    } else {
-      calculateResult();
-    }
+    setCurrentQuestionIdx(prev => {
+      if (forceEnd) {
+        setGameState('calculating');
+        return prev;
+      }
+      if (activeQuiz && prev < activeQuiz.questions.length - 1) {
+        return prev + 1;
+      } else {
+        setGameState('calculating');
+        return prev;
+      }
+    });
   };
 
-  const calculateResult = () => {
-    setGameState('calculating');
-    setTimeout(() => {
-      const sorted = Object.entries(scores).sort((a, b) => b[1] - a[1]);
-      let winningRole = sorted[0]?.[0] || 'BACKGROUND_EXTRA';
-      let secRole = null;
-      
-      if (sorted.length > 1 && sorted[0][1] - sorted[1][1] <= 2 && sorted[1][1] > 0) {
-        secRole = sorted[1][0];
-      }
-      
-      setFinalRole(winningRole);
-      setSecondaryRole(secRole);
-      setGameState('result');
-      
-      try {
-        const unlockedStr = localStorage.getItem('unlockedCards');
-        const unlocked = unlockedStr ? JSON.parse(unlockedStr) : [];
-        let updated = false;
+  // Process calculating state
+  React.useEffect(() => {
+    if (gameState === 'calculating' && activeQuiz) {
+      const timeoutId = setTimeout(() => {
+        const sorted = Object.entries(scores).sort((a, b) => b[1] - a[1]);
+        let winningRole = sorted[0]?.[0] || 'BACKGROUND_EXTRA';
+        let secRole = null;
         
-        if (!unlocked.includes(winningRole)) {
-          unlocked.push(winningRole);
-          updated = true;
-        }
-        if (secRole && !unlocked.includes(secRole)) {
-          unlocked.push(secRole);
-          updated = true;
+        if (sorted.length > 1 && sorted[0][1] - sorted[1][1] <= 2 && sorted[1][1] > 0) {
+          secRole = sorted[1][0];
         }
         
-        if (updated) {
-          localStorage.setItem('unlockedCards', JSON.stringify(unlocked));
+        setFinalRole(winningRole);
+        setSecondaryRole(secRole);
+        setGameState('result');
+        
+        try {
+          const unlockedStr = localStorage.getItem('unlockedCards');
+          const unlocked = unlockedStr ? JSON.parse(unlockedStr) : [];
+          let updated = false;
+          
+          if (!unlocked.includes(winningRole)) {
+            unlocked.push(winningRole);
+            updated = true;
+          }
+          
+          if (updated) {
+            localStorage.setItem('unlockedCards', JSON.stringify(unlocked));
+          }
+        } catch (e) {
+          console.error('Could not access localStorage', e);
         }
-      } catch (e) {
-        console.error('Could not access localStorage', e);
-      }
-    }, 3000);
-  };
+      }, 3000);
+      
+      return () => clearTimeout(timeoutId);
+    }
+  }, [gameState, activeQuiz, scores]);
 
   const restartQuiz = () => {
     if(!activeQuiz) return;
@@ -290,12 +326,28 @@ export default function NPCStatCardApp() {
         )}
 
         {gameState === 'quiz' && activeQuiz && (
-          <QuizScreen 
-            key="quiz"
-            question={activeQuiz.questions[currentQuestionIdx]} 
-            progress={(currentQuestionIdx / activeQuiz.questions.length) * 100}
-            onAnswer={handleAnswer} 
-          />
+          activeQuiz.type === 'rapid-fire' ? (
+            <RapidFireQuizScreen
+              key={`rapid-fire-quiz-${currentQuestionIdx}`}
+              question={activeQuiz.questions[currentQuestionIdx]}
+              progress={(currentQuestionIdx / activeQuiz.questions.length) * 100}
+              onAnswer={handleAnswer}
+            />
+          ) : activeQuiz.type === 'trick' ? (
+            <TrickQuizScreen
+              key={`trick-quiz-${currentQuestionIdx}`}
+              question={activeQuiz.questions[currentQuestionIdx]}
+              progress={(currentQuestionIdx / activeQuiz.questions.length) * 100}
+              onAnswer={handleAnswer}
+            />
+          ) : (
+            <QuizScreen 
+              key={`quiz-${currentQuestionIdx}`}
+              question={activeQuiz.questions[currentQuestionIdx]} 
+              progress={(currentQuestionIdx / activeQuiz.questions.length) * 100}
+              onAnswer={handleAnswer} 
+            />
+          )
         )}
 
         {gameState === 'calculating' && (
@@ -337,7 +389,7 @@ function QuizSelectScreen({ onSelect, onViewCollection }: { onSelect: (id: strin
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 w-full px-4 sm:px-6">
-        {QUIZZES.map((quiz, i) => (
+        {QUIZZES.filter(q => !q.hidden).map((quiz, i) => (
           <motion.button
             key={quiz.id}
             initial={{ opacity: 0, scale: 0.9, y: 15 }}
@@ -390,7 +442,255 @@ function QuizSelectScreen({ onSelect, onViewCollection }: { onSelect: (id: strin
   );
 }
 
+function RapidFireQuizScreen({ question, progress, onAnswer }: { question: Question, progress: number, onAnswer: (p: any) => void }) {
+  const [timeLeft, setTimeLeft] = React.useState(3000);
+  const answeredRef = React.useRef(false);
+  
+  React.useEffect(() => {
+    answeredRef.current = false;
+    let startTime = Date.now();
+    const interval = setInterval(() => {
+      if (answeredRef.current) {
+        clearInterval(interval);
+        return;
+      }
+      const remaining = 3000 - (Date.now() - startTime);
+      if (remaining <= 0) {
+        clearInterval(interval);
+        answeredRef.current = true;
+        onAnswer({ THE_HESITANT: 2 }); // Unlocks Hesitant if out of time
+      } else {
+        setTimeLeft(remaining);
+      }
+    }, 16);
+    
+    return () => clearInterval(interval);
+  }, [question, onAnswer]);
+
+  // keyboard capture A/D
+  React.useEffect(() => {
+     const handleKeyDown = (e: KeyboardEvent) => {
+        if (answeredRef.current) return;
+        if(e.key === 'a' || e.key === 'A') {
+           if(question?.answers[0]) {
+               answeredRef.current = true;
+               onAnswer(question.answers[0].points);
+           }
+        } else if (e.key === 'd' || e.key === 'D') {
+           if(question?.answers[1]) {
+               answeredRef.current = true;
+               onAnswer(question.answers[1].points);
+           }
+        }
+     };
+     window.addEventListener('keydown', handleKeyDown);
+     return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [question, onAnswer]);
+
+  if (!question) return null;
+  
+  return (
+    <motion.div 
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 1.1 }}
+      className="z-10 w-full max-w-2xl px-4 my-auto pt-16 sm:pt-0 relative"
+    >
+      <div 
+        className="absolute inset-0 bg-[repeating-linear-gradient(45deg,transparent,transparent_20px,rgba(250,204,21,0.05)_20px,rgba(250,204,21,0.05)_40px)] pointer-events-none -z-10 blur-[1px] rounded-3xl"
+      ></div>
+
+      <div className="w-full h-3 bg-zinc-900 mb-8 overflow-hidden border-2 border-yellow-500/50 skew-x-12 shadow-[0_0_20px_rgba(250,204,21,0.2)]">
+        <motion.div 
+          className="h-full bg-yellow-400 shadow-[0_0_15px_rgba(250,204,21,0.8)]"
+          style={{ width: `${(timeLeft / 3000) * 100}%` }}
+        />
+      </div>
+
+      <div 
+        className={`space-y-8 text-center drop-shadow-2xl ${timeLeft < 1000 ? 'animate-[shake_0.5s_infinite]' : ''}`} 
+        style={{ touchAction: 'none' }}
+      >
+        <div className="text-yellow-500 text-xs uppercase tracking-widest font-black animate-pulse">
+          WARNING: CRITICAL COGNITIVE LOAD
+        </div>
+        
+        <h2 className="text-3xl sm:text-5xl md:text-6xl font-black text-yellow-50 uppercase tracking-tighter drop-shadow-[0_2px_20px_rgba(250,204,21,0.6)] mix-blend-add">
+          {question.text}
+        </h2>
+        
+        <motion.div 
+          drag="x"
+          dragConstraints={{ left: 0, right: 0 }}
+          dragSnapToOrigin={true}
+          onDragEnd={(e, { offset }) => {
+            if (answeredRef.current) return;
+            const swipe = offset.x;
+            if (swipe < -80 && question.answers[0]) {
+               answeredRef.current = true;
+               onAnswer(question.answers[0].points);
+            } else if (swipe > 80 && question.answers[1]) {
+               answeredRef.current = true;
+               onAnswer(question.answers[1].points);
+            }
+          }}
+          className="grid grid-cols-2 gap-4 mt-12 cursor-grab active:cursor-grabbing"
+        >
+          {question.answers.map((ans, i) => (
+             <button 
+               key={i} 
+               onClick={() => {
+                 if (answeredRef.current) return;
+                 answeredRef.current = true;
+                 onAnswer(ans.points);
+               }}
+               className={`h-40 rounded-2xl flex items-center justify-center text-xl sm:text-2xl font-black uppercase tracking-tight transition-all active:scale-95 border-4 ${
+                  i === 0 ? 'bg-black hover:bg-yellow-500 hover:text-black border-yellow-500 text-yellow-500 shadow-[inset_0_0_20px_rgba(250,204,21,0.2)] hover:shadow-[0_0_30px_rgba(250,204,21,0.8)]' : 
+                            'bg-yellow-500 hover:bg-black hover:text-yellow-500 border-black text-black shadow-[inset_0_0_20px_rgba(0,0,0,0.5)] hover:shadow-[0_0_30px_rgba(250,204,21,0.8)]'
+               }`}
+             >
+                <div className="flex flex-col items-center pointer-events-none">
+                   <span className="text-xs font-mono opacity-50 mb-2">PRESS {i === 0 ? 'A' : 'D'} OR SWIPE</span>
+                   {ans.text}
+                </div>
+             </button>
+          ))}
+        </motion.div>
+      </div>
+    </motion.div>
+  );
+}
+
+function TrickQuizScreen({ question, progress, onAnswer }: { question: Question, progress: number, onAnswer: (p: any, forceEnd?: boolean) => void }) {
+  const answeredRef = React.useRef(false);
+  const [glitch, setGlitch] = React.useState(false);
+  const [ticker, setTicker] = React.useState("0000");
+
+  const [dangerHover, setDangerHover] = React.useState(false);
+  
+  React.useEffect(() => {
+    answeredRef.current = false;
+    const interval = setInterval(() => {
+      // safe random number string (use local var, not React state during render)
+      const num = Math.floor(Math.random() * 9999).toString().padStart(4, '0');
+      setTicker(num);
+
+      if (Math.random() > 0.8) {
+        setGlitch(true);
+        setTimeout(() => setGlitch(false), 150);
+      }
+    }, 400);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [question]);
+
+  if (!question) return null;
+
+  return (
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="z-10 w-full max-w-3xl px-4 my-auto pt-16 sm:pt-0 font-mono relative min-h-[60vh] flex flex-col justify-center"
+    >
+      <div 
+        className="fixed inset-0 pointer-events-none z-0"
+        style={{
+          background: 'repeating-linear-gradient(0deg, rgba(0,0,0,0.15) 0px, rgba(0,0,0,0.15) 1px, transparent 1px, transparent 2px)',
+          backgroundSize: '100% 2px',
+        }}
+      />
+      
+      {/* Dynamic tracking lines to cursor if hovering near button */}
+      {dangerHover && (
+         <div className="fixed inset-0 pointer-events-none z-40 bg-red-900/10 animate-pulse"></div>
+      )}
+
+      <div className="absolute -top-16 md:-top-32 right-0 md:-right-10 z-50">
+         <motion.button 
+           onMouseEnter={() => setDangerHover(true)}
+           onMouseLeave={() => setDangerHover(false)}
+           animate={{ scale: dangerHover ? [1, 1.1, 1] : [1, 1.05, 1] }}
+           transition={{ repeat: Infinity, duration: dangerHover ? 0.2 : 1.5 }}
+           onClick={() => {
+              if (answeredRef.current) return;
+              answeredRef.current = true;
+              onAnswer({ THE_DEFECTOR: 100 }, true);
+           }}
+           className="bg-red-700 text-white font-black p-4 md:p-6 rounded-full shadow-[0_0_30px_rgba(255,0,0,0.8)] border-4 border-red-900 uppercase active:scale-95 transition-transform"
+         >
+            <div className="flex flex-col items-center">
+              <AlertTriangle className="w-6 h-6 md:w-8 md:h-8 mb-1" />
+              <span className="text-[10px] md:text-xs tracking-tighter">DO NOT PRESS<br/>THIS BUTTON</span>
+            </div>
+         </motion.button>
+         {dangerHover && (
+             <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap text-red-500 text-[10px] uppercase font-black tracking-widest animate-pulse">
+                Violation of Protocol!
+             </div>
+         )}
+      </div>
+
+      <div className="w-full h-1 bg-zinc-800 mb-8 rounded-none overflow-hidden relative">
+        <motion.div 
+          className="h-full bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.5)]"
+          initial={{ width: 0 }}
+          animate={{ width: `${progress}%` }}
+        />
+        <div className="absolute right-0 top-0 text-[8px] text-green-500 leading-none">SYS_MEM_{ticker}</div>
+      </div>
+
+      <div className={`space-y-8 relative z-10 ${glitch ? 'translate-x-1 -translate-y-0.5 skew-x-2 drop-shadow-[2px_0_0_rgba(255,0,0,0.5)]' : ''} transition-all duration-75`}>
+        <div className="flex justify-between items-end border-b border-green-900/50 pb-2 mb-6">
+           <div className="text-green-500 text-xs uppercase tracking-widest opacity-70">
+             Terminal_Interface v2.4 <br/>
+             <span className="opacity-50 text-[10px]">Active Calibration: DO_NOT_DEVIATE</span>
+           </div>
+           <div className="text-green-500 text-xs opacity-50 text-right">
+             PID: {ticker} <br/>
+             VOLTAGE: NORMAL
+           </div>
+        </div>
+
+        <h2 className="text-xl sm:text-2xl md:text-2xl font-normal leading-relaxed text-green-400 mb-8 lowercase max-w-2xl">
+          {'> '} {question.text}
+          <span className="animate-pulse bg-green-400 w-2 h-4 inline-block ml-1 align-middle"></span>
+        </h2>
+        <div className="space-y-3">
+          {question.answers.map((ans, i) => (
+            <motion.button
+              key={i}
+              whileHover={{ x: 10, backgroundColor: "rgba(20,83,45, 0.4)" }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => {
+                if (answeredRef.current) return;
+                answeredRef.current = true;
+                onAnswer(ans.points);
+              }}
+              className="w-full text-left p-3 sm:p-4 border border-green-900/30 bg-black/60 backdrop-blur-sm rounded-none text-green-500 hover:text-green-300 hover:border-green-500 transition-all uppercase tracking-widest text-xs sm:text-sm grid grid-cols-[auto_1fr] items-center group relative overflow-hidden"
+            >
+              <div className="absolute inset-0 bg-green-500/5 -translate-x-full group-hover:translate-x-0 transition-transform duration-300"></div>
+              <span className="text-green-700 group-hover:text-green-400 mr-4 self-start opacity-70">[{i + 1}]</span>
+              <span className="relative z-10">{ans.text}</span>
+            </motion.button>
+          ))}
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
 function QuizScreen({ question, progress, onAnswer }: { question: Question, progress: number, onAnswer: (p: any) => void }) {
+  const answeredRef = React.useRef(false);
+
+  React.useEffect(() => {
+    answeredRef.current = false;
+  }, [question]);
+
+  if (!question) return null;
+
   return (
     <motion.div 
       initial={{ opacity: 0, x: 50 }}
@@ -416,7 +716,11 @@ function QuizScreen({ question, progress, onAnswer }: { question: Question, prog
               key={i}
               whileHover={{ scale: 1.02, x: 5 }}
               whileTap={{ scale: 0.98 }}
-              onClick={() => onAnswer(ans.points)}
+              onClick={() => {
+                if (answeredRef.current) return;
+                answeredRef.current = true;
+                onAnswer(ans.points);
+              }}
               className="w-full text-left p-4 sm:p-6 border border-zinc-800 bg-zinc-900/50 hover:bg-zinc-800 hover:border-cyan-500/50 rounded-lg text-sm sm:text-lg text-zinc-300 hover:text-white transition-all font-mono"
             >
               <span className="text-cyan-500/50 mr-4">[{String.fromCharCode(65 + i)}]</span>
@@ -710,7 +1014,8 @@ function ResultScreen({ roleDef, secondaryRoleDef, quizName, quizId, userName, o
             style={{ background: useTransform([glareX, glareY], ([gx, gy]) => `radial-gradient(circle at ${gx}% ${gy}%, rgba(255,255,255,0.8) 0%, transparent 60%)`) }}
           />
 
-          <div className={`absolute inset-0 ${getFoilClass(roleDef.rarity)} z-10`}></div>
+          <div className="absolute inset-0 card-noise z-10" />
+          <div className={`absolute inset-0 ${getFoilClass(roleDef.rarity)} z-10`} />
           
           <div className="relative z-30 h-full flex flex-col" style={{ transform: 'translateZ(30px)' }}>
             <div className="flex justify-between items-start mb-3 sm:mb-4">
@@ -825,6 +1130,7 @@ function CollectionScreen() {
   React.useEffect(() => {
     try {
       const unlocked = JSON.parse(localStorage.getItem('unlockedCards') || '[]');
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setUnlockedCards(unlocked);
     } catch (e) {
       console.error('Could not access localStorage', e);
@@ -858,6 +1164,19 @@ function CollectionScreen() {
     
     return cards.sort((a, b) => rarityOrder[b.role.rarity as keyof typeof rarityOrder] - rarityOrder[a.role.rarity as keyof typeof rarityOrder]);
   }, []);
+
+  const getFoilClass = (rarity: string) => {
+    switch(rarity) {
+      case 'mythic': return 'mythic-foil';
+      case 'abyssal': return 'abyssal-foil';
+      case 'legendary': return 'gold-foil';
+      case 'epic': return 'epic-foil';
+      case 'rare': return 'rare-foil';
+      case 'glitched': return 'glitch-foil';
+      case 'common':
+      default: return 'common-foil';
+    }
+  };
 
   const getRarityColor = (rarity: string) => {
     switch (rarity) {
@@ -909,6 +1228,8 @@ function CollectionScreen() {
                     : 'bg-black border-white/5 text-zinc-600'
                 } backdrop-blur-xl overflow-hidden transition-all duration-300 ${isUnlocked ? 'cursor-pointer group shadow-lg' : 'opacity-70 grayscale'}`}
               >
+                {isUnlocked && <div className="absolute inset-0 card-noise z-0"></div>}
+                {isUnlocked && <div className={`absolute inset-0 ${getFoilClass(card.role.rarity)} opacity-50 z-0`}></div>}
                 {isUnlocked && <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors z-0"></div>}
                 
                 <div className="relative z-10 flex flex-col h-full">
