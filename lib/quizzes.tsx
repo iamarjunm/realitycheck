@@ -111,7 +111,7 @@ export const QUIZZES: QuizDef[] = [
       { id: 'b10', text: '(Hidden Wildcard) A sentient AI asks you for a meme to summarize humanity.', answers: [{ text: 'Sending a void meme or deep fried nonsense.', points: { CORECORE_EDITOR: 2 } }, { text: 'Sending whatever is currently trending on TikTok.', points: { REPLY_GUY: 2 } }, { text: 'Telling the AI it wouldn\'t understand.', points: { TASTEMAKER: 2, THE_LURKER: 1 } }] }
     ]
   },
-  // QUIZ 4: Corporate Matrix
+  // QUIZ 4: The 9-to-5 Matrix
   {
     id: 'corp', title: 'The 9-to-5 Matrix', subtitle: 'Corporate Survival Assessment', description: 'Evaluate your operational capacity in the artificial construct of late-stage capitalism.',
     roles: {

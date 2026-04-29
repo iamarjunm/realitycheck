@@ -12,53 +12,96 @@ const QuizVibeBackground = ({ quizId, gameState }: { quizId: string | null, game
   switch (quizId) {
     case 'npc':
       return (
-        <div className="fixed inset-0 z-0 overflow-hidden opacity-20 pointer-events-none">
-          <div className="w-full h-full bg-[linear-gradient(rgba(0,255,0,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(0,255,0,0.1)_1px,transparent_1px)] bg-[size:40px_40px] animate-[pulse_2s_infinite]"></div>
-          <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCI+PHRleHQgeD0iMTAiIHk9IjIwIiBmaWxsPSJyZ2JhKDAsMjU1LDAsMC4yKSIgZm9udC1mYW1pbHk9Im1vbm9zcGFjZSIgZm9udC1zaXplPSIxMCI+MTAxMDEwPC90ZXh0Pjwvc3ZnPg==')] opacity-30"></div>
+        <div className="fixed inset-0 z-0 overflow-hidden bg-black pointer-events-none">
+          <div className="absolute inset-0 bg-[linear-gradient(rgba(0,255,0,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(0,255,0,0.1)_1px,transparent_1px)] bg-[size:40px_40px] animate-[pulse_2s_infinite]"></div>
+          {/* Matrix rain effect via CSS */}
+          <div className="matrix-rain-container opacity-40">
+             {Array.from({ length: 20 }).map((_, i) => (
+                <div key={i} className="matrix-drop" style={{ left: `${i * 5}%`, animationDelay: `${Math.random() * 5}s`, animationDuration: `${2 + Math.random() * 3}s` }}>
+                  10101011010<br/>010101001<br/>10111101<br/>01010101
+                </div>
+             ))}
+          </div>
+          <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black" />
         </div>
       );
     case 'liability':
       return (
-        <div className="fixed inset-0 z-0 overflow-hidden opacity-30 pointer-events-none flex">
-          <motion.div animate={{ opacity: [0.1, 0.8, 0.1] }} transition={{ duration: 0.8, repeat: Infinity }} className="w-1/2 h-full bg-red-600 blur-[100px]" />
-          <motion.div animate={{ opacity: [0.8, 0.1, 0.8] }} transition={{ duration: 0.8, repeat: Infinity }} className="w-1/2 h-full bg-blue-600 blur-[100px]" />
+        <div className="fixed inset-0 z-0 overflow-hidden bg-black pointer-events-none flex">
+          <motion.div animate={{ opacity: [0.1, 0.9, 0.1], x: [0, 50, 0] }} transition={{ duration: 0.6, repeat: Infinity, ease: "linear" }} className="w-1/2 h-full bg-red-600 blur-[80px] mix-blend-screen" />
+          <motion.div animate={{ opacity: [0.9, 0.1, 0.9], x: [0, -50, 0] }} transition={{ duration: 0.6, repeat: Infinity, ease: "linear" }} className="w-1/2 h-full bg-blue-600 blur-[80px] mix-blend-screen" />
+          <div className="absolute inset-0 bg-white/5 opacity-0 animate-[flash_0.1s_infinite]" />
         </div>
       );
     case 'brainrot':
       return (
-        <div className="fixed inset-0 z-0 overflow-hidden opacity-20 pointer-events-none flex items-center justify-center">
+        <div className="fixed inset-0 z-0 overflow-hidden bg-zinc-950 pointer-events-none flex items-center justify-center">
           <motion.div 
-            animate={{ rotate: 360 }} 
-            transition={{ duration: 5, repeat: Infinity, ease: "linear" }}
-             className="absolute w-[150vw] h-[150vw] bg-[conic-gradient(red,yellow,lime,aqua,blue,magenta,red)] blur-[100px] rounded-full" 
+            animate={{ rotate: 360, scale: [1, 1.2, 0.9, 1.5, 1] }} 
+            transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+             className="absolute w-[200vw] h-[200vw] bg-[conic-gradient(red,yellow,lime,aqua,blue,magenta,red)] blur-[80px] rounded-full mix-blend-color-dodge opacity-20" 
           />
+          <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPjxyZWN0IHdpZHRoPSI0IiBoZWlnaHQ9IjQiIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC41Ii8+PC9zdmc+')] mix-blend-overlay rotate-45 scale-150 animate-pulse opacity-40"></div>
         </div>
       );
-    case 'corporate':
+    case 'corp':
       return (
-        <div className="fixed inset-0 z-0 overflow-hidden opacity-[0.05] pointer-events-none bg-white">
-          <div className="w-full h-full bg-[linear-gradient(#000_1px,transparent_1px),linear-gradient(90deg,#000_1px,transparent_1px)] bg-[size:10px_10px]"></div>
+        <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none bg-zinc-950 flex items-center justify-center perspective-[1000px]">
+          {/* Bleak infinite scrolling floor */}
+          <motion.div 
+            animate={{ backgroundPosition: ['0px 0px', '0px 100px'] }}
+            transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+            className="absolute bottom-0 w-[200vw] h-[100vh] bg-[linear-gradient(#444_2px,transparent_2px),linear-gradient(90deg,#444_2px,transparent_2px)] bg-[size:100px_100px] origin-bottom shadow-[inset_0_100px_100px_rgba(9,9,11,1)]"
+            style={{ transform: 'rotateX(75deg) translateY(50%)' }}
+          />
+          {/* Flickering fluorescent light */}
+          <div className="absolute top-0 w-full h-[30vh] bg-zinc-600 opacity-20 blur-3xl animate-[flicker_3s_infinite]" />
+          <div className="absolute inset-0 bg-gradient-to-t from-zinc-900/80 to-transparent flex items-center justify-center">
+             <div className="text-[15vw] font-bold text-zinc-800/40 tracking-tighter uppercase blur-sm whitespace-nowrap rotate-[-10deg]">SYNERGY </div>
+          </div>
         </div>
       );
     case 'aesthetic':
       return (
-        <div className="fixed inset-0 z-0 overflow-hidden opacity-30 pointer-events-none flex items-center justify-center">
+        <div className="fixed inset-0 z-0 overflow-hidden bg-black pointer-events-none flex items-center justify-center">
           <motion.div 
-            animate={{ scale: [1, 1.1, 1], rotate: [0, 5, 0] }} 
-            transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }} 
-            className="w-[120vw] h-[120vw] bg-gradient-to-br from-pink-400 via-purple-300 to-indigo-400 blur-[120px] rounded-full" 
+            animate={{ scale: [1, 1.2, 1], rotate: [0, 10, 0] }} 
+            transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }} 
+            className="w-[150vw] h-[150vw] bg-gradient-to-br from-pink-500 via-purple-500 to-indigo-500 blur-[150px] rounded-full opacity-20" 
+          />
+          <div className="absolute inset-0 backdrop-blur-[50px] bg-white/5 mix-blend-overlay" />
+          <motion.div 
+            animate={{ y: [0, -20, 0] }} 
+            transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute bottom-0 w-full h-1/2 bg-gradient-to-t from-black to-transparent opacity-80" 
           />
         </div>
       );
     case 'cosmic':
       return (
-        <div className="fixed inset-0 z-0 overflow-hidden opacity-40 pointer-events-none flex items-center justify-center">
+        <div className="fixed inset-0 z-0 overflow-hidden bg-black pointer-events-none flex items-center justify-center">
+          {/* Black hole singularity */}
           <motion.div 
-            animate={{ scale: [1, 1.5, 1], opacity: [0.3, 0.8, 0.3] }} 
-            transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }} 
-            className="w-[100vw] h-[100vw] bg-[radial-gradient(ellipse_at_center,rgba(80,0,255,0.4)_0%,rgba(0,0,0,0)_70%)] blur-[40px] rounded-full" 
+            animate={{ scale: [1, 1.1, 0.9, 1], rotate: 360 }} 
+            transition={{ duration: 10, repeat: Infinity, ease: "linear" }} 
+            className="absolute w-[80vw] h-[80vw] md:w-[50vw] md:h-[50vw] rounded-full border-[20px] border-purple-900/40 border-t-fuchsia-500/80 border-r-fuchsia-500/20 blur-[10px]"
           />
-          <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPjxyZWN0IHdpZHRoPSI0IiBoZWlnaHQ9IjQiIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4xIi8+PC9zdmc+')] opacity-20"></div>
+          <motion.div 
+            animate={{ scale: [0.9, 1.2, 0.9] }} 
+            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }} 
+            className="absolute w-[60vw] h-[60vw] md:w-[30vw] md:h-[30vw] rounded-full bg-black shadow-[0_0_150px_100px_rgba(120,0,255,0.4)] z-10"
+          />
+          {/* Moving starfield */}
+          <motion.div 
+            animate={{ scale: [1, 1.5], opacity: [0, 1, 0] }}
+            transition={{ duration: 5, repeat: Infinity, ease: "linear" }}
+            className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAiIGhlaWdodD0iNDAwIj48Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSIyIiBmaWxsPSIjZmZmIi8+PGNpcmNsZSBjeD0iMzAwIiBjeT0iMjAwIiByPSIxIiBmaWxsPSIjZmZmIi8+PGNpcmNsZSBjeD0iMTUwIiBjeT0iMzUwIiByPSIxLjUiIGZpbGw9IiNmZmYiLz48L3N2Zz4=')] opacity-50 bg-[length:200px_200px]" 
+          />
+          <motion.div 
+            animate={{ scale: [1, 1.5], opacity: [0, 1, 0] }}
+            transition={{ duration: 7, repeat: Infinity, ease: "linear", delay: 2.5 }}
+            className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAiIGhlaWdodD0iNDAwIj48Y2lyY2xlIGN4PSIyMDAiIGN4PSI1MCIgY3k9IjI1MCIgcj0iMiIgZmlsbD0iI2ZmZiIvPjxjaXJjbGUgY3g9IjEwMCIgY3k9IjEwMCIgcj0iMSIgZmlsbD0iI2ZmZiIvPjxjaXJjbGUgY3g9IjM1MCIgY3k9IjE1MCIgcj0iMS41IiBmaWxsPSIjZmZmIi8+PC9zdmc+')] opacity-30 bg-[length:300px_300px] rotate-45" 
+          />
         </div>
       );
     default:
@@ -465,7 +508,7 @@ function ResultScreen({ roleDef, secondaryRoleDef, quizName, quizId, userName, o
       cardAnim = { scale: 1, rotateZ: 0, opacity: 1 };
       cardTransition = { type: "spring", stiffness: 60, damping: 20, mass: 0.5, delay: 0.1 };
       break;
-    case 'corporate':
+    case 'corp':
       containerAnim = { opacity: 1 };
       cardInitial = { y: 500, opacity: 0 };
       cardAnim = { y: 0, opacity: 1 };
