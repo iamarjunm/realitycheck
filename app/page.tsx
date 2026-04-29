@@ -411,6 +411,8 @@ function ResultScreen({ roleDef, secondaryRoleDef, quizName, userName, onRestart
 
   const getFoilClass = (rarity: string) => {
     switch(rarity) {
+      case 'mythic': return 'mythic-foil';
+      case 'abyssal': return 'abyssal-foil';
       case 'legendary': return 'gold-foil';
       case 'epic': return 'epic-foil';
       case 'rare': return 'rare-foil';
@@ -422,27 +424,77 @@ function ResultScreen({ roleDef, secondaryRoleDef, quizName, userName, onRestart
 
   return (
     <motion.div 
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
-      className="z-10 flex flex-col items-center w-full max-w-sm px-4"
+      initial={{ opacity: 0 }}
+      animate={{ 
+        opacity: 1,
+        x: [0, -15, 15, -10, 10, -5, 5, 0],
+        y: [0, 15, -15, 10, -10, 5, -5, 0]
+      }}
+      transition={{ 
+        duration: 0.6, 
+        delay: 0.25, 
+        ease: "easeInOut" 
+      }}
+      className="z-10 flex flex-col items-center w-full max-w-sm px-4 relative"
     >
-      <div className="mb-6 text-center">
-        <h3 className="text-zinc-500 font-mono text-sm uppercase tracking-widest mb-2">Analysis Complete</h3>
-        <p className="text-white font-medium">{roleDef.resultText}</p>
+      <div className="mb-6 text-center z-10">
+        <motion.h3 
+          initial={{ opacity: 0, y: -20, scale: 2 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ delay: 1, type: "spring" }}
+          className="text-zinc-500 font-mono text-sm uppercase tracking-widest mb-2 shadow-black drop-shadow-md"
+        >
+          Analysis Complete
+        </motion.h3>
+        <motion.p 
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.2 }}
+          className="text-white font-medium drop-shadow-lg"
+        >
+          {roleDef.resultText}
+        </motion.p>
       </div>
 
-      <div 
-        className={`w-full aspect-[3/4] perspective-[1000px] mb-8 ${roleDef.rarity === 'glitched' ? 'glitch-anim' : ''}`}
-        onMouseMove={handleMouseMove}
-        onMouseLeave={handleMouseLeave}
-      >
-        <motion.div
-          id="stat-card"
-          ref={cardRef}
-          style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
-          className={`w-full h-full relative rounded-2xl border-2 bg-gradient-to-b ${roleDef.theme} p-6 flex flex-col overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.6)] backdrop-blur-md`}
+      {/* Explosive background aura containment to stop scroll bugs */}
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden flex items-center justify-center">
+        <motion.div 
+           initial={{ scale: 0, opacity: 1 }}
+           animate={{ scale: [0, 4, 8], opacity: [1, 0.8, 0] }}
+           transition={{ duration: 1.5, ease: "easeOut", delay: 0.2 }}
+           className={`w-[300px] h-[300px] rounded-full blur-[60px] bg-gradient-to-t ${roleDef.theme}`}
+        />
+        <motion.div 
+           initial={{ scale: 0, opacity: 1 }}
+           animate={{ scale: [0, 2, 4], opacity: [1, 0.5, 0] }}
+           transition={{ duration: 1.2, ease: "easeOut", delay: 0.25 }}
+           className="absolute w-[200px] h-[200px] rounded-full blur-[40px] bg-white mix-blend-overlay"
+        />
+        <motion.div 
+           initial={{ opacity: 0 }}
+           animate={{ opacity: [0, 1, 0] }}
+           transition={{ duration: 0.6, delay: 0.3 }}
+           className="absolute inset-0 bg-white z-50 mix-blend-overlay"
+        />
+      </div>
+
+      <div className="w-full aspect-[3/4] perspective-[1000px] mb-8 relative z-20">        
+        {/* Card slam drop */}
+        <motion.div 
+          initial={{ y: -1200, rotateZ: 75, rotateX: 45, scale: 0.2 }}
+          animate={{ y: 0, rotateZ: 0, rotateX: 0, scale: 1 }}
+          transition={{ type: "spring", stiffness: 80, damping: 10, mass: 1.2, delay: 0.3 }}
+          className="w-full h-full"
+          onMouseMove={handleMouseMove}
+          onMouseLeave={handleMouseLeave}
         >
-          {roleDef.rarity === 'legendary' && <div className="bg-starburst z-0"></div>}
+          <motion.div
+            id="stat-card"
+            ref={cardRef}
+            style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
+            className={`w-full h-full relative rounded-2xl border-2 bg-gradient-to-b ${roleDef.theme} p-6 flex flex-col overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.6)] backdrop-blur-md ${roleDef.rarity === 'glitched' ? 'glitch-anim' : ''}`}
+          >
+            {roleDef.rarity === 'legendary' && <div className="bg-starburst z-0"></div>}
 
           <motion.div 
             className="absolute inset-0 pointer-events-none z-20 mix-blend-overlay opacity-60"
@@ -524,9 +576,15 @@ function ResultScreen({ roleDef, secondaryRoleDef, quizName, userName, onRestart
             
           </div>
         </motion.div>
-      </div>
+      </motion.div>
+    </div>
 
-      <div className="flex w-full gap-2 mt-2">
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 1.5 }}
+        className="flex w-full gap-2 mt-2 z-10"
+      >
         <button 
           onClick={captureCard}
           className="flex-1 py-3 bg-white text-black font-bold uppercase rounded-lg hover:bg-zinc-200 transition-colors flex items-center justify-center gap-2 text-sm shadow-[0_0_15px_rgba(255,255,255,0.2)]"
@@ -546,7 +604,7 @@ function ResultScreen({ roleDef, secondaryRoleDef, quizName, userName, onRestart
         >
           <RotateCcw className="w-4 h-4" />
         </button>
-      </div>
+      </motion.div>
     </motion.div>
   );
 }

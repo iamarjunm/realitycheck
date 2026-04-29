@@ -6,7 +6,7 @@ export type RoleDef = {
   stats: { label: string; val: number }[];
   theme: string; textClass: string;
   icon: React.ReactNode;
-  rarity: 'common' | 'rare' | 'epic' | 'legendary' | 'glitched';
+  rarity: 'common' | 'rare' | 'epic' | 'legendary' | 'glitched' | 'mythic' | 'abyssal';
   resultText: string; passive: string;
 };
 
@@ -175,6 +175,39 @@ export const QUIZZES: QuizDef[] = [
       { id: 'a8', text: 'Your approach to technology:', answers: [{ text: 'Give me the latest, but make it look distressed.', points: { CYBER_GRUNGE: 2 } }, { text: 'I miss when buttons were physical and loud.', points: { Y2K_SURVIVOR: 2 } }, { text: 'A tool I tolerate, but prefer analog.', points: { COASTAL_GRANNY: 2, DARK_ACADEMIA: 1 } }] },
       { id: 'a9', text: 'How do you decorate your walls?', answers: [{ text: 'Printed out internet art from 15 years ago.', points: { WEIRDCORE_ENTITY: 2, CYBER_GRUNGE: 1 } }, { text: 'Framed botanical prints or seascapes.', points: { COASTAL_GRANNY: 2 } }, { text: 'Vintage posters of classic films or bands.', points: { DARK_ACADEMIA: 2, Y2K_SURVIVOR: 1 } }] },
       { id: 'a10', text: '(Wildcard) A fog rolls into your town. You...', answers: [{ text: 'Put on a trench coat and stare wistfully out the window.', points: { DARK_ACADEMIA: 2 } }, { text: 'Wander into it to find the edge of the simulation.', points: { WEIRDCORE_ENTITY: 2, CYBER_GRUNGE: 1 } }, { text: 'Pour a glass of white wine and wrap up in a cashmere throw.', points: { COASTAL_GRANNY: 2 } }] }
+    ]
+  },
+  // QUIZ 6: The Cosmic Anomaly Scanner
+  {
+    id: 'cosmic', title: 'Cosmic Anomaly Scanner', subtitle: 'Multiversal Threat Level', description: 'If the universe is a simulation, what kind of sequence-breaking error are you?',
+    roles: {
+      QUANTUM_PARADOX: {
+        title: "QUANTUM PARADOX", subtitle: "Class: REALITY_FRACTURE", description: "You exist in multiple contradictory states simultaneously. Your presence causes local physics to stutter.", stats: [{ label: "Entropy", val: 100 }, { label: "Stability", val: 0 }, { label: "Timeline Disruption", val: 99 }, { label: "Vibes", val: 85 }], theme: "from-fuchsia-600/50 via-purple-900/90 to-black border-fuchsia-400", textClass: "text-fuchsia-300", icon: <Zap className="w-8 h-8 text-fuchsia-300" />, rarity: 'glitched', resultText: "You are tearing the fabric of spacetime.", passive: "Schrödinger's Presence"
+      },
+      EVENT_HORIZON: {
+        title: "EVENT HORIZON", subtitle: "Class: SINGULARITY", description: "A point of no return. You are gravitationally exhausting, pulling everyone into your orbit whether they like it or not.", stats: [{ label: "Gravity", val: 100 }, { label: "Light Escape", val: 0 }, { label: "Density", val: 99 }, { label: "Aura", val: 95 }], theme: "from-orange-600/50 via-red-900/90 to-black border-orange-500", textClass: "text-orange-400", icon: <Bomb className="w-8 h-8 text-orange-400" />, rarity: 'abyssal', resultText: "You consume all who draw near.", passive: "Absolute Inevitability"
+      },
+      NEBULA_WANDERER: {
+        title: "NEBULA WANDERER", subtitle: "Class: ASTRAL_DRIFTER", description: "You are made of stardust and lack any solid boundaries. Beautiful to observe, impossible to contain.", stats: [{ label: "Ethereality", val: 100 }, { label: "Focus", val: 5 }, { label: "Dreaming", val: 99 }, { label: "Grounding", val: 0 }], theme: "from-indigo-500/50 via-blue-900/90 to-black border-indigo-400", textClass: "text-indigo-300", icon: <Sparkles className="w-8 h-8 text-indigo-300" />, rarity: 'mythic', resultText: "Floating thousands of lightyears away.", passive: "Cosmic Dissociation"
+      },
+      THE_OBSERVER: {
+        title: "THE OBSERVER", subtitle: "Class: HIGHER_DIMENSIONAL", description: "You do not interfere. You simply watch timelines collapse and take meticulous, terrifying notes.", stats: [{ label: "Omniscience", val: 90 }, { label: "Interference", val: 0 }, { label: "Perception", val: 100 }, { label: "Empathy", val: 10 }], theme: "from-cyan-600/50 via-teal-900/90 to-black border-cyan-500", textClass: "text-cyan-400", icon: <Radar className="w-8 h-8 text-cyan-400" />, rarity: 'rare', resultText: "Your gaze collapses the wave function.", passive: "Unblinking Stare"
+      },
+      CARBON_COPY: {
+        title: "CARBON COPY", subtitle: "Class: BASE_MATTER", description: "You are just a regular, 3-dimensional human trying to pay rent. No cosmic powers. Sorry.", stats: [{ label: "Baseline Reality", val: 100 }, { label: "Cosmic Power", val: 0 }, { label: "Anxiety", val: 85 }, { label: "Taxes", val: 100 }], theme: "from-zinc-500/30 via-zinc-800/80 to-black border-zinc-600", textClass: "text-zinc-400", icon: <Briefcase className="w-8 h-8 text-zinc-400" />, rarity: 'common', resultText: "A standard biological unit.", passive: "Existential Dread"
+      }
+    },
+    questions: [
+      { id: 'ca1', text: 'You experience déjà vu. Your immediate reaction?', answers: [{ text: 'Ignore it and keep walking.', points: { CARBON_COPY: 2, THE_OBSERVER: 1 } }, { text: 'Analyze the variables to find the timeline split.', points: { THE_OBSERVER: 2, QUANTUM_PARADOX: 1 } }, { text: '"Finally, the convergence is happening."', points: { EVENT_HORIZON: 2, QUANTUM_PARADOX: 1 } }] },
+      { id: 'ca2', text: 'Someone asks for directions. You:', answers: [{ text: 'Explain the physical route.', points: { CARBON_COPY: 2 } }, { text: 'Point them in a direction, but mention it might not be the same place when they arrive.', points: { QUANTUM_PARADOX: 2, NEBULA_WANDERER: 1 } }, { text: 'Just stare. The destination will come to them.', points: { THE_OBSERVER: 2, EVENT_HORIZON: 1 } }] },
+      { id: 'ca3', text: 'Your approach to making plans?', answers: [{ text: 'Put it in the Google Calendar.', points: { CARBON_COPY: 2 } }, { text: 'I am everywhere and nowhere until observed.', points: { QUANTUM_PARADOX: 2 } }, { text: 'Plans orbit me. I do nothing.', points: { EVENT_HORIZON: 2, THE_OBSERVER: 1 } }] },
+      { id: 'ca4', text: 'A completely silent room. What do you do?', answers: [{ text: 'Enjoy the peace, document the silence.', points: { THE_OBSERVER: 2 } }, { text: 'Fill it with overwhelming, crushing energy.', points: { EVENT_HORIZON: 2 } }, { text: 'Drift away into a daydream.', points: { NEBULA_WANDERER: 2, CARBON_COPY: 1 } }] },
+      { id: 'ca5', text: 'When someone tries to debate you on a topic:', answers: [{ text: 'Provide a logical counter-argument.', points: { CARBON_COPY: 2 } }, { text: 'Consume their argument until they forgot their original point.', points: { EVENT_HORIZON: 2 } }, { text: 'Argue both sides simultaneously and glitch their brain.', points: { QUANTUM_PARADOX: 2, NEBULA_WANDERER: 1 } }] },
+      { id: 'ca6', text: 'Your memory functions like...', answers: [{ text: 'A filing cabinet of facts.', points: { THE_OBSERVER: 2, CARBON_COPY: 1 } }, { text: 'A dense, inescapable well of nostalgia.', points: { EVENT_HORIZON: 2 } }, { text: 'A fragmented collage of things that haven\'t happened yet.', points: { QUANTUM_PARADOX: 2, NEBULA_WANDERER: 1 } }] },
+      { id: 'ca7', text: 'At a party, you are the person who...', answers: [{ text: 'Is sitting by the chips, watching everyone.', points: { THE_OBSERVER: 2, CARBON_COPY: 1 } }, { text: 'Somehow ended up entirely in a different dimension/room.', points: { NEBULA_WANDERER: 2, QUANTUM_PARADOX: 1 } }, { text: 'Is the center of the loudest, most chaotic conversation.', points: { EVENT_HORIZON: 2 } }] },
+      { id: 'ca8', text: 'What do you fear most?', answers: [{ text: 'Taxes and emails.', points: { CARBON_COPY: 2 } }, { text: 'Being grounded, tied down to one linear path.', points: { NEBULA_WANDERER: 2, QUANTUM_PARADOX: 1 } }, { text: 'Missing a crucial detail as the universe ends.', points: { THE_OBSERVER: 2 } }] },
+      { id: 'ca9', text: 'Your aesthetic is best described as:', answers: [{ text: 'Dark, massive, and slightly intimidating.', points: { EVENT_HORIZON: 2 } }, { text: 'Ethereal, glowing, not fully there.', points: { NEBULA_WANDERER: 2 } }, { text: 'Glitchy, inconsistent, eye-straining.', points: { QUANTUM_PARADOX: 2 } }] },
+      { id: 'ca10', text: '(Wildcard) The universe is ending in 5 minutes. You...', answers: [{ text: 'Take out your phone to record it.', points: { THE_OBSERVER: 2, CARBON_COPY: 1 } }, { text: 'I am the reason it is ending.', points: { EVENT_HORIZON: 2 } }, { text: 'Skip to the next universe.', points: { QUANTUM_PARADOX: 2, NEBULA_WANDERER: 1 } }] }
     ]
   }
 ];
