@@ -6,6 +6,66 @@ import { Download, Share2, Terminal, ChevronRight, AlertTriangle, RotateCcw, Lis
 import * as htmlToImage from 'html-to-image';
 import { QUIZZES, QuizDef, RoleDef, Question } from '../lib/quizzes';
 
+const QuizVibeBackground = ({ quizId, gameState }: { quizId: string | null, gameState: string }) => {
+  if (gameState === 'select' || !quizId) return null;
+
+  switch (quizId) {
+    case 'npc':
+      return (
+        <div className="fixed inset-0 z-0 overflow-hidden opacity-20 pointer-events-none">
+          <div className="w-full h-full bg-[linear-gradient(rgba(0,255,0,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(0,255,0,0.1)_1px,transparent_1px)] bg-[size:40px_40px] animate-[pulse_2s_infinite]"></div>
+          <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCI+PHRleHQgeD0iMTAiIHk9IjIwIiBmaWxsPSJyZ2JhKDAsMjU1LDAsMC4yKSIgZm9udC1mYW1pbHk9Im1vbm9zcGFjZSIgZm9udC1zaXplPSIxMCI+MTAxMDEwPC90ZXh0Pjwvc3ZnPg==')] opacity-30"></div>
+        </div>
+      );
+    case 'liability':
+      return (
+        <div className="fixed inset-0 z-0 overflow-hidden opacity-30 pointer-events-none flex">
+          <motion.div animate={{ opacity: [0.1, 0.8, 0.1] }} transition={{ duration: 0.8, repeat: Infinity }} className="w-1/2 h-full bg-red-600 blur-[100px]" />
+          <motion.div animate={{ opacity: [0.8, 0.1, 0.8] }} transition={{ duration: 0.8, repeat: Infinity }} className="w-1/2 h-full bg-blue-600 blur-[100px]" />
+        </div>
+      );
+    case 'brainrot':
+      return (
+        <div className="fixed inset-0 z-0 overflow-hidden opacity-20 pointer-events-none flex items-center justify-center">
+          <motion.div 
+            animate={{ rotate: 360 }} 
+            transition={{ duration: 5, repeat: Infinity, ease: "linear" }}
+             className="absolute w-[150vw] h-[150vw] bg-[conic-gradient(red,yellow,lime,aqua,blue,magenta,red)] blur-[100px] rounded-full" 
+          />
+        </div>
+      );
+    case 'corporate':
+      return (
+        <div className="fixed inset-0 z-0 overflow-hidden opacity-[0.05] pointer-events-none bg-white">
+          <div className="w-full h-full bg-[linear-gradient(#000_1px,transparent_1px),linear-gradient(90deg,#000_1px,transparent_1px)] bg-[size:10px_10px]"></div>
+        </div>
+      );
+    case 'aesthetic':
+      return (
+        <div className="fixed inset-0 z-0 overflow-hidden opacity-30 pointer-events-none flex items-center justify-center">
+          <motion.div 
+            animate={{ scale: [1, 1.1, 1], rotate: [0, 5, 0] }} 
+            transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }} 
+            className="w-[120vw] h-[120vw] bg-gradient-to-br from-pink-400 via-purple-300 to-indigo-400 blur-[120px] rounded-full" 
+          />
+        </div>
+      );
+    case 'cosmic':
+      return (
+        <div className="fixed inset-0 z-0 overflow-hidden opacity-40 pointer-events-none flex items-center justify-center">
+          <motion.div 
+            animate={{ scale: [1, 1.5, 1], opacity: [0.3, 0.8, 0.3] }} 
+            transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }} 
+            className="w-[100vw] h-[100vw] bg-[radial-gradient(ellipse_at_center,rgba(80,0,255,0.4)_0%,rgba(0,0,0,0)_70%)] blur-[40px] rounded-full" 
+          />
+          <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPjxyZWN0IHdpZHRoPSI0IiBoZWlnaHQ9IjQiIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4xIi8+PC9zdmc+')] opacity-20"></div>
+        </div>
+      );
+    default:
+      return null;
+  }
+};
+
 export default function NPCStatCardApp() {
   const [gameState, setGameState] = useState<'select' | 'intro' | 'quiz' | 'calculating' | 'result'>('select');
   const [activeQuizId, setActiveQuizId] = useState<string | null>(null);
@@ -87,8 +147,9 @@ export default function NPCStatCardApp() {
   };
 
   return (
-    <main className="min-h-screen bg-grid-white relative flex flex-col items-center justify-center p-4">
-      <div className="absolute inset-0 noise-bg"></div>
+    <main className="h-[100dvh] w-screen bg-grid-white relative flex flex-col items-center justify-center p-4 overflow-hidden">
+      <QuizVibeBackground quizId={activeQuizId} gameState={gameState} />
+      <div className="absolute inset-0 noise-bg pointer-events-none"></div>
 
       {gameState !== 'select' && (
         <button 
@@ -179,6 +240,7 @@ export default function NPCStatCardApp() {
             roleDef={activeQuiz.roles[finalRole]} 
             secondaryRoleDef={secondaryRole ? activeQuiz.roles[secondaryRole] : null}
             quizName={activeQuiz.title}
+            quizId={activeQuiz.id}
             userName={userName} 
             onRestart={restartQuiz} 
           />
@@ -353,7 +415,7 @@ function TerminalCalculationScreen() {
   );
 }
 
-function ResultScreen({ roleDef, secondaryRoleDef, quizName, userName, onRestart }: { roleDef: RoleDef, secondaryRoleDef: RoleDef | null, quizName: string, userName: string, onRestart: () => void }) {
+function ResultScreen({ roleDef, secondaryRoleDef, quizName, quizId, userName, onRestart }: { roleDef: RoleDef, secondaryRoleDef: RoleDef | null, quizName: string, quizId: string, userName: string, onRestart: () => void }) {
   const cardRef = useRef<HTMLDivElement>(null);
   const [cardId] = useState(() => Math.random().toString(36).substring(7).toUpperCase());
 
@@ -373,6 +435,59 @@ function ResultScreen({ roleDef, secondaryRoleDef, quizName, userName, onRestart
   function handleMouseLeave() {
     mouseX.set(0);
     mouseY.set(0);
+  }
+
+  let containerAnim: any = { opacity: 1, x: 0, y: 0 };
+  let cardInitial: any = { y: 0, scale: 1, rotateZ: 0, rotateX: 0, opacity: 0 };
+  let cardAnim: any = { y: 0, scale: 1, rotateZ: 0, rotateX: 0, opacity: 1 };
+  let cardTransition: any = { duration: 0.5, ease: "easeOut" };
+
+  switch (quizId) {
+    case 'npc':
+      containerAnim = { opacity: 1 };
+      cardInitial = { opacity: 0, scale: 0.9, filter: 'blur(10px)' };
+      cardAnim = { opacity: 1, scale: 1, filter: 'blur(0px)' };
+      cardTransition = { duration: 0.5, ease: "easeOut", delay: 0.2 };
+      break;
+    case 'liability':
+      containerAnim = { 
+        opacity: 1,
+        x: [0, -20, 20, -10, 10, -5, 5, 0],
+        y: [0, 20, -20, 10, -10, 5, -5, 0]
+      };
+      cardInitial = { y: -1000, rotateZ: -15, scale: 1.5, opacity: 1 };
+      cardAnim = { y: 0, rotateZ: 0, scale: 1, opacity: 1 };
+      cardTransition = { type: "spring", stiffness: 150, damping: 12, mass: 2, delay: 0.2 };
+      break;
+    case 'brainrot':
+      containerAnim = { opacity: 1 };
+      cardInitial = { scale: 0.1, rotateZ: 1080, opacity: 1 };
+      cardAnim = { scale: 1, rotateZ: 0, opacity: 1 };
+      cardTransition = { type: "spring", stiffness: 60, damping: 20, mass: 0.5, delay: 0.1 };
+      break;
+    case 'corporate':
+      containerAnim = { opacity: 1 };
+      cardInitial = { y: 500, opacity: 0 };
+      cardAnim = { y: 0, opacity: 1 };
+      cardTransition = { duration: 1.5, ease: "easeOut", delay: 0.2 };
+      break;
+    case 'aesthetic':
+      containerAnim = { opacity: 1 };
+      cardInitial = { y: 20, opacity: 0, scale: 0.95 };
+      cardAnim = { y: 0, opacity: 1, scale: 1 };
+      cardTransition = { duration: 1.5, ease: "easeOut", delay: 0.5 };
+      break;
+    case 'cosmic':
+    default:
+      containerAnim = { 
+        opacity: 1,
+        x: [0, -15, 15, -10, 10, -5, 5, 0],
+        y: [0, 15, -15, 10, -10, 5, -5, 0]
+      };
+      cardInitial = { y: -1000, rotateZ: 75, rotateX: 45, scale: 0.2, opacity: 1 };
+      cardAnim = { y: 0, rotateZ: 0, rotateX: 0, scale: 1, opacity: 1 };
+      cardTransition = { type: "spring", stiffness: 80, damping: 10, mass: 1.2, delay: 0.3 };
+      break;
   }
 
   const captureCard = async () => {
@@ -425,11 +540,7 @@ function ResultScreen({ roleDef, secondaryRoleDef, quizName, userName, onRestart
   return (
     <motion.div 
       initial={{ opacity: 0 }}
-      animate={{ 
-        opacity: 1,
-        x: [0, -15, 15, -10, 10, -5, 5, 0],
-        y: [0, 15, -15, 10, -10, 5, -5, 0]
-      }}
+      animate={containerAnim}
       transition={{ 
         duration: 0.6, 
         delay: 0.25, 
@@ -456,34 +567,53 @@ function ResultScreen({ roleDef, secondaryRoleDef, quizName, userName, onRestart
         </motion.p>
       </div>
 
-      {/* Explosive background aura containment to stop scroll bugs */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden flex items-center justify-center">
-        <motion.div 
-           initial={{ scale: 0, opacity: 1 }}
-           animate={{ scale: [0, 4, 8], opacity: [1, 0.8, 0] }}
-           transition={{ duration: 1.5, ease: "easeOut", delay: 0.2 }}
-           className={`w-[300px] h-[300px] rounded-full blur-[60px] bg-gradient-to-t ${roleDef.theme}`}
-        />
-        <motion.div 
-           initial={{ scale: 0, opacity: 1 }}
-           animate={{ scale: [0, 2, 4], opacity: [1, 0.5, 0] }}
-           transition={{ duration: 1.2, ease: "easeOut", delay: 0.25 }}
-           className="absolute w-[200px] h-[200px] rounded-full blur-[40px] bg-white mix-blend-overlay"
-        />
-        <motion.div 
-           initial={{ opacity: 0 }}
-           animate={{ opacity: [0, 1, 0] }}
-           transition={{ duration: 0.6, delay: 0.3 }}
-           className="absolute inset-0 bg-white z-50 mix-blend-overlay"
-        />
+        {(quizId === 'cosmic' || quizId === 'liability') && (
+          <>
+            <motion.div 
+              initial={{ scale: 0, opacity: 1 }}
+              animate={{ scale: [0, 4, 8], opacity: [1, 0.8, 0] }}
+              transition={{ duration: 1.5, ease: "easeOut", delay: 0.2 }}
+              className={`w-[300px] h-[300px] rounded-full blur-[60px] bg-gradient-to-t ${roleDef.theme}`}
+            />
+            <motion.div 
+              initial={{ scale: 0, opacity: 1 }}
+              animate={{ scale: [0, 2, 4], opacity: [1, 0.5, 0] }}
+              transition={{ duration: 1.2, ease: "easeOut", delay: 0.25 }}
+              className="absolute w-[200px] h-[200px] rounded-full blur-[40px] bg-white mix-blend-overlay"
+            />
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: [0, 1, 0] }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              className="absolute inset-0 bg-white z-50 mix-blend-overlay"
+            />
+          </>
+        )}
+        {quizId === 'npc' && (
+           <motion.div 
+             initial={{ opacity: 1 }}
+             animate={{ opacity: 0 }}
+             transition={{ duration: 0.5, delay: 0.5 }}
+             className="absolute inset-0 bg-green-500/20 z-50 mix-blend-color-dodge"
+           />
+        )}
+        {quizId === 'brainrot' && (
+           <motion.div 
+             initial={{ opacity: 1, scale: 0 }}
+             animate={{ opacity: 0, scale: 10 }}
+             transition={{ duration: 0.8, ease: "easeOut" }}
+             className="absolute w-20 h-20 bg-[conic-gradient(red,yellow,lime,aqua,blue,magenta,red)] rounded-full blur-[20px]"
+           />
+        )}
       </div>
 
       <div className="w-full aspect-[3/4] perspective-[1000px] mb-8 relative z-20">        
-        {/* Card slam drop */}
+        {/* Card wrapper */}
         <motion.div 
-          initial={{ y: -1200, rotateZ: 75, rotateX: 45, scale: 0.2 }}
-          animate={{ y: 0, rotateZ: 0, rotateX: 0, scale: 1 }}
-          transition={{ type: "spring", stiffness: 80, damping: 10, mass: 1.2, delay: 0.3 }}
+          initial={cardInitial}
+          animate={cardAnim}
+          transition={cardTransition}
           className="w-full h-full"
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}
