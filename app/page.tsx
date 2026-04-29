@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from 'motion/react';
-import { Download, Share2, Terminal, ChevronRight, AlertTriangle, RotateCcw, List } from 'lucide-react';
+import { Download, Share2, Terminal, ChevronRight, AlertTriangle, RotateCcw, List, Sparkles } from 'lucide-react';
 import * as htmlToImage from 'html-to-image';
 import { QUIZZES, QuizDef, RoleDef, Question } from '../lib/quizzes';
 
@@ -106,31 +106,68 @@ const QuizVibeBackground = ({ quizId, gameState }: { quizId: string | null, game
       );
     case 'rapid_fire':
       return (
-        <div className="fixed inset-0 z-0 overflow-hidden bg-black pointer-events-none flex items-center justify-center">
+        <div className="fixed inset-0 z-0 overflow-hidden bg-zinc-950 pointer-events-none flex items-center justify-center">
           <motion.div 
-            animate={{ opacity: [0, 0.4, 0] }} 
-            transition={{ duration: 0.2, repeat: Infinity, ease: "linear", repeatType: "mirror" }} 
-            className="absolute inset-0 bg-yellow-500 mix-blend-overlay"
+            animate={{ opacity: [0.1, 0.4, 0.1], scale: [1, 1.05, 1] }} 
+            transition={{ duration: 0.5, repeat: Infinity, ease: "linear", repeatType: "mirror" }} 
+            className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(250,204,21,0.3)_0%,rgba(0,0,0,1)_80%)] mix-blend-screen"
           />
-          <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPjxyZWN0IHdpZHRoPSI0IiBoZWlnaHQ9IjQiIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC41Ii8+PC9zdmc+')] mix-blend-overlay scale-150 animate-pulse opacity-20"></div>
+          <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPjxyZWN0IHdpZHRoPSI0IiBoZWlnaHQ9IjQiIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC41Ii8+PC9zdmc+')] mix-blend-overlay scale-150 animate-[pulse_0.5s_infinite] opacity-30"></div>
           {/* Warning chevrons */}
-          <div className="absolute inset-0 bg-[repeating-linear-gradient(45deg,transparent,transparent_40px,rgba(202,138,4,0.1)_40px,rgba(202,138,4,0.1)_80px)] opacity-50 z-10" />
+          <motion.div 
+            animate={{ backgroundPosition: ['0px 0px', '40px 40px'] }}
+            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+            className="absolute inset-0 bg-[repeating-linear-gradient(45deg,transparent,transparent_40px,rgba(202,138,4,0.15)_40px,rgba(202,138,4,0.15)_80px)] opacity-60 z-10" 
+          />
         </div>
       );
     case 'trick':
       return (
         <div className="fixed inset-0 z-0 overflow-hidden bg-black pointer-events-none">
           <motion.div 
-             animate={{ height: ["0vh", "3vh", "0vh"], opacity: [0, 0.8, 0], y: ["0vh", "100vh"] }} 
-             transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
-             className="w-full bg-green-500/20 mix-blend-screen shadow-[0_0_20px_rgba(34,197,94,0.5)] z-20"
+             animate={{ height: ["0vh", "5vh", "0vh"], opacity: [0, 0.8, 0], y: ["0vh", "100vh"] }} 
+             transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+             className="w-full bg-green-500/30 mix-blend-screen shadow-[0_0_30px_rgba(34,197,94,0.8)] z-20"
           />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,50,0,0.5)_0%,rgba(0,0,0,1)_100%)] z-0" />
+          <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-green-900/20 to-transparent blur-2xl animate-[pulse_4s_infinite]" />
           <div className="absolute inset-0 bg-[repeating-linear-gradient(0deg,rgba(0,0,0,0.15)_0px,rgba(0,0,0,0.15)_1px,transparent_1px,transparent_2px)] bg-[size:100%_2px] z-10" />
         </div>
       );
+    case 'true_reality':
+      return <TrueRealityBackground />;
     default:
       return null;
   }
+};
+
+const TrueRealityBackground = () => {
+  const codeBlocks = React.useMemo(() => {
+    // eslint-disable-next-line react-hooks/purity
+    return Array.from({length: 200}).map(() => Math.random() > 0.5 ? 'FATAL_ERR ' : 'NULL_VOID ');
+  }, []);
+
+  return (
+    <div className="fixed inset-0 z-0 overflow-hidden bg-black pointer-events-none flex flex-col items-center justify-center">
+      <motion.div
+        animate={{ opacity: [0.1, 0.3, 0.1] }}
+        transition={{ duration: 0.8, repeat: Infinity, repeatType: 'mirror' }}
+        className="absolute inset-0 bg-red-950"
+      />
+      <div className="relative font-mono text-red-600 text-sm opacity-50 whitespace-pre wrap break-words w-full h-full overflow-hidden leading-tight tracking-tighter">
+          {codeBlocks.map((block, i) => (
+            <span key={i} className="inline-block p-1 animate-pulse" style={{ animationDelay: `${i * 0.05}s` }}>
+              {block}
+            </span>
+          ))}
+      </div>
+      <motion.div 
+        animate={{ translateY: ['-100%', '100%'] }}
+        transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}
+        className="absolute inset-0 bg-gradient-to-b from-transparent via-red-600/10 to-transparent h-[20%] w-full"
+      />
+    </div>
+  );
 };
 
 export default function NPCStatCardApp() {
@@ -343,6 +380,7 @@ export default function NPCStatCardApp() {
           ) : (
             <QuizScreen 
               key={`quiz-${currentQuestionIdx}`}
+              quizId={activeQuiz.id}
               question={activeQuiz.questions[currentQuestionIdx]} 
               progress={(currentQuestionIdx / activeQuiz.questions.length) * 100}
               onAnswer={handleAnswer} 
@@ -371,6 +409,38 @@ export default function NPCStatCardApp() {
 }
 
 function QuizSelectScreen({ onSelect, onViewCollection }: { onSelect: (id: string) => void, onViewCollection: () => void }) {
+  const [unlockedCount, setUnlockedCount] = React.useState(0);
+  const [glitchVisible, setGlitchVisible] = React.useState(false);
+
+  React.useEffect(() => {
+    try {
+      const unlocked = JSON.parse(localStorage.getItem('unlockedCards') || '[]');
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setUnlockedCount(unlocked.length);
+    } catch(e){}
+  }, []);
+
+  React.useEffect(() => {
+    if (unlockedCount >= 10) {
+      // Show glitch briefly every 2-6 minutes randomly
+      const timeoutRandom = () => {
+        return Math.random() * 240000 + 120000; // 2 to 6 minutes
+      };
+      
+      let timerId: NodeJS.Timeout;
+
+      const triggerGlitch = () => {
+        setGlitchVisible(true);
+        setTimeout(() => setGlitchVisible(false), 3000 + Math.random() * 5000); // 3-8 seconds
+        timerId = setTimeout(triggerGlitch, timeoutRandom());
+      };
+
+      timerId = setTimeout(triggerGlitch, timeoutRandom());
+      
+      return () => clearTimeout(timerId);
+    }
+  }, [unlockedCount]);
+
   return (
     <motion.div 
       initial={{ opacity: 0 }}
@@ -426,6 +496,41 @@ function QuizSelectScreen({ onSelect, onViewCollection }: { onSelect: (id: strin
             </div>
           </motion.button>
         ))}
+        
+        <AnimatePresence>
+          {glitchVisible && (
+            <motion.button
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1, rotate: [-1, 1, -1] }}
+              transition={{ rotate: { repeat: Infinity, duration: 0.1 } }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              onClick={() => onSelect('true_reality')}
+              className="group relative flex flex-col items-start text-left p-5 sm:p-6 bg-red-950 border-2 border-red-600/80 rounded-xl overflow-hidden shadow-[0_0_15px_rgba(255,0,0,0.4)] hover:shadow-[0_0_30px_rgba(255,0,0,0.8)] cursor-pointer"
+            >
+              <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPjxyZWN0IHdpZHRoPSI0IiBoZWlnaHQ9IjQiIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC41Ii8+PC9zdmc+')] mix-blend-overlay opacity-30 animate-pulse z-0"></div>
+              <div className="absolute top-0 left-0 right-0 h-[2px] bg-red-600 animate-[pulse_0.1s_infinite] w-full z-10"></div>
+              
+              <div className="relative z-10 w-full text-red-100">
+                <div className="flex justify-between items-center mb-3">
+                  <div className="text-red-400 font-mono text-[10px] sm:text-xs tracking-widest border border-red-500/50 px-2 py-0.5 rounded bg-red-900/50 font-bold">
+                    ERR // 0xDEAD
+                  </div>
+                  <div className="w-2 h-2 rounded-full bg-red-500 animate-ping"></div>
+                </div>
+                <h3 className="text-lg sm:text-xl font-black mb-1 uppercase tracking-tight text-white mb-1">THE TRUE REALITY</h3>
+                <p className="text-red-400 text-[9px] sm:text-[10px] font-mono uppercase tracking-widest mb-2 sm:mb-3 border-b border-red-500/50 pb-2">SYSTEM_BREACH</p>
+                <p className="text-red-200/80 text-[11px] sm:text-xs leading-relaxed line-clamp-2 font-mono">
+                  YOU WERE NOT MEANT TO SEE THIS. THE SIMULATION IS FAILING. CLOSE THE APPLET.
+                </p>
+                
+                <div className="mt-3 sm:mt-4 flex items-center text-[10px] font-mono text-red-400 group-hover:text-red-300 font-bold uppercase transition-transform group-hover:translate-x-2">
+                  <span className="mr-2">WAKE UP</span>
+                  <AlertTriangle className="w-3 h-3 animate-bounce" />
+                </div>
+              </div>
+            </motion.button>
+          )}
+        </AnimatePresence>
       </div>
 
       <motion.button
@@ -433,11 +538,12 @@ function QuizSelectScreen({ onSelect, onViewCollection }: { onSelect: (id: strin
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.6, type: "spring", stiffness: 100 }}
         onClick={onViewCollection}
-        className="mt-8 sm:mt-12 px-6 sm:px-8 py-3 bg-zinc-900/50 border border-zinc-700 hover:border-fuchsia-500/50 hover:bg-zinc-800 text-zinc-300 hover:text-fuchsia-400 font-mono text-xs sm:text-sm uppercase tracking-widest rounded-lg flex items-center gap-3 transition-all group shadow-md"
+        className="mt-8 sm:mt-12 px-6 sm:px-8 py-3 bg-zinc-900/50 border border-zinc-700 hover:border-fuchsia-500/50 hover:bg-zinc-800 text-zinc-300 hover:text-fuchsia-400 font-mono text-xs sm:text-sm uppercase tracking-widest rounded-lg flex items-center gap-3 transition-all group shadow-md z-20 relative"
       >
         <span className="w-1.5 sm:w-2 h-1.5 sm:h-2 rounded-full bg-fuchsia-500 group-hover:animate-pulse"></span>
         View Card Collection
       </motion.button>
+      
     </motion.div>
   );
 }
@@ -682,7 +788,7 @@ function TrickQuizScreen({ question, progress, onAnswer }: { question: Question,
   );
 }
 
-function QuizScreen({ question, progress, onAnswer }: { question: Question, progress: number, onAnswer: (p: any) => void }) {
+function QuizScreen({ question, progress, onAnswer, quizId }: { question: Question, progress: number, onAnswer: (p: any) => void, quizId?: string }) {
   const answeredRef = React.useRef(false);
 
   React.useEffect(() => {
@@ -691,12 +797,14 @@ function QuizScreen({ question, progress, onAnswer }: { question: Question, prog
 
   if (!question) return null;
 
+  const isTrueReality = quizId === 'true_reality';
+
   return (
     <motion.div 
       initial={{ opacity: 0, x: 50 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -50 }}
-      className="z-10 w-full max-w-2xl px-4 my-auto pt-16 sm:pt-0"
+      className={`relative z-10 w-full max-w-2xl px-4 my-auto pt-16 sm:pt-0 ${isTrueReality ? 'drop-shadow-[0_0_10px_rgba(255,0,0,0.8)]' : ''}`}
     >
       <div className="w-full h-1 bg-zinc-800 mb-12 rounded-full overflow-hidden">
         <motion.div 
@@ -707,7 +815,7 @@ function QuizScreen({ question, progress, onAnswer }: { question: Question, prog
       </div>
 
       <div className="space-y-8">
-        <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold leading-tight text-white mb-8">
+        <h2 className={`text-2xl sm:text-3xl md:text-4xl font-semibold leading-tight mb-8 ${isTrueReality ? 'text-white font-mono tracking-tighter' : 'text-white'}`}>
           {question.text}
         </h2>
         <div className="space-y-4">
@@ -721,9 +829,13 @@ function QuizScreen({ question, progress, onAnswer }: { question: Question, prog
                 answeredRef.current = true;
                 onAnswer(ans.points);
               }}
-              className="w-full text-left p-4 sm:p-6 border border-zinc-800 bg-zinc-900/50 hover:bg-zinc-800 hover:border-cyan-500/50 rounded-lg text-sm sm:text-lg text-zinc-300 hover:text-white transition-all font-mono"
+              className={`w-full text-left p-4 sm:p-6 border rounded-lg text-sm sm:text-lg transition-all font-mono ${
+                isTrueReality 
+                  ? 'bg-transparent border-white text-white hover:bg-white hover:text-black font-bold uppercase' 
+                  : 'border-zinc-800 bg-zinc-900/50 hover:bg-zinc-800 hover:border-cyan-500/50 text-zinc-300 hover:text-white'
+              }`}
             >
-              <span className="text-cyan-500/50 mr-4">[{String.fromCharCode(65 + i)}]</span>
+              <span className={`${isTrueReality ? 'text-white' : 'text-cyan-500/50'} mr-4`}>[{String.fromCharCode(65 + i)}]</span>
               {ans.text}
             </motion.button>
           ))}
@@ -798,9 +910,25 @@ function TerminalCalculationScreen() {
   );
 }
 
-function ResultScreen({ roleDef, secondaryRoleDef, quizName, quizId, userName, onRestart }: { roleDef: RoleDef, secondaryRoleDef: RoleDef | null, quizName: string, quizId: string, userName: string, onRestart: () => void }) {
+function ResultScreen({ roleDef, secondaryRoleDef, quizName, quizId, userName, onRestart, isModal, onClose }: { roleDef: RoleDef, secondaryRoleDef: RoleDef | null, quizName: string, quizId: string, userName: string, onRestart?: () => void, isModal?: boolean, onClose?: () => void }) {
   const cardRef = useRef<HTMLDivElement>(null);
   const [cardId] = useState(() => Math.random().toString(36).substring(7).toUpperCase());
+
+  const uniqueFeatures = React.useMemo(() => {
+    let hash = 0;
+    for (let i = 0; i < cardId.length; i++) hash = cardId.charCodeAt(i) + ((hash << 5) - hash);
+    const absHash = Math.abs(hash);
+    return {
+        hue: absHash % 360,
+        pattern: absHash % 4,
+        accent: `hsl(${absHash % 360}, 100%, 70%)`,
+        cx: absHash % 100,
+        cy: (absHash >> 2) % 100,
+        rotation: (absHash >> 4) % 360,
+        opacity: ((absHash >> 6) % 30) + 10,
+        borderType: absHash % 3
+    };
+  }, [cardId]);
 
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
@@ -929,9 +1057,10 @@ function ResultScreen({ roleDef, secondaryRoleDef, quizName, quizId, userName, o
         delay: 0.25, 
         ease: "easeInOut" 
       }}
-      className="z-10 flex flex-col items-center w-full max-w-sm px-4 relative my-auto mt-16 sm:mt-auto"
+      className="z-10 flex flex-col items-center w-full px-4 relative my-auto mt-8 sm:mt-auto"
+      style={{ maxWidth: 'min(384px, 100%, max(280px, calc((100vh - 220px) * 0.75)))' }}
     >
-      <div className="mb-6 text-center z-10">
+      <div className="mb-4 text-center z-10 shrink-0">
         <motion.h3 
           initial={{ opacity: 0, y: -20, scale: 2 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -1005,7 +1134,12 @@ function ResultScreen({ roleDef, secondaryRoleDef, quizName, quizId, userName, o
             id="stat-card"
             ref={cardRef}
             style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
-            className={`w-full h-full relative rounded-2xl border-2 bg-gradient-to-b ${roleDef.theme} p-4 sm:p-6 flex flex-col overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.6)] backdrop-blur-md ${roleDef.rarity === 'glitched' ? 'glitch-anim' : ''}`}
+            className={`w-full h-full relative p-4 sm:p-6 flex flex-col overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.6)] backdrop-blur-md ${
+              roleDef.rarity === 'glitched' ? 'glitch-anim bg-black border-4 border-green-500 rounded-lg skew-x-1 outline outline-4 outline-fuchsia-500/50' :
+              roleDef.rarity === 'abyssal' ? 'border-2 border-red-900 bg-black rounded-[100px] shadow-[0_0_100px_rgba(220,38,38,0.5)]' :
+              roleDef.rarity === 'mythic' ? 'border-b-8 border-x-4 border-white bg-white/95 rounded-none shadow-[0_0_80px_rgba(255,255,255,0.4)]' :
+              `rounded-2xl border-2 bg-gradient-to-b ${roleDef.theme}`
+            }`}
           >
             {roleDef.rarity === 'legendary' && <div className="bg-starburst z-0"></div>}
 
@@ -1014,83 +1148,190 @@ function ResultScreen({ roleDef, secondaryRoleDef, quizName, quizId, userName, o
             style={{ background: useTransform([glareX, glareY], ([gx, gy]) => `radial-gradient(circle at ${gx}% ${gy}%, rgba(255,255,255,0.8) 0%, transparent 60%)`) }}
           />
 
-          <div className="absolute inset-0 card-noise z-10" />
-          <div className={`absolute inset-0 ${getFoilClass(roleDef.rarity)} z-10`} />
+          {roleDef.rarity !== 'mythic' && <div className="absolute inset-0 card-noise z-10" />}
+          <div className={`absolute inset-0 ${getFoilClass(roleDef.rarity)} z-10 pointer-events-none`} />
           
-          <div className="relative z-30 h-full flex flex-col" style={{ transform: 'translateZ(30px)' }}>
-            <div className="flex justify-between items-start mb-3 sm:mb-4">
-              <div className={`p-2 sm:p-3 rounded-lg bg-black/40 border border-white/10 shadow-lg ${roleDef.textClass}`}>
-                {roleDef.icon}
-              </div>
-              <div className="text-right">
-                <div className="text-[10px] sm:text-xs font-mono text-white/50 tracking-widest uppercase">Entity: {userName.substring(0, 15)}</div>
-                <div className={`text-xs font-mono font-bold ${roleDef.textClass}`}>
-                  {roleDef.subtitle}
-                  {secondaryRoleDef && <><br/>Hybrid: {secondaryRoleDef.title}</>}
-                </div>
-                <div className="text-[8px] sm:text-[9px] font-mono text-white/30 uppercase tracking-widest mt-0.5">{quizName}</div>
-              </div>
-            </div>
-
-            <div className="mb-3 sm:mb-4">
-              <h2 className={`text-2xl sm:text-3xl font-black uppercase tracking-tighter leading-none mb-2 ${roleDef.textClass}`} style={{ textShadow: '0 2px 10px rgba(0,0,0,0.5)' }}>
-                {roleDef.title}
-              </h2>
-              <p className="text-xs sm:text-sm text-white/90 leading-relaxed font-sans drop-shadow-md bg-black/20 p-2 rounded-md border border-white/5">
-                {roleDef.description}
-              </p>
-            </div>
-            
-            {secondaryRoleDef && (
-              <div className="mb-2 sm:mb-3">
-                <div className="text-[9px] text-white/50 uppercase font-mono mb-1 tracking-widest">Detected Anomalies:</div>
-                <div className={`text-[9px] sm:text-[10px] font-bold ${secondaryRoleDef.textClass} bg-black/40 p-1.5 sm:p-2 rounded border border-white/10 shadow-inner`}>
-                  Traces of [{secondaryRoleDef.title}]: {secondaryRoleDef.passive}
-                </div>
-              </div>
-            )}
-
-            <div className="flex-grow"></div>
-
-            <div className="space-y-2 sm:space-y-3 bg-black/60 p-3 sm:p-4 rounded-xl border border-white/10 backdrop-blur-md shadow-inner">
-              {roleDef.stats.map((stat, i) => (
-                <div key={i} className="flex flex-col gap-1.5">
-                  <div className="flex justify-between text-[10px] sm:text-xs font-mono uppercase tracking-widest">
-                    <span className="text-white/80">{stat.label}</span>
-                    <span className="text-white font-bold">{stat.val}/100</span>
-                  </div>
-                  {/* Progress bar container */}
-                  <div className="h-1.5 w-full bg-zinc-800/80 rounded-full overflow-hidden border border-black shadow-inner">
-                    {/* The fill bar */}
-                    <motion.div 
-                      initial={{ width: 0 }}
-                      animate={{ width: `${stat.val}%` }}
-                      transition={{ delay: 0.5 + (i * 0.1), duration: 1, ease: "easeOut" }}
-                      className={`h-full bg-white/90 shadow-[0_0_8px_rgba(255,255,255,0.8)] rounded-full`}
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <div className="mt-3 p-3 bg-black/40 rounded-lg border border-white/10 flex flex-col shadow-md">
-              <span className="text-[9px] text-white/50 uppercase font-mono mb-1 tracking-widest">Passive Ability</span>
-              <span className={`text-xs sm:text-sm font-bold ${roleDef.textClass} drop-shadow-md`}>{roleDef.passive}</span>
-            </div>
-
-            <div className="mt-4 pt-3 border-t border-white/20 flex justify-between items-end text-[8px] sm:text-[9px] font-mono text-white/50">
-              <div className="flex flex-col gap-1">
-                <span>SYSTEM v3.0 // {roleDef.rarity.toUpperCase()}</span>
-                <span>ID: {cardId}</span>
-              </div>
-              <div className="tracking-tighter text-sm opacity-60 flex right-0">
-                █║▌│█│║▌║││█║▌
-              </div>
-            </div>
-            
+          <div 
+             className="absolute inset-0 z-10 pointer-events-none mix-blend-overlay opacity-50"
+             style={{
+               filter: `hue-rotate(${uniqueFeatures.hue}deg)`,
+               backgroundImage: uniqueFeatures.pattern === 0 ? 'repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.1) 10px, rgba(255,255,255,0.1) 20px)' :
+                                uniqueFeatures.pattern === 1 ? 'radial-gradient(circle at center, rgba(255,255,255,0.2) 2px, transparent 2.5px)' :
+                                uniqueFeatures.pattern === 2 ? 'repeating-linear-gradient(-45deg, transparent, transparent 5px, rgba(255,255,255,0.15) 5px, rgba(255,255,255,0.15) 10px)' :
+                                'none',
+               backgroundSize: uniqueFeatures.pattern === 1 ? '20px 20px' : 'auto'
+             }}
+          />
+          <div className="absolute inset-0 z-10 pointer-events-none overflow-hidden mix-blend-overlay" style={{ opacity: uniqueFeatures.opacity / 100 }}>
+             <div className="absolute rounded-full border border-white" style={{ left: `${uniqueFeatures.cx}%`, top: `${uniqueFeatures.cy}%`, width: '150%', height: '150%', transform: 'translate(-50%, -50%)' }}></div>
+             <div className="absolute border border-white" style={{ left: `${100 - uniqueFeatures.cx}%`, top: `${100 - uniqueFeatures.cy}%`, width: '100%', height: '100%', transform: `translate(-50%, -50%) rotate(${uniqueFeatures.rotation}deg)` }}></div>
           </div>
+          
+          {/* ABYSSAL INTERNAL STRUCTURE */}
+          {roleDef.rarity === 'abyssal' && (
+             <div className="relative z-30 h-full flex flex-col items-center justify-center text-center -mx-4" style={{ transform: 'translateZ(50px)' }}>
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,black_100%)] z-0 rounded-full mix-blend-multiply"></div>
+                <div className="z-10 bg-red-950/40 p-6 rounded-full border border-red-900 shadow-[inset_0_0_50px_rgba(0,0,0,1)] mix-blend-screen scale-110 mb-8 mt-4 animate-[pulse_3s_infinite]">
+                   {roleDef.icon}
+                </div>
+                <h2 className="z-10 text-4xl sm:text-5xl font-black uppercase tracking-widest text-red-600 mb-2 mt-4 drop-shadow-[0_0_15px_rgba(220,38,38,0.8)] scale-y-110">{roleDef.title}</h2>
+                <p className="z-10 text-[9px] sm:text-[10px] font-mono text-red-800 uppercase tracking-widest mb-4 border-b border-red-900/50 pb-2">{roleDef.subtitle}</p>
+                <p className="z-10 text-xs sm:text-sm text-red-700/80 leading-relaxed font-sans px-8">{roleDef.description}</p>
+                
+                <div className="z-10 flex flex-col gap-3 w-full px-8 opacity-80 mt-auto mb-16">
+                  {roleDef.stats.map((stat, i) => (
+                    <div key={i} className="flex justify-between items-center text-[10px] sm:text-xs uppercase font-mono text-red-500 border-b border-red-950 pb-1">
+                       <span>{stat.label}</span>
+                       <span className="font-black drop-shadow-[0_0_5px_currentColor]">{stat.val}</span>
+                    </div>
+                  ))}
+                </div>
+                
+                <div className="absolute bottom-6 text-[8px] text-red-900 font-mono tracking-tighter opacity-50">ENTITY_ID: {cardId}</div>
+             </div>
+          )}
+
+          {/* MYTHIC INTERNAL STRUCTURE */}
+          {roleDef.rarity === 'mythic' && (
+             <div className="relative z-30 h-full flex flex-col items-center justify-between p-2 -mx-2 -my-2" style={{ transform: 'translateZ(40px)' }}>
+                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(255,255,255,1)_0%,rgba(200,200,200,0.5)_100%)] z-0 mix-blend-overlay pointer-events-none"></div>
+                <div className="z-10 w-full flex justify-between p-2 font-mono text-[8px] sm:text-[9px] uppercase tracking-widest text-black/50 border-b border-black/10">
+                   <span>{quizName}</span>
+                   <span>{cardId}</span>
+                </div>
+                
+                <div className="z-10 flex-1 flex flex-col items-center justify-center w-full mt-4">
+                   <div className="p-8 rounded-full bg-black/5 shadow-[0_0_50px_rgba(255,255,255,1)] text-black mb-6">
+                      {roleDef.icon}
+                   </div>
+                   <h2 className="text-3xl sm:text-4xl font-serif italic text-black tracking-tighter mb-2 mix-blend-difference drop-shadow-md text-center">{roleDef.title}</h2>
+                   <div className="text-[10px] sm:text-xs font-mono font-bold text-black/40 uppercase tracking-widest mb-4">{roleDef.subtitle}</div>
+                   <p className="text-black/60 text-[10px] sm:text-xs text-center px-4 leading-relaxed font-sans border-t border-black/10 pt-4 max-w-[90%]">{roleDef.description}</p>
+                </div>
+                
+                <div className="z-10 w-[105%] bg-black/5 p-4 mt-auto border border-black/10">
+                  {roleDef.stats.map((stat, i) => (
+                    <div key={i} className="flex justify-between items-center text-[9px] sm:text-[10px] uppercase font-mono text-black/70 mb-1.5 border-black/5 border-b last:border-b-0 pb-1.5">
+                       <span>{stat.label}</span>
+                       <div className="w-1/2 h-1 bg-black/10 rounded-full overflow-hidden flex justify-end">
+                         <div className="h-full bg-black/50" style={{ width: `${stat.val}%` }}></div>
+                       </div>
+                    </div>
+                  ))}
+                </div>
+             </div>
+          )}
+
+          {/* GLITCHED INTERNAL STRUCTURE */}
+          {roleDef.rarity === 'glitched' && (
+             <div className="relative z-30 h-full flex flex-col p-2" style={{ transform: 'translateZ(30px)' }}>
+                <div className="absolute -inset-4 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPjxyZWN0IHdpZHRoPSI0IiBoZWlnaHQ9IjQiIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC41Ii8+PC9zdmc+')] mix-blend-overlay opacity-30 z-0 scale-150 animate-[pulse_0.4s_infinite]"></div>
+                
+                <h2 className="text-5xl sm:text-6xl font-black uppercase tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-green-500 to-fuchsia-600 absolute top-20 left-[-20px] rotate-[-10deg] scale-150 mix-blend-screen opacity-40 z-0 blur-[4px] pointer-events-none">{roleDef.title}</h2>
+                
+                <div className="z-10 border-l-8 border-green-500 pl-4 mt-4 sm:mt-5 mb-3 relative bg-black/40 backdrop-blur-md pb-3 pt-2 -ml-2">
+                   <div className="text-green-400 mix-blend-screen bg-green-900/40 p-2 sm:p-2.5 border border-green-500/50 w-fit animate-[pulse_0.2s_infinite] mb-3 sm:mb-4 shadow-[6px_4px_0_rgba(34,197,94,0.5)] skew-x-6">
+                      {roleDef.icon}
+                   </div>
+                   <h2 className="text-3xl font-black font-mono text-white mb-1 shadow-[3px_3px_0_rgba(255,0,255,0.8)] tracking-tighter skew-x-[-2deg]">{roleDef.title}</h2>
+                   <p className="text-[10px] sm:text-[11px] font-mono text-green-400 uppercase tracking-widest bg-black/80 px-2 py-1 w-fit">{roleDef.subtitle}</p>
+                   <div className="absolute top-0 right-4 text-[8px] font-mono text-fuchsia-500 opacity-50 text-right mt-2">{quizName}<br/>SYS_ERR</div>
+                </div>
+                
+                <div className="z-10 mb-4 bg-fuchsia-900/30 p-3 border-y-2 border-r-4 border-fuchsia-500/50 -skew-x-6 backdrop-blur-sm -ml-4 pl-6 w-[105%] shadow-[0_0_15px_rgba(217,70,239,0.2)]">
+                   <p className="text-[11px] sm:text-xs font-mono text-fuchsia-200 leading-tight">{roleDef.description}</p>
+                </div>
+                
+                <div className="flex-grow"></div>
+                
+                <div className="z-10 grid grid-cols-2 gap-2 mb-3">
+                   {roleDef.stats.map((stat, i) => (
+                     <div key={i} className="bg-green-950/80 border border-green-500/50 p-2 sm:p-2.5 rotate-[1deg] hover:rotate-0 hover:scale-105 transition-transform flex flex-col justify-center">
+                        <div className="text-[8px] sm:text-[9px] text-green-400 font-mono uppercase mb-0.5 opacity-80">{stat.label}</div>
+                        <div className="text-lg sm:text-xl font-black text-white font-mono drop-shadow-[2px_2px_0_rgba(34,197,94,0.5)]">{stat.val}</div>
+                     </div>
+                   ))}
+                </div>
+                <div className="text-center text-[10px] sm:text-xs text-fuchsia-500 font-mono uppercase font-bold animate-[pulse_0.1s_infinite] bg-black py-1">!CORRUPTION_DETECTED_0X{cardId}</div>
+             </div>
+          )}
+
+          {/* STANDARD INTERNAL STRUCTURE */}
+          {!['abyssal', 'mythic', 'glitched'].includes(roleDef.rarity) && (
+            <div className="relative z-30 h-full flex flex-col" style={{ transform: 'translateZ(30px)' }}>
+              <div className="flex justify-between items-start mb-3 sm:mb-4">
+                <div className={`p-2 sm:p-3 rounded-lg bg-black/40 border border-white/10 shadow-lg ${roleDef.textClass}`}>
+                  {roleDef.icon}
+                </div>
+                <div className="text-right">
+                  <div className="text-[10px] sm:text-xs font-mono text-white/50 tracking-widest uppercase">Entity: {userName.substring(0, 15)}</div>
+                  <div className={`text-xs font-mono font-bold ${roleDef.textClass}`}>
+                    {roleDef.subtitle}
+                    {secondaryRoleDef && <><br/>Hybrid: {secondaryRoleDef.title}</>}
+                  </div>
+                  <div className="text-[8px] sm:text-[9px] font-mono text-white/30 uppercase tracking-widest mt-0.5">{quizName}</div>
+                </div>
+              </div>
+
+              <div className="mb-3 sm:mb-4">
+                <h2 className={`text-2xl sm:text-3xl font-black uppercase tracking-tighter leading-none mb-2 ${roleDef.textClass}`} style={{ textShadow: '0 2px 10px rgba(0,0,0,0.5)' }}>
+                  {roleDef.title}
+                </h2>
+                <p className="text-xs sm:text-sm text-white/90 leading-relaxed font-sans drop-shadow-md bg-black/20 p-2 rounded-md border border-white/5">
+                  {roleDef.description}
+                </p>
+              </div>
+              
+              {secondaryRoleDef && (
+                <div className="mb-2 sm:mb-3">
+                  <div className="text-[9px] text-white/50 uppercase font-mono mb-1 tracking-widest">Detected Anomalies:</div>
+                  <div className={`text-[9px] sm:text-[10px] font-bold ${secondaryRoleDef.textClass} bg-black/40 p-1.5 sm:p-2 rounded border border-white/10 shadow-inner`}>
+                    Traces of [{secondaryRoleDef.title}]: {secondaryRoleDef.passive}
+                  </div>
+                </div>
+              )}
+
+              <div className="flex-grow"></div>
+
+              <div className="space-y-2 sm:space-y-3 bg-black/60 p-3 sm:p-4 rounded-xl border border-white/10 backdrop-blur-md shadow-inner">
+                {roleDef.stats.map((stat, i) => (
+                  <div key={i} className="flex flex-col gap-1.5">
+                    <div className="flex justify-between text-[10px] sm:text-xs font-mono uppercase tracking-widest">
+                      <span className="text-white/80">{stat.label}</span>
+                      <span className="text-white font-bold">{stat.val}/100</span>
+                    </div>
+                    {/* Progress bar container */}
+                    <div className="h-1.5 w-full bg-zinc-800/80 rounded-full overflow-hidden border border-black shadow-inner">
+                      {/* The fill bar */}
+                      <motion.div 
+                        initial={{ width: 0 }}
+                        animate={{ width: `${stat.val}%` }}
+                        transition={{ delay: 0.5 + (i * 0.1), duration: 1, ease: "easeOut" }}
+                        className={`h-full bg-white/90 shadow-[0_0_8px_rgba(255,255,255,0.8)] rounded-full`}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-3 p-3 bg-black/40 rounded-lg border border-white/10 flex flex-col shadow-md">
+                <span className="text-[9px] text-white/50 uppercase font-mono mb-1 tracking-widest">Passive Ability</span>
+                <span className={`text-xs sm:text-sm font-bold ${roleDef.textClass} drop-shadow-md`}>{roleDef.passive}</span>
+              </div>
+
+              <div className="mt-4 pt-3 border-t border-white/20 flex justify-between items-end text-[8px] sm:text-[9px] font-mono text-white/50">
+                <div className="flex flex-col gap-1">
+                  <span>SYSTEM v3.0 // {roleDef.rarity.toUpperCase()}</span>
+                  <span>ID: {cardId}</span>
+                </div>
+                <div className="tracking-tighter text-sm opacity-60 flex right-0">
+                  █║▌│█│║▌║││█║▌
+                </div>
+              </div>
+            </div>
+          )}
+          </motion.div>
         </motion.div>
-      </motion.div>
     </div>
 
       <motion.div 
@@ -1105,19 +1346,30 @@ function ResultScreen({ roleDef, secondaryRoleDef, quizName, quizId, userName, o
         >
           <Download className="w-4 h-4" /> Save
         </button>
-        <button 
-          onClick={shareCard}
-          className="flex-1 py-3 bg-cyan-500 text-black font-bold uppercase rounded-lg hover:bg-cyan-400 transition-colors flex items-center justify-center gap-2 text-sm shadow-[0_0_15px_rgba(34,211,238,0.2)]"
-        >
-          <Share2 className="w-4 h-4" /> Share
-        </button>
-        <button 
-          onClick={onRestart}
-          className="py-3 px-4 bg-zinc-800 text-white font-bold uppercase rounded-lg hover:bg-zinc-700 transition-colors text-sm border border-zinc-600 shadow-md"
-          title="Restart"
-        >
-          <RotateCcw className="w-4 h-4" />
-        </button>
+        {!isModal && (
+          <button 
+            onClick={shareCard}
+            className="flex-1 py-3 bg-cyan-500 text-black font-bold uppercase rounded-lg hover:bg-cyan-400 transition-colors flex items-center justify-center gap-2 text-sm shadow-[0_0_15px_rgba(34,211,238,0.2)]"
+          >
+            <Share2 className="w-4 h-4" /> Share
+          </button>
+        )}
+        {isModal ? (
+          <button 
+            onClick={onClose}
+            className="py-3 px-6 bg-red-600 text-white font-bold uppercase rounded-lg hover:bg-red-500 transition-colors text-sm shadow-md"
+          >
+            Close
+          </button>
+        ) : (
+          <button 
+            onClick={() => onRestart && onRestart()}
+            className="py-3 px-4 bg-zinc-800 text-white font-bold uppercase rounded-lg hover:bg-zinc-700 transition-colors text-sm border border-zinc-600 shadow-md"
+            title="Restart"
+          >
+            <RotateCcw className="w-4 h-4" />
+          </button>
+        )}
       </motion.div>
     </motion.div>
   );
@@ -1126,6 +1378,7 @@ function ResultScreen({ roleDef, secondaryRoleDef, quizName, quizId, userName, o
 function CollectionScreen() {
   const [unlockedCards, setUnlockedCards] = React.useState<string[]>([]);
   const [isMounted, setIsMounted] = React.useState(false);
+  const [selectedCard, setSelectedCard] = React.useState<{ roleDef: RoleDef, quizTitle: string, quizId: string } | null>(null);
 
   React.useEffect(() => {
     try {
@@ -1164,6 +1417,18 @@ function CollectionScreen() {
     
     return cards.sort((a, b) => rarityOrder[b.role.rarity as keyof typeof rarityOrder] - rarityOrder[a.role.rarity as keyof typeof rarityOrder]);
   }, []);
+
+  const SYNERGIES = [
+    { title: "The Capitalist", req: ['THE_BANK', 'FOUNDER_CEO'], desc: "Acquired immense hypothetical wealth." },
+    { title: "System Outage", req: ['GLITCH', 'VOID_CORE'], desc: "Removed the UI entirely." },
+    { title: "God Entity", req: ['THE_AWAKENED', 'THE_ARCHITECT'], desc: "Hacked the universe source code." },
+    { title: "Chaos Engine", req: ['YAPPER', 'THE_INSTIGATOR'], desc: "Started a fire just to talk about it." },
+    { title: "The Silent Witness", req: ['DOOMSCROLLER', 'THE_OBSERVER'], desc: "Watched the end from the back row." },
+    { title: "The Phantom", req: ['QUIET_QUITTER', 'THE_FLAKE'], desc: "Cannot be located during business hours or weekends." },
+    { title: "Absolute Zero", req: ['THE_SOCIOPATH', 'THE_RUTHLESS'], desc: "Optimized for maximum efficiency. Minimum humanity." }
+  ];
+
+  const earnedTitles = SYNERGIES.filter(syn => syn.req.every(r => unlockedCards.includes(r)));
 
   const getFoilClass = (rarity: string) => {
     switch(rarity) {
@@ -1207,6 +1472,22 @@ function CollectionScreen() {
         </p>
       </div>
 
+      {isMounted && earnedTitles.length > 0 && (
+        <div className="w-full mb-6 max-w-4xl">
+          <div className="text-cyan-400 text-xs font-mono uppercase tracking-widest mb-2 border-b border-cyan-500/30 pb-1">
+            Achieved Synergy Titles
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {earnedTitles.map(syn => (
+              <div key={syn.title} className="bg-cyan-900/40 border border-cyan-500 text-cyan-100 px-3 py-1.5 rounded-lg flex items-center gap-2" title={syn.desc}>
+                <Sparkles className="w-4 h-4 text-cyan-400" />
+                <span className="font-bold tracking-tight text-sm">{syn.title}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="flex-1 w-full p-2 sm:p-4 rounded-xl border border-white/5 bg-black/40 backdrop-blur-md">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
           {allCards.map((card, i) => {
@@ -1222,6 +1503,11 @@ function CollectionScreen() {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: i * 0.02 }}
                 whileHover={{ scale: isUnlocked ? 1.02 : 1 }}
+                onClick={() => {
+                  if (isUnlocked) {
+                    setSelectedCard({ roleDef: card.role, quizTitle: card.quizTitle, quizId: card.quizId });
+                  }
+                }}
                 className={`relative flex flex-col p-4 rounded-xl border ${
                   isUnlocked 
                     ? `bg-gradient-to-b ${card.role.theme.split(' ')[0]} ${card.role.theme.split(' ')[1] || 'to-zinc-900/80'} ${getRarityColor(card.role.rarity)}`
@@ -1263,6 +1549,30 @@ function CollectionScreen() {
           })}
         </div>
       </div>
+      
+      <AnimatePresence>
+        {selectedCard && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex flex-col items-center justify-center p-4 bg-black/90 backdrop-blur-md overflow-y-auto"
+            onClick={() => setSelectedCard(null)}
+          >
+            <div onClick={(e) => e.stopPropagation()} className="w-full flex justify-center my-auto">
+              <ResultScreen 
+                roleDef={selectedCard.roleDef} 
+                secondaryRoleDef={null} 
+                quizName={selectedCard.quizTitle} 
+                quizId={selectedCard.quizId} 
+                userName="UNKNOWN" 
+                isModal={true}
+                onClose={() => setSelectedCard(null)}
+              />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
       
       {/* Required style for valid rendering, no imports needed */}
       <style dangerouslySetInnerHTML={{__html: `

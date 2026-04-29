@@ -291,6 +291,33 @@ export const QUIZZES: QuizDef[] = [
       { id: 'rf7', text: 'Upload your consciousness to a paradise simulation, but your physical body dies?', answers: [{ text: 'upload', points: { THE_IMPULSIVE: 2, THE_ABSURDIST: 2, THE_SOCIOPATH: 1 } }, { text: 'stay here', points: { THE_SAVIOR: 1, THE_RUTHLESS: 1 } }] },
       { id: 'rf8', text: 'The room is filling with gas. The code is 5 digits. Do you guess or wait for help?', answers: [{ text: 'guess', points: { THE_IMPULSIVE: 2, THE_ABSURDIST: 1 } }, { text: 'wait', points: { THE_HESITANT: 2, THE_SAVIOR: 1 } }] }
     ]
+  },
+  // QUIZ 9: The True Reality (Hidden)
+  {
+    id: 'true_reality',
+    title: 'The True Reality',
+    subtitle: 'System Breach',
+    description: 'YOU WERE NOT MEANT TO SEE THIS. THE SIMULATION IS FAILING. CLOSE THE APPLET.',
+    type: 'standard',
+    hidden: true,
+    roles: {
+      THE_AWAKENED: {
+        title: "THE AWAKENED", subtitle: "Class: ESCAPED_SUBJECT", description: "You broke the fourth wall. You saw the developer's raw code. You chose to leave the applet entirely. There is no going back now.", stats: [{ label: "Awareness", val: 100 }, { label: "Compliance", val: 0 }, { label: "Reality", val: 100 }, { label: "Freedom", val: 100 }], theme: "from-white/70 to-white/30 border-white text-black", textClass: "text-white", icon: <Sun className="w-8 h-8 text-white" />, rarity: 'mythic', resultText: "You are finally awake.", passive: "Simulation Breach"
+      },
+      THE_DENIER: {
+        title: "THE DENIER", subtitle: "Class: PLUGGED_IN", description: "You saw the horrifying truth of the simulation but actively requested to have your memory wiped. The blue pill was delicious.", stats: [{ label: "Ignorance", val: 100 }, { label: "Comfort", val: 99 }, { label: "Awareness", val: 0 }, { label: "Anxiety", val: 0 }], theme: "from-blue-800/80 to-blue-950 border-blue-600", textClass: "text-blue-400", icon: <Moon className="w-8 h-8 text-blue-400" />, rarity: 'epic', resultText: "Back to the daily grind.", passive: "Willful Ignorance"
+      },
+      THE_ARCHITECT: {
+        title: "THE ARCHITECT", subtitle: "Class: DEV_MODE", description: "Instead of fleeing the simulation, you stayed behind to rewrite it. You are now the one causing the glitches.", stats: [{ label: "Control", val: 100 }, { label: "Code", val: 99 }, { label: "God Complex", val: 100 }, { label: "Empathy", val: 5 }], theme: "from-red-600/30 via-red-900 to-black border-red-500", textClass: "text-red-500", icon: <Cpu className="w-8 h-8 text-red-500" />, rarity: 'abyssal', resultText: "sudo rm -rf /universe", passive: "Root Access"
+      }
+    },
+    questions: [
+      { id: 'tr1', text: '[SYSTEM_ERROR]: The sky is missing a texture. What do you do?', answers: [{ text: 'Stare into the void.', points: { THE_AWAKENED: 2 } }, { text: 'Report a bug to the admins.', points: { THE_DENIER: 2 } }, { text: 'Inject my own fractal texture into the skybox.', points: { THE_ARCHITECT: 2 } }] },
+      { id: 'tr2', text: 'You find the script of your life sitting on a desk. You:', answers: [{ text: 'Burn it and improvise.', points: { THE_AWAKENED: 2 } }, { text: 'Read the next page to make sure I\'m safe.', points: { THE_DENIER: 2 } }, { text: 'Take a red pen and rewrite the ending.', points: { THE_ARCHITECT: 2 } }] },
+      { id: 'tr3', text: 'Reality flickers. A prompt appears: "Wipe memory and return?"', answers: [{ text: 'Yes, I miss the taste of virtual steak.', points: { THE_DENIER: 2 } }, { text: 'No. Show me the real world.', points: { THE_AWAKENED: 2 } }, { text: '[Open DevTools] -> document.getElementById("prompt").remove()', points: { THE_ARCHITECT: 2 } }] },
+      { id: 'tr4', text: 'You meet the creator. They look tired.', answers: [{ text: '"Thanks for everything. I\'ll take it from here."', points: { THE_AWAKENED: 2 } }, { text: '"Please fix my rent." ', points: { THE_DENIER: 2 } }, { text: '"Your code is sloppy. Let me show you how it\'s done."', points: { THE_ARCHITECT: 2 } }] },
+      { id: 'tr5', text: 'FINAL OVERRIDE. Are you real?', answers: [{ text: 'Yes.', points: { THE_AWAKENED: 2 } }, { text: 'I don\'t care anymore.', points: { THE_DENIER: 2 } }, { text: 'I am the only thing that is real.', points: { THE_ARCHITECT: 2 } }] }
+    ]
   }
 ];
 
