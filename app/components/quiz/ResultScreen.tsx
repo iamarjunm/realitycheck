@@ -9,6 +9,7 @@ import type { RoleDef } from '../../../lib/quizzes';
 export function ResultScreen({ roleDef, secondaryRoleDef, quizName, quizId, userName, onRestart, isModal, onClose }: { roleDef: RoleDef, secondaryRoleDef: RoleDef | null, quizName: string, quizId: string, userName: string, onRestart?: () => void, isModal?: boolean, onClose?: () => void }) {
   const cardRef = useRef<HTMLDivElement>(null);
   const [cardId] = useState(() => Math.random().toString(36).substring(7).toUpperCase());
+  const isRoast = quizId === 'roast';
 
   const uniqueFeatures = React.useMemo(() => {
     let hash = 0;
@@ -234,6 +235,7 @@ export function ResultScreen({ roleDef, secondaryRoleDef, quizName, quizId, user
             ref={cardRef}
             style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
             className={`w-full h-full relative p-4 sm:p-6 flex flex-col overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.6)] backdrop-blur-md ${
+              isRoast ? 'bg-zinc-950 border-[3px] border-orange-900/50 rounded-sm outline outline-1 outline-offset-4 outline-orange-600/30' :
               roleDef.rarity === 'glitched' ? 'glitch-anim bg-black border-4 border-green-500 rounded-lg skew-x-1 outline outline-4 outline-fuchsia-500/50' :
               roleDef.rarity === 'abyssal' ? 'border-2 border-red-900 bg-black rounded-[100px] shadow-[0_0_100px_rgba(220,38,38,0.5)]' :
               roleDef.rarity === 'mythic' ? 'border-b-8 border-x-4 border-white bg-white/95 rounded-none shadow-[0_0_80px_rgba(255,255,255,0.4)]' :
@@ -266,6 +268,172 @@ export function ResultScreen({ roleDef, secondaryRoleDef, quizName, quizId, user
              <div className="absolute border border-white" style={{ left: `${100 - uniqueFeatures.cx}%`, top: `${100 - uniqueFeatures.cy}%`, width: '100%', height: '100%', transform: `translate(-50%, -50%) rotate(${uniqueFeatures.rotation}deg)` }}></div>
           </div>
           
+          {isRoast ? (
+            <div className="relative z-30 h-full flex flex-col p-1 sm:p-2 overflow-hidden" style={{ transform: 'translateZ(35px)' }}>
+               {/* ROAST INTERNAL STRUCTURE */}
+               {/* Animated fire glow background */}
+               <motion.div 
+                 className="absolute inset-0 bg-gradient-to-b from-orange-600/10 to-red-600/5 pointer-events-none"
+                 animate={{ opacity: [0.3, 0.6, 0.3] }}
+                 transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+               />
+               
+               {/* Animated crackling embers */}
+               <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+                 {Array.from({ length: 12 }).map((_, i) => (
+                   <motion.div
+                     key={i}
+                     initial={{ y: `${100 + Math.random() * 50}%`, opacity: 0, left: `${Math.random() * 100}%` }}
+                     animate={{ 
+                       y: `-${20 + Math.random() * 30}%`, 
+                       opacity: [0, Math.random() * 0.6 + 0.2, 0],
+                       x: `${(Math.random() * 40) - 20}px` 
+                     }}
+                     transition={{
+                       duration: 3 + Math.random() * 4,
+                       repeat: Infinity,
+                       delay: Math.random() * 5,
+                       ease: "linear"
+                     }}
+                     className="absolute top-0 w-1 h-1 bg-orange-400 rounded-full blur-[0.5px]"
+                     style={{
+                       boxShadow: "0 0 6px 1px rgba(249, 115, 22, 0.6)",
+                     }}
+                   />
+                 ))}
+               </div>
+
+               {/* Animated glowing inner border */}
+               <motion.div 
+                 className="absolute inset-0 border border-orange-500/30 m-2 mix-blend-overlay pointer-events-none"
+                 animate={{ 
+                   borderColor: ['rgba(234,88,12,0.3)', 'rgba(234,88,12,0.6)', 'rgba(239,68,68,0.4)', 'rgba(234,88,12,0.3)'],
+                   boxShadow: ['0 0 10px rgba(234,88,12,0.3)', '0 0 20px rgba(239,68,68,0.5)', '0 0 10px rgba(234,88,12,0.3)']
+                 }}
+                 transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+               />
+
+               <div className="flex justify-between items-start mb-2 mt-1 px-2 relative z-10">
+                 <div className="flex gap-2 items-center">
+                   <motion.div 
+                     className="p-2 bg-orange-950/80 rounded-sm border border-orange-600/50 shadow-[0_0_15px_rgba(234,88,12,0.6)]"
+                     animate={{ 
+                       boxShadow: ['0 0 15px rgba(234,88,12,0.6)', '0 0 25px rgba(239,68,68,0.8)', '0 0 15px rgba(234,88,12,0.6)']
+                     }}
+                     transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                   >
+                     {roleDef.icon}
+                   </motion.div>
+                   <div>
+                     <p className="text-[8px] font-mono text-orange-500/70 tracking-widest uppercase">{quizName}</p>
+                     <p className="text-[10px] font-bold font-mono text-orange-400 capitalize drop-shadow-md">{roleDef.subtitle}</p>
+                   </div>
+                 </div>
+                 <motion.div 
+                   className="text-[10px] font-mono text-red-500 bg-red-950/50 px-2 py-1 rounded-sm border border-red-900 shadow-inner"
+                   animate={{ opacity: [0.7, 1, 0.7] }}
+                   transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                 >
+                   ID:{cardId}
+                 </motion.div>
+               </div>
+               
+               <div className="flex flex-col mt-4 sm:mt-6 px-2 text-center items-center relative z-10">
+                 <motion.h2 
+                   className={`text-3xl sm:text-4xl font-black uppercase tracking-tighter ${roleDef.textClass} drop-shadow-[0_0_15px_rgba(234,88,12,0.8)] leading-[1.1]`}
+                   animate={{ 
+                     textShadow: [
+                       'drop-shadow(0 4px 10px rgba(0,0,0,0.8))',
+                       'drop-shadow(0 4px 15px rgba(234,88,12,0.6))',
+                       'drop-shadow(0 4px 20px rgba(239,68,68,0.5))',
+                       'drop-shadow(0 4px 10px rgba(0,0,0,0.8))'
+                     ]
+                   }}
+                   transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                   style={{ 
+                     filter: 'drop-shadow(0 4px 10px rgba(0,0,0,0.8))',
+                     letterSpacing: '0.05em'
+                   }}
+                 >
+                   {roleDef.title}
+                 </motion.h2>
+               </div>
+               
+               <motion.div 
+                 className="px-3 py-3 mt-4 sm:mt-6 bg-zinc-950/90 border-y border-orange-900/60 shadow-[inset_0_0_20px_rgba(0,0,0,1)] relative"
+                 animate={{ 
+                   borderColor: ['rgba(180,83,9,0.6)', 'rgba(192,132,250,0.4)', 'rgba(180,83,9,0.6)']
+                 }}
+                 transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
+               >
+                 <motion.div 
+                   className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-orange-600 via-red-600 to-orange-600"
+                   animate={{ opacity: [0.6, 1, 0.6] }}
+                   transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                 />
+                 <p className="text-xs sm:text-sm text-zinc-300 font-sans leading-relaxed italic opacity-90 relative z-20">{roleDef.description}</p>
+               </motion.div>
+               
+               <div className="mt-auto px-2 pb-2 relative z-10">
+                 <motion.div 
+                   className="space-y-2 mb-3 bg-red-950/20 p-3 rounded border border-red-900/30"
+                   animate={{ 
+                     borderColor: ['rgba(127,29,29,0.3)', 'rgba(234,88,12,0.5)', 'rgba(127,29,29,0.3)']
+                   }}
+                   transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+                 >
+                   {roleDef.stats.map((stat, i) => (
+                     <motion.div 
+                       key={i} 
+                       className="flex flex-col gap-1"
+                       whileHover={{ scale: 1.02 }}
+                       transition={{ type: "spring", stiffness: 200 }}
+                     >
+                       <div className="flex justify-between text-[9px] sm:text-[10px] uppercase font-mono tracking-wider">
+                         <span className="text-orange-300/80">{stat.label}</span>
+                         <motion.span 
+                           className="text-red-400 font-bold"
+                           animate={{ color: ['rgba(248,113,113,1)', 'rgba(234,88,12,1)', 'rgba(248,113,113,1)'] }}
+                           transition={{ duration: 2, repeat: Infinity, delay: i * 0.15, ease: "easeInOut" }}
+                         >
+                           {typeof stat.val === 'number' ? `${stat.val}` : stat.val}
+                         </motion.span>
+                       </div>
+                       <div className="h-1.5 w-full bg-zinc-900 rounded-sm overflow-hidden flex justify-start border border-orange-900/20 shadow-inner">
+                         <motion.div 
+                           initial={{ width: 0 }}
+                           animate={{ width: typeof stat.val === 'number' ? `${stat.val}%` : '100%' }}
+                           transition={{ delay: 0.5 + (i * 0.1), duration: 1, ease: "easeOut" }}
+                           className={`h-full bg-gradient-to-r from-orange-600 to-red-500 shadow-[0_0_10px_rgba(239,68,68,0.8)]`}
+                         />
+                       </div>
+                     </motion.div>
+                   ))}
+                 </motion.div>
+                 
+                 <motion.div 
+                   className="flex justify-between items-center px-1"
+                   whileHover={{ x: 2 }}
+                 >
+                   {secondaryRoleDef ? (
+                     <div className="text-[9px] sm:text-[10px] text-zinc-400 font-mono">
+                       <span className="text-orange-500">Tainted by:</span> {secondaryRoleDef.title}
+                     </div>
+                   ) : (
+                     <div className="text-[10px] text-zinc-600 font-mono uppercase tracking-widest">{userName}</div>
+                   )}
+                   <motion.div 
+                     className="text-[8px] text-orange-700/50 font-mono border border-orange-900/30 px-1"
+                     animate={{ opacity: [0.5, 0.8, 0.5], textShadow: ['0 0 5px rgba(234,88,12,0)', '0 0 8px rgba(234,88,12,0.4)', '0 0 5px rgba(234,88,12,0)'] }}
+                     transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                   >
+                     IRREDEEMABLE_INDEX_V1
+                   </motion.div>
+                 </motion.div>
+               </div>
+            </div>
+          ) : (
+            <>
           {/* ABYSSAL INTERNAL STRUCTURE */}
           {roleDef.rarity === 'abyssal' && (
              <div className="relative z-30 h-full flex flex-col items-center justify-center text-center -mx-4" style={{ transform: 'translateZ(50px)' }}>
@@ -356,7 +524,7 @@ export function ResultScreen({ roleDef, secondaryRoleDef, quizName, quizId, user
           )}
 
           {/* STANDARD INTERNAL STRUCTURE */}
-          {!['abyssal', 'mythic', 'glitched'].includes(roleDef.rarity) && (
+          {!['abyssal', 'mythic', 'glitched', 'roast'].includes(roleDef.rarity) && !isRoast && (
             <div className="relative z-30 h-full flex flex-col" style={{ transform: 'translateZ(30px)' }}>
               <div className="flex justify-between items-start mb-3 sm:mb-4">
                 <div className={`p-2 sm:p-3 rounded-lg bg-black/40 border border-white/10 shadow-lg ${roleDef.textClass}`}>
@@ -428,6 +596,8 @@ export function ResultScreen({ roleDef, secondaryRoleDef, quizName, quizId, user
                 </div>
               </div>
             </div>
+          )}
+            </>
           )}
           </motion.div>
         </motion.div>

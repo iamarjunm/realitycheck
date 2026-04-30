@@ -2,6 +2,146 @@ import React from 'react';
 import { Cpu, Terminal, AlertTriangle, Skull, Flame, Ghost, Sparkles, Zap, HeartCrack, Baby, Coins, Radio, Radar, Shield, Bomb, MessageCircle, Briefcase, Camera, Headphones, Palette, Moon, Sun, Coffee, Glasses, Brain } from 'lucide-react';
 import type { QuizDef } from './quizzes/types';
 
+type AbyssChoice = {
+  text: string;
+  depth: number;
+  sanity?: number;
+};
+
+type AbyssQuestionPool = {
+  depth: number;
+  texts: string[];
+  choices: AbyssChoice[];
+};
+
+const createAbyssQuestion = (id: string, depth: number, text: string, choices: AbyssChoice[]) => ({
+  id,
+  depth,
+  text,
+  answers: choices.map((choice) => ({
+    text: choice.text,
+    points: {
+      depth: choice.depth,
+      sanity: choice.sanity ?? Math.max(1, choice.depth + 2),
+    },
+  })),
+});
+
+const abyssQuestionPools: AbyssQuestionPool[] = [
+  {
+    depth: 0,
+    choices: [
+      { text: 'Pretend you did not see it.', depth: 0, sanity: 1 },
+      { text: 'Wave back and keep walking.', depth: 1, sanity: 2 },
+      { text: 'Go over and ask if they know you.', depth: 2, sanity: 3 },
+    ],
+    texts: [
+      'A stranger on the street waves like they know you.',
+      'Your phone opens to a draft message you do not remember typing.',
+      'One clock in the room is exactly three seconds behind the others.',
+      'Your reflection blinks a little too late.',
+      'The elevator stops on your floor even though nobody pressed the button.',
+      'A note app opens with your name already written at the top.',
+      'The houseplant by your window seems to lean toward you.',
+      'You hear footsteps stop outside your door and then go quiet.',
+    ],
+  },
+  {
+    depth: 1,
+    choices: [
+      { text: 'Ignore it and keep moving.', depth: 0, sanity: 2 },
+      { text: 'Check the mirror, then the phone.', depth: 1, sanity: 3 },
+      { text: 'Answer the message and wait for a reply.', depth: 3, sanity: 4 },
+    ],
+    texts: [
+      'You are sure you heard your own voice from another room.',
+      'Your browser opens a blank tab titled later.',
+      'A streetlight turns on the instant you look at it.',
+      'Someone uses your childhood nickname in a crowd of strangers.',
+      'Your coffee tastes faintly like pennies.',
+      'An ad describes the exact mood you were trying not to show.',
+      'The hallway feels longer on the way back than it did on the way out.',
+      'A picture on the wall looks like it was hung more recently than yesterday.',
+    ],
+  },
+  {
+    depth: 2,
+    choices: [
+      { text: 'Shut it down and do not answer.', depth: 0, sanity: 3 },
+      { text: 'Ask what it wants.', depth: 3, sanity: 5 },
+      { text: 'Answer it in your own voice.', depth: 5, sanity: 6 },
+    ],
+    texts: [
+      'Your left hand seems to know the answer before you do.',
+      'A voicemail contains only breathing and your laugh.',
+      'You blink and the room looks like it was rearranged by someone who hates you personally.',
+      'The mirror smiles one frame too late.',
+      'A familiar song is playing somewhere inside the wall.',
+      'A train passes, but nobody remembers hearing it.',
+      'Your shadow stays behind for a second after you move.',
+      'You wake up with dirt under one fingernail and no memory of where it came from.',
+    ],
+  },
+  {
+    depth: 3,
+    choices: [
+      { text: 'Deflect and change the subject.', depth: 1, sanity: 3 },
+      { text: 'Admit a little more than you planned.', depth: 3, sanity: 5 },
+      { text: 'Tell the whole truth.', depth: 5, sanity: 7 },
+    ],
+    texts: [
+      'A friend says something you were about to text them.',
+      'You catch yourself rehearsing apologies for things you have not done yet.',
+      'One memory feels edited, like a badly cut scene.',
+      'Your group chat goes quiet right after you type your real thought.',
+      'Someone asks what you are hiding and they sound certain.',
+      'Your own handwriting appears in a place you never wrote.',
+      'You start wondering which version of you people are actually tolerating.',
+      'A photo makes you look relieved in a way you do not remember feeling.',
+    ],
+  },
+  {
+    depth: 4,
+    choices: [
+      { text: 'Look away and keep pretending this is normal.', depth: 0, sanity: 4 },
+      { text: 'Touch the change and see if it reacts.', depth: 3, sanity: 6 },
+      { text: 'Let it continue and see what becomes of you.', depth: 5, sanity: 8 },
+    ],
+    texts: [
+      'Your reflection uses different expressions when nobody is watching.',
+      'You forget your face for a split second in a dark window.',
+      'The voice in your head starts using your full name.',
+      'A scar appears where a worry used to be.',
+      'You can feel a room remembering you after you leave it.',
+      'Your pulse feels like a knock from the inside.',
+      'You find your name on something you never owned.',
+      'Your dreams stop pretending they belong to you.',
+    ],
+  },
+  {
+    depth: 5,
+    choices: [
+      { text: 'Deny it and stay where you are.', depth: 1, sanity: 5 },
+      { text: 'Ask for proof.', depth: 5, sanity: 8 },
+      { text: 'Accept the answer and keep going.', depth: 5, sanity: 10 },
+    ],
+    texts: [
+      'You realize the darkness behind your eyes has been listening.',
+      'The thing in the mirror introduces itself without moving its mouth.',
+      'A future version of you begs you to stop asking questions.',
+      'Your name tastes unfamiliar when you say it aloud.',
+      'The room feels relieved when you sit still.',
+      'Your thoughts arrive with fingerprints that are not yours.',
+      'The abyss asks whether you want truth or comfort.',
+      'Something inside you answers before you do.',
+    ],
+  },
+];
+
+const abyssQuestions = abyssQuestionPools.flatMap((pool) =>
+  pool.texts.map((text, index) => createAbyssQuestion(`a${pool.depth}${index}`, pool.depth, text, pool.choices))
+);
+
 export const QUIZZES: QuizDef[] = [
   // QUIZ 1: Reality Check
   {
@@ -306,6 +446,179 @@ export const QUIZZES: QuizDef[] = [
       { id: 'tr4', text: 'You meet the creator. They look tired.', answers: [{ text: '"Thanks for everything. I\'ll take it from here."', points: { THE_AWAKENED: 2 } }, { text: '"Please fix my rent." ', points: { THE_DENIER: 2 } }, { text: '"Your code is sloppy. Let me show you how it\'s done."', points: { THE_ARCHITECT: 2 } }] },
       { id: 'tr5', text: 'FINAL OVERRIDE. Are you real?', answers: [{ text: 'Yes.', points: { THE_AWAKENED: 2 } }, { text: 'I don\'t care anymore.', points: { THE_DENIER: 2 } }, { text: 'I am the only thing that is real.', points: { THE_ARCHITECT: 2 } }] }
     ]
-  }
-];
-
+  },
+  // QUIZ 10: The Irredeemable Index
+  {
+    id: 'roast',
+    title: 'The Irredeemable Index',
+    subtitle: 'Terminal Roast Protocol',
+    description: 'This quiz has no safe answers. No participation trophies. We are here to hurt your feelings with love. Welcome to the final boss of self-awareness.',
+    type: 'standard',
+    roles: {
+      THE_WALKING_REDLAG: {
+        title: "THE WALKING RED FLAG",
+        subtitle: "Code: CHRONIC_ISSUE",
+        description: "You are not a red flag. You are an entire Soviet parade of red flags marching through someone's therapy session. People don't ghost you — they fake their own death.",
+        stats: [{ label: "Aura", val: 15 }, { label: "Therapy Bills Caused", val: 98 }, { label: "Situationships", val: 100 }, { label: "Self-Awareness", val: 8 }],
+        theme: "from-red-600/40 to-rose-950 border-red-600",
+        textClass: "text-red-400",
+        icon: <Flame className="w-8 h-8 text-red-500" />,
+        rarity: 'abyssal',
+        resultText: "Run. Not for you — for them.",
+        passive: "Emotional Landmines"
+      },
+      HUMAN_TORCH: {
+        title: "HUMAN TORCH (But Only For Drama)",
+        subtitle: "Code: PYRO_SOCIAL",
+        description: "You don't enter rooms. You detonate them. Every group chat dies a little when you type 'hey guys'. Your superpower is making calm people suddenly need a drink.",
+        stats: [{ label: "Chaos", val: 100 }, { label: "Volume", val: 95 }, { label: "Regret", val: 85 }, { label: "Survivors", val: 12 }],
+        theme: "from-orange-500/40 to-amber-950 border-orange-500",
+        textClass: "text-orange-400",
+        icon: <Bomb className="w-8 h-8 text-orange-400" />,
+        rarity: 'epic',
+        resultText: "You are why 'it's not that deep' was invented.",
+        passive: "Incendiary Personality"
+      },
+      THE_VOID: {
+        title: "THE VOID",
+        subtitle: "Code: NULL_SOUL",
+        description: "You bring nothing to the table except mild depression and an unsettling ability to kill every vibe within a 50-foot radius. Even your plants are plotting to leave.",
+        stats: [{ label: "Energy Given", val: 0 }, { label: "Energy Drained", val: 100 }, { label: "Mystery", val: 70 }, { label: "Rizz", val: -5 }],
+        theme: "from-zinc-900 via-black to-zinc-950 border-zinc-700",
+        textClass: "text-zinc-500",
+        icon: <Ghost className="w-8 h-8 text-zinc-400" />,
+        rarity: 'common',
+        resultText: "Congratulations. You are the human equivalent of a loading screen.",
+        passive: "Emotional Black Hole"
+      },
+      DELUSIONAL_MAIN_CHARACTER: {
+        title: "DELUSIONAL MAIN CHARACTER",
+        subtitle: "Code: PLOT_ARMOR_DENIAL",
+        description: "You think you're the main character but you're actually the plot device that gets killed off in season 2 for shock value. Your main character energy is held together by copium and unwashed hair.",
+        stats: [{ label: "Delusion", val: 100 }, { label: "Main Character Syndrome", val: 99 }, { label: "Actual Plot Relevance", val: 3 }, { label: "Coping", val: 95 }],
+        theme: "from-yellow-400/30 to-amber-900 border-yellow-400",
+        textClass: "text-yellow-300",
+        icon: <Sparkles className="w-8 h-8 text-yellow-400" />,
+        rarity: 'legendary',
+        resultText: "The universe is not centered on you. It's actively trying to swerve.",
+        passive: "Copium Overdose"
+      },
+      THE_CURSE: {
+        title: "THE CURSE",
+        subtitle: "Code: GENERATIONAL_TRAUMA",
+        description: "You are not a person. You are a cautionary tale that mothers tell their daughters. Your love life is a war crime. Your personality is a biohazard.",
+        stats: [{ label: "Danger", val: 100 }, { label: "Trauma Exported", val: 97 }, { label: "Warning Signs Ignored", val: 100 }, { label: "Incompatibility", val: 100 }],
+        theme: "from-purple-600/40 to-fuchsia-950 border-purple-500",
+        textClass: "text-purple-400",
+        icon: <Skull className="w-8 h-8 text-purple-400" />,
+        rarity: 'mythic',
+        resultText: "Some people are born with a silver spoon. You were born with a red flag factory.",
+        passive: "Walking L"
+      },
+      UNIRONICALLY_BASED: {
+        title: "UNIRONICALLY BASED",
+        subtitle: "Code: RARE_EXCEPTION",
+        description: "Against all odds, you somehow made it through this quiz without getting absolutely cooked. You're either genuinely cool... or the most dangerous manipulator here.",
+        stats: [{ label: "Based", val: 100 }, { label: "Self-Awareness", val: 85 }, { label: "Roast Resistance", val: 90 }, { label: "Suspicion", val: 60 }],
+        theme: "from-emerald-500/40 to-teal-900 border-emerald-400",
+        textClass: "text-emerald-400",
+        icon: <Brain className="w-8 h-8 text-emerald-400" />,
+        rarity: 'glitched',
+        resultText: "Wait... you might actually be alright. That's suspicious.",
+        passive: "Plot Armor (Legitimate)"
+      }
+    },
+    questions: [
+      { id: 'r1', text: 'Your ex sees you in public. Your first instinct is to...', answers: [{ text: 'Hide behind the nearest menu like a raccoon in headlights.', points: { THE_VOID: 2, DELUSIONAL_MAIN_CHARACTER: 1 } }, { text: 'Make intense eye contact and slowly mouth "I win."', points: { THE_CURSE: 2, HUMAN_TORCH: 1 } }, { text: 'Wave enthusiastically like nothing ever happened.', points: { THE_WALKING_REDLAG: 2 } }, { text: 'Immediately start a new situationship with the waiter to prove a point.', points: { DELUSIONAL_MAIN_CHARACTER: 2 } }] },
+      { id: 'r2', text: 'How do people usually describe you after meeting you for the first time?', answers: [{ text: '"They were... a lot."', points: { HUMAN_TORCH: 2, THE_CURSE: 1 } }, { text: '"Nice... but I need a nap now."', points: { THE_VOID: 2 } }, { text: '"They seem chill" (they are lying)', points: { DELUSIONAL_MAIN_CHARACTER: 2, THE_WALKING_REDLAG: 1 } }, { text: '"I can\'t explain it but I\'d let them ruin my life."', points: { THE_CURSE: 2 } }] },
+      { id: 'r3', text: 'In a group project, you are most likely to be the one who...', answers: [{ text: 'Does nothing and then cries when you get a bad grade.', points: { THE_WALKING_REDLAG: 2 } }, { text: 'Takes over everything and makes everyone hate you.', points: { HUMAN_TORCH: 2, DELUSIONAL_MAIN_CHARACTER: 1 } }, { text: 'Disappears for two weeks and comes back with "ideas".', points: { THE_VOID: 2 } }, { text: 'Causes the entire group to have an existential crisis.', points: { THE_CURSE: 2 } }] },
+      { id: 'r4', text: 'Your love language is actually:', answers: [{ text: 'Emotional terrorism', points: { THE_CURSE: 2, THE_WALKING_REDLAG: 1 } }, { text: 'Sending 47 memes at 3 AM and expecting a response', points: { HUMAN_TORCH: 2 } }, { text: 'Stone cold silence followed by random "wyd" texts', points: { THE_VOID: 2 } }, { text: 'Telling them they\'re "not like other girls/guys" on day two', points: { DELUSIONAL_MAIN_CHARACTER: 2 } }] },
+      { id: 'r5', text: 'When someone gives you constructive criticism, you...', answers: [{ text: 'Cry, then make it their problem.', points: { THE_WALKING_REDLAG: 2 } }, { text: 'Laugh it off while internally plotting their downfall.', points: { THE_CURSE: 2 } }, { text: 'Immediately tell them they\'re just jealous.', points: { DELUSIONAL_MAIN_CHARACTER: 2, HUMAN_TORCH: 1 } }, { text: 'Absorb it like a black hole and continue being the same.', points: { THE_VOID: 2 } }] },
+      { id: 'r6', text: 'Your group chat energy is best described as:', answers: [{ text: 'The reason the mute button was invented.', points: { HUMAN_TORCH: 2 } }, { text: 'Occasionally liked by two people at 2:47 AM.', points: { THE_VOID: 2 } }, { text: 'Constantly starting civil wars over pineapple on pizza.', points: { THE_WALKING_REDLAG: 2, DELUSIONAL_MAIN_CHARACTER: 1 } }, { text: 'The chat dies when you leave and revives when you return with drama.', points: { THE_CURSE: 2 } }] },
+      { id: 'r7', text: 'Pick the most accurate statement:', answers: [{ text: 'I bring the vibe. Everyone else just ruins it.', points: { DELUSIONAL_MAIN_CHARACTER: 2 } }, { text: 'I am the vibe. And the vibe is "concerning".', points: { THE_CURSE: 2 } }, { text: 'What vibe?', points: { THE_VOID: 2 } }, { text: 'I am multiple concerning vibes in a trench coat.', points: { HUMAN_TORCH: 2, THE_WALKING_REDLAG: 1 } }] },
+      { id: 'r8', text: '(Wildcard) Your therapist says "We need to talk about your patterns..." You reply:', answers: [{ text: '"What patterns? I\'m literally perfect."', points: { DELUSIONAL_MAIN_CHARACTER: 2 } }, { text: '"Finally, someone gets it. Let\'s roast my ex again."', points: { HUMAN_TORCH: 2 } }, { text: '*Stares into the void for 45 seconds* "Anyway..."', points: { THE_VOID: 2 } }, { text: '"They\'re the problem, not me. Next question."', points: { THE_WALKING_REDLAG: 2, THE_CURSE: 1 } }] }
+    ]
+  },
+  {
+    id: 'abyss',
+    title: 'THE ABYSS MODE',
+    subtitle: 'Endless Descent Protocol • There is no bottom',
+    description: 'This quiz does not end. It only stops when you do. The longer you continue, the more it learns how to unsettle you specifically. Good luck.',
+    type: 'infinite',
+    roles: {
+      ABYSS_0: {
+        title: 'SURFACE ECHO',
+        subtitle: 'Class: RUMOR_LEVEL',
+        description: 'You are still above water, but the ripples are starting to spell your name.',
+        stats: [{ label: 'Composure', val: 88 }, { label: 'Curiosity', val: 42 }, { label: 'Distance', val: 90 }, { label: 'Alarm', val: 18 }],
+        theme: 'from-sky-500/20 to-slate-950/90 border-sky-400',
+        textClass: 'text-sky-300',
+        icon: <Moon className="w-8 h-8 text-sky-300" />,
+        rarity: 'abyssal',
+        resultText: 'You heard the first whisper and stayed to listen.',
+        passive: 'Faint Echoes',
+      },
+      ABYSS_1: {
+        title: 'THE SUBMERGED',
+        subtitle: 'Class: PRESSURE_BUILDUP',
+        description: 'The water is in your lungs now. You are pretending it is fine.',
+        stats: [{ label: 'Composure', val: 70 }, { label: 'Curiosity', val: 60 }, { label: 'Distance', val: 55 }, { label: 'Alarm', val: 35 }],
+        theme: 'from-cyan-500/20 to-slate-950/90 border-cyan-400',
+        textClass: 'text-cyan-300',
+        icon: <Radar className="w-8 h-8 text-cyan-300" />,
+        rarity: 'abyssal',
+        resultText: 'You are starting to mistake pressure for purpose.',
+        passive: 'Pressure Sense',
+      },
+      ABYSS_2: {
+        title: 'THE UNRAVELING',
+        subtitle: 'Class: DREAM_LOGIC',
+        description: 'The rules are soft here. That is not a relief.',
+        stats: [{ label: 'Composure', val: 48 }, { label: 'Curiosity', val: 72 }, { label: 'Distance', val: 30 }, { label: 'Alarm', val: 58 }],
+        theme: 'from-indigo-500/20 to-zinc-950/90 border-indigo-400',
+        textClass: 'text-indigo-300',
+        icon: <Ghost className="w-8 h-8 text-indigo-300" />,
+        rarity: 'abyssal',
+        resultText: 'You are no longer entirely certain which thoughts are yours.',
+        passive: 'Loose Thread',
+      },
+      ABYSS_3: {
+        title: 'THE NULL SAINT',
+        subtitle: 'Class: SELF_NEGATION',
+        description: 'You keep moving out of habit. The abyss appreciates the effort.',
+        stats: [{ label: 'Composure', val: 28 }, { label: 'Curiosity', val: 88 }, { label: 'Distance', val: 12 }, { label: 'Alarm', val: 75 }],
+        theme: 'from-fuchsia-500/20 to-black/90 border-fuchsia-400',
+        textClass: 'text-fuchsia-300',
+        icon: <Skull className="w-8 h-8 text-fuchsia-300" />,
+        rarity: 'mythic',
+        resultText: 'You have become a shrine to your own worst assumptions.',
+        passive: 'Mercy Denied',
+      },
+      ABYSS_4: {
+        title: 'THE DEEP END',
+        subtitle: 'Class: IDENTITY_EARTHING',
+        description: 'The part of you that used to flinch is getting quieter.',
+        stats: [{ label: 'Composure', val: 14 }, { label: 'Curiosity', val: 96 }, { label: 'Distance', val: 5 }, { label: 'Alarm', val: 91 }],
+        theme: 'from-violet-600/25 to-black/95 border-violet-400',
+        textClass: 'text-violet-300',
+        icon: <Flame className="w-8 h-8 text-violet-300" />,
+        rarity: 'glitched',
+        resultText: 'The abyss is now actively learning your habits.',
+        passive: 'Night Vision',
+      },
+      ABYSS_5: {
+        title: 'THE ABYSS ITSELF',
+        subtitle: 'Class: BOTTOMLESS',
+        description: 'There was never any separation between you and the thing looking back.',
+        stats: [{ label: 'Composure', val: 0 }, { label: 'Curiosity', val: 100 }, { label: 'Distance', val: 0 }, { label: 'Alarm', val: 100 }],
+        theme: 'from-red-700/20 via-black to-black border-red-500',
+        textClass: 'text-red-300',
+        icon: <Sparkles className="w-8 h-8 text-red-300" />,
+        rarity: 'abyssal',
+        resultText: 'You stayed long enough to be recognized.',
+        passive: 'Mutual Recognition',
+      },
+    },
+    questions: abyssQuestions,
+  },
+]

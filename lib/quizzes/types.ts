@@ -22,6 +22,7 @@ export interface Question {
   id: string;
   text: string;
   answers: Answer[];
+  depth?: number;
 }
 
 export interface QuizDef {
@@ -31,6 +32,6 @@ export interface QuizDef {
   description: string;
   roles: Record<string, RoleDef>;
   questions: Question[];
-  type?: 'standard' | 'rapid-fire' | 'trick';
+  type?: 'standard' | 'rapid-fire' | 'trick' | 'infinite';
   hidden?: boolean;
 }

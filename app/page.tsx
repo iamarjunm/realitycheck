@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ChevronRight, AlertTriangle, List } from 'lucide-react';
 import { QUIZZES } from '../lib/quizzes';
@@ -10,6 +10,7 @@ import {
   RapidFireQuizScreen,
   TrickQuizScreen,
   QuizScreen,
+  InfiniteQuizScreen,
   TerminalCalculationScreen,
   ResultScreen,
   CollectionScreen,
@@ -19,32 +20,38 @@ export default function NPCStatCardApp() {
   const [gameState, setGameState] = useState<'select' | 'intro' | 'quiz' | 'calculating' | 'result' | 'collection'>('select');
   const [activeQuizId, setActiveQuizId] = useState<string | null>(null);
   const [currentQuestionIdx, setCurrentQuestionIdx] = useState(0);
+  const [currentDepth, setCurrentDepth] = useState(0);
+  const [abyssQuestionSeed, setAbyssQuestionSeed] = useState(0);
   const [userName, setUserName] = useState('');
   const [scores, setScores] = useState<Record<string, number>>({});
   const [finalRole, setFinalRole] = useState<string | null>(null);
   const [secondaryRole, setSecondaryRole] = useState<string | null>(null);
 
-  const activeQuiz = QUIZZES.find((q) => q.id === activeQuizId);
+  const activeQuiz = QUIZZES.find((quiz) => quiz.id === activeQuizId);
 
   const selectQuiz = (id: string) => {
     let finalId = id;
     if (Math.random() < 0.15 && id !== 'trick') {
       finalId = 'trick';
     }
-    setActiveQuizId(finalId);
-    setCurrentQuestionIdx(0);
-    setFinalRole(null);
-    setSecondaryRole(null);
-    setUserName('');
 
-    const quiz = QUIZZES.find((q) => q.id === finalId);
+    const quiz = QUIZZES.find((entry) => entry.id === finalId);
+    const initialScores: Record<string, number> = {};
+
     if (quiz) {
-      const initialScores: Record<string, number> = {};
       Object.keys(quiz.roles).forEach((key) => {
         initialScores[key] = 0;
       });
-      setScores(initialScores);
     }
+
+    setActiveQuizId(finalId);
+    setCurrentQuestionIdx(0);
+    setCurrentDepth(0);
+    setAbyssQuestionSeed(0);
+    setScores(initialScores);
+    setFinalRole(null);
+    setSecondaryRole(null);
+    setUserName('');
     setGameState('intro');
   };
 
@@ -54,67 +61,100 @@ export default function NPCStatCardApp() {
   };
 
   const handleAnswer = (points: Record<string, number>, forceEnd?: boolean) => {
-    setScores((prev) => {
-      const newScores = { ...prev };
-      for (const [role, pts] of Object.entries(points)) {
-        if (newScores[role] !== undefined) newScores[role] += pts;
-        else newScores[role] = pts;
-      }
-      return newScores;
-    });
-
-    setCurrentQuestionIdx((prev) => {
+    if (activeQuiz?.type === 'infinite') {
       if (forceEnd) {
         setGameState('calculating');
-        return prev;
+        return;
       }
-      if (activeQuiz && prev < activeQuiz.questions.length - 1) {
-        return prev + 1;
+
+      const depthGain = Math.max(0, Number(points.depth ?? 1));
+      setCurrentDepth((previousDepth) => previousDepth + depthGain);
+      setAbyssQuestionSeed((previousSeed) => previousSeed + 1);
+      return;
+    }
+
+    setScores((previousScores) => {
+      const updatedScores = { ...previousScores };
+      for (const [role, pointsValue] of Object.entries(points)) {
+        if (updatedScores[role] !== undefined) updatedScores[role] += pointsValue;
+        else updatedScores[role] = pointsValue;
       }
+      return updatedScores;
+    });
+
+    setCurrentQuestionIdx((previousIndex) => {
+      if (forceEnd) {
+        setGameState('calculating');
+        return previousIndex;
+      }
+
+      if (activeQuiz && previousIndex < activeQuiz.questions.length - 1) {
+        return previousIndex + 1;
+      }
+
       setGameState('calculating');
-      return prev;
+      return previousIndex;
     });
   };
 
-  React.useEffect(() => {
-    if (gameState === 'calculating' && activeQuiz) {
-      const timeoutId = setTimeout(() => {
-        const sorted = Object.entries(scores).sort((a, b) => b[1] - a[1]);
-        const winningRole = sorted[0]?.[0] || 'BACKGROUND_EXTRA';
-        let secRole: string | null = null;
+  const handleStopDescending = () => {
+    setGameState('calculating');
+  };
 
-        if (sorted.length > 1 && sorted[0][1] - sorted[1][1] <= 2 && sorted[1][1] > 0) {
-          secRole = sorted[1][0];
+  const getAbyssRoleForDepth = (depth: number) => {
+    const abyssRoles = ['ABYSS_0', 'ABYSS_1', 'ABYSS_2', 'ABYSS_3', 'ABYSS_4', 'ABYSS_5'];
+    return abyssRoles[Math.min(Math.floor(depth / 4), abyssRoles.length - 1)] ?? 'ABYSS_0';
+  };
+
+  useEffect(() => {
+    if (gameState !== 'calculating' || !activeQuiz) return;
+
+    const timeoutId = setTimeout(() => {
+      let winningRole = 'BACKGROUND_EXTRA';
+      let secondaryWinningRole: string | null = null;
+
+      if (activeQuiz.type === 'infinite') {
+        winningRole = getAbyssRoleForDepth(currentDepth);
+      } else {
+        const sortedScores = Object.entries(scores).sort((left, right) => right[1] - left[1]);
+        winningRole = sortedScores[0]?.[0] || 'BACKGROUND_EXTRA';
+
+        if (sortedScores.length > 1 && sortedScores[0][1] - sortedScores[1][1] <= 2 && sortedScores[1][1] > 0) {
+          secondaryWinningRole = sortedScores[1][0];
         }
+      }
 
-        setFinalRole(winningRole);
-        setSecondaryRole(secRole);
-        setGameState('result');
+      setFinalRole(winningRole);
+      setSecondaryRole(secondaryWinningRole);
+      setGameState('result');
 
-        try {
-          const unlockedStr = localStorage.getItem('unlockedCards');
-          const unlocked = unlockedStr ? JSON.parse(unlockedStr) : [];
-          if (!unlocked.includes(winningRole)) {
-            unlocked.push(winningRole);
-            localStorage.setItem('unlockedCards', JSON.stringify(unlocked));
-          }
-        } catch (e) {
-          console.error('Could not access localStorage', e);
+      try {
+        const unlockedJson = localStorage.getItem('unlockedCards');
+        const unlockedCards = unlockedJson ? JSON.parse(unlockedJson) : [];
+        if (!unlockedCards.includes(winningRole)) {
+          unlockedCards.push(winningRole);
+          localStorage.setItem('unlockedCards', JSON.stringify(unlockedCards));
         }
-      }, 3000);
+      } catch (error) {
+        console.error('Could not access localStorage', error);
+      }
+    }, 3000);
 
-      return () => clearTimeout(timeoutId);
-    }
-  }, [gameState, activeQuiz, scores]);
+    return () => clearTimeout(timeoutId);
+  }, [gameState, activeQuiz, scores, currentDepth]);
 
   const restartQuiz = () => {
     if (!activeQuiz) return;
+
     const initialScores: Record<string, number> = {};
     Object.keys(activeQuiz.roles).forEach((key) => {
       initialScores[key] = 0;
     });
+
     setScores(initialScores);
     setCurrentQuestionIdx(0);
+    setCurrentDepth(0);
+    setAbyssQuestionSeed(0);
     setFinalRole(null);
     setSecondaryRole(null);
     setUserName('');
@@ -124,6 +164,8 @@ export default function NPCStatCardApp() {
   const backToSelect = () => {
     setActiveQuizId(null);
     setCurrentQuestionIdx(0);
+    setCurrentDepth(0);
+    setAbyssQuestionSeed(0);
     setScores({});
     setFinalRole(null);
     setSecondaryRole(null);
@@ -133,7 +175,7 @@ export default function NPCStatCardApp() {
 
   return (
     <main className="min-h-[100dvh] w-screen bg-grid-white relative flex flex-col items-center justify-start p-4 overflow-x-hidden overflow-y-auto pt-16 sm:pt-4">
-      <QuizVibeBackground quizId={activeQuizId} gameState={gameState} />
+      <QuizVibeBackground quizId={activeQuizId} gameState={gameState} abyssDepth={currentDepth} />
       <div className="absolute inset-0 noise-bg pointer-events-none" />
 
       {gameState !== 'select' && (
@@ -153,13 +195,7 @@ export default function NPCStatCardApp() {
         {gameState === 'collection' && <CollectionScreen key="collection" />}
 
         {gameState === 'intro' && activeQuiz && (
-          <motion.div
-            key="intro"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, filter: 'blur(10px)' }}
-            className="z-10 flex flex-col items-center max-w-xl text-center space-y-8 my-auto"
-          >
+          <motion.div key="intro" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, filter: 'blur(10px)' }} className="z-10 flex flex-col items-center max-w-xl text-center space-y-8 my-auto">
             <div className="space-y-4">
               <div className="inline-flex items-center space-x-2 border border-cyan-500/50 bg-cyan-500/10 px-3 py-1 rounded-full text-cyan-400 font-mono text-xs sm:text-sm mb-2 sm:mb-4">
                 <AlertTriangle className="w-3 h-3 sm:w-4 sm:h-4" />
@@ -176,11 +212,11 @@ export default function NPCStatCardApp() {
                 type="text"
                 maxLength={20}
                 value={userName}
-                onChange={(e) => setUserName(e.target.value)}
+                onChange={(event) => setUserName(event.target.value)}
                 placeholder="Enter Entity Name..."
                 className="w-full bg-transparent border-b-2 border-cyan-500/30 text-center text-white text-2xl pb-2 focus:outline-none focus:border-cyan-400 transition-colors font-mono placeholder:text-zinc-700 uppercase"
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && userName.trim()) handleStart();
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter' && userName.trim()) handleStart();
                 }}
                 suppressHydrationWarning
                 autoComplete="off"
@@ -203,27 +239,13 @@ export default function NPCStatCardApp() {
         {gameState === 'quiz' &&
           activeQuiz &&
           (activeQuiz.type === 'rapid-fire' ? (
-            <RapidFireQuizScreen
-              key={`rapid-fire-quiz-${currentQuestionIdx}`}
-              question={activeQuiz.questions[currentQuestionIdx]}
-              progress={(currentQuestionIdx / activeQuiz.questions.length) * 100}
-              onAnswer={handleAnswer}
-            />
+            <RapidFireQuizScreen key={`rapid-fire-quiz-${currentQuestionIdx}`} question={activeQuiz.questions[currentQuestionIdx]} progress={(currentQuestionIdx / activeQuiz.questions.length) * 100} onAnswer={handleAnswer} />
+          ) : activeQuiz.type === 'infinite' ? (
+            <InfiniteQuizScreen key="infinite-quiz" questions={activeQuiz.questions} currentDepth={currentDepth} progress={Math.min(((currentDepth % 4) / 4) * 100, 100)} questionSeed={abyssQuestionSeed} onAnswer={handleAnswer} onStopDescending={handleStopDescending} />
           ) : activeQuiz.type === 'trick' ? (
-            <TrickQuizScreen
-              key={`trick-quiz-${currentQuestionIdx}`}
-              question={activeQuiz.questions[currentQuestionIdx]}
-              progress={(currentQuestionIdx / activeQuiz.questions.length) * 100}
-              onAnswer={handleAnswer}
-            />
+            <TrickQuizScreen key={`trick-quiz-${currentQuestionIdx}`} question={activeQuiz.questions[currentQuestionIdx]} progress={(currentQuestionIdx / activeQuiz.questions.length) * 100} onAnswer={handleAnswer} />
           ) : (
-            <QuizScreen
-              key={`quiz-${currentQuestionIdx}`}
-              quizId={activeQuiz.id}
-              question={activeQuiz.questions[currentQuestionIdx]}
-              progress={(currentQuestionIdx / activeQuiz.questions.length) * 100}
-              onAnswer={handleAnswer}
-            />
+            <QuizScreen key={`quiz-${currentQuestionIdx}`} quizId={activeQuiz.id} question={activeQuiz.questions[currentQuestionIdx]} progress={(currentQuestionIdx / activeQuiz.questions.length) * 100} onAnswer={handleAnswer} />
           ))}
 
         {gameState === 'calculating' && <TerminalCalculationScreen key="calc" />}
