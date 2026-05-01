@@ -4,8 +4,8 @@ import type { QuizDef } from './quizzes/types';
 
 type AbyssChoice = {
   text: string;
-  depth: number;
-  sanity?: number;
+  depthGain: number;
+  sanityLoss: number;
 };
 
 type AbyssQuestionPool = {
@@ -18,128 +18,173 @@ const createAbyssQuestion = (id: string, depth: number, text: string, choices: A
   id,
   depth,
   text,
-  answers: choices.map((choice) => ({
+  answers: choices.map((choice, index) => ({
     text: choice.text,
     points: {
-      depth: choice.depth,
-      sanity: choice.sanity ?? Math.max(1, choice.depth + 2),
+      depth: choice.depthGain,
+      sanity: -choice.sanityLoss,   // Negative = loss
     },
   })),
 });
 
 const abyssQuestionPools: AbyssQuestionPool[] = [
+  // DEPTH 0 – Mild, everyday unease
   {
     depth: 0,
-    choices: [
-      { text: 'Pretend you did not see it.', depth: 0, sanity: 1 },
-      { text: 'Wave back and keep walking.', depth: 1, sanity: 2 },
-      { text: 'Go over and ask if they know you.', depth: 2, sanity: 3 },
-    ],
     texts: [
-      'A stranger on the street waves like they know you.',
-      'Your phone opens to a draft message you do not remember typing.',
-      'One clock in the room is exactly three seconds behind the others.',
-      'Your reflection blinks a little too late.',
-      'The elevator stops on your floor even though nobody pressed the button.',
-      'A note app opens with your name already written at the top.',
-      'The houseplant by your window seems to lean toward you.',
-      'You hear footsteps stop outside your door and then go quiet.',
+      "A stranger on the street waves at you like they know you.",
+      "Your phone shows a draft message you don’t remember typing.",
+      "One clock in the room is running exactly three seconds slow.",
+      "Your reflection blinks half a second after you do.",
+      "The elevator opens on your floor without anyone pressing the button.",
+      "You find a note app open with only your name at the top.",
+      "Your houseplant has turned toward you while you were sleeping.",
     ],
+    choices: [
+      { text: "Ignore it and move on.", depthGain: 0, sanityLoss: 2 },
+      { text: "Check it briefly.", depthGain: 1, sanityLoss: 5 },
+      { text: "Engage with it directly.", depthGain: 3, sanityLoss: 9 },
+    ]
   },
+
+  // DEPTH 1
   {
     depth: 1,
-    choices: [
-      { text: 'Ignore it and keep moving.', depth: 0, sanity: 2 },
-      { text: 'Check the mirror, then the phone.', depth: 1, sanity: 3 },
-      { text: 'Answer the message and wait for a reply.', depth: 3, sanity: 4 },
-    ],
     texts: [
-      'You are sure you heard your own voice from another room.',
-      'Your browser opens a blank tab titled later.',
-      'A streetlight turns on the instant you look at it.',
-      'Someone uses your childhood nickname in a crowd of strangers.',
-      'Your coffee tastes faintly like pennies.',
-      'An ad describes the exact mood you were trying not to show.',
-      'The hallway feels longer on the way back than it did on the way out.',
-      'A picture on the wall looks like it was hung more recently than yesterday.',
+      "You hear your own voice coming from another room.",
+      "A streetlight turns on the exact moment you look at it.",
+      "Someone in a crowd uses your childhood nickname.",
+      "Your coffee tastes faintly like blood.",
+      "An ad describes exactly how you’re feeling right now.",
+      "The hallway feels longer on the way back.",
     ],
+    choices: [
+      { text: "Pretend you didn’t notice.", depthGain: 0, sanityLoss: 3 },
+      { text: "Pause and observe carefully.", depthGain: 2, sanityLoss: 8 },
+      { text: "Respond out loud.", depthGain: 5, sanityLoss: 14 },
+    ]
   },
+
+  // DEPTH 2 – Surreal
   {
     depth: 2,
-    choices: [
-      { text: 'Shut it down and do not answer.', depth: 0, sanity: 3 },
-      { text: 'Ask what it wants.', depth: 3, sanity: 5 },
-      { text: 'Answer it in your own voice.', depth: 5, sanity: 6 },
-    ],
     texts: [
-      'Your left hand seems to know the answer before you do.',
-      'A voicemail contains only breathing and your laugh.',
-      'You blink and the room looks like it was rearranged by someone who hates you personally.',
-      'The mirror smiles one frame too late.',
-      'A familiar song is playing somewhere inside the wall.',
-      'A train passes, but nobody remembers hearing it.',
-      'Your shadow stays behind for a second after you move.',
-      'You wake up with dirt under one fingernail and no memory of where it came from.',
+      "Your left hand twitches before you consciously move it.",
+      "A voicemail from an unknown number contains only your laughter.",
+      "When you blink, the room feels slightly rearranged.",
+      "Your shadow lags behind you for a moment.",
+      "You woke up with dirt under your nails and no memory of going outside.",
     ],
+    choices: [
+      { text: "Force yourself to ignore it.", depthGain: 1, sanityLoss: 6 },
+      { text: "Whisper back to it.", depthGain: 4, sanityLoss: 13 },
+      { text: "Let it happen and watch.", depthGain: 8, sanityLoss: 20 },
+    ]
   },
+
+  // DEPTH 3 – Personal
   {
     depth: 3,
-    choices: [
-      { text: 'Deflect and change the subject.', depth: 1, sanity: 3 },
-      { text: 'Admit a little more than you planned.', depth: 3, sanity: 5 },
-      { text: 'Tell the whole truth.', depth: 5, sanity: 7 },
-    ],
     texts: [
-      'A friend says something you were about to text them.',
-      'You catch yourself rehearsing apologies for things you have not done yet.',
-      'One memory feels edited, like a badly cut scene.',
-      'Your group chat goes quiet right after you type your real thought.',
-      'Someone asks what you are hiding and they sound certain.',
-      'Your own handwriting appears in a place you never wrote.',
-      'You start wondering which version of you people are actually tolerating.',
-      'A photo makes you look relieved in a way you do not remember feeling.',
+      "A friend says the exact dark thought you were about to send them.",
+      "You catch yourself rehearsing apologies for things you haven’t done.",
+      "One of your memories feels like it was poorly edited.",
+      "You wonder which version of you people are actually tolerating.",
     ],
+    choices: [
+      { text: "Push the thought down.", depthGain: 1, sanityLoss: 7 },
+      { text: "Admit it quietly to yourself.", depthGain: 5, sanityLoss: 16 },
+      { text: "Say it out loud right now.", depthGain: 10, sanityLoss: 25 },
+    ]
   },
+
+  // DEPTH 4 – Identity & Body
   {
     depth: 4,
-    choices: [
-      { text: 'Look away and keep pretending this is normal.', depth: 0, sanity: 4 },
-      { text: 'Touch the change and see if it reacts.', depth: 3, sanity: 6 },
-      { text: 'Let it continue and see what becomes of you.', depth: 5, sanity: 8 },
-    ],
     texts: [
-      'Your reflection uses different expressions when nobody is watching.',
-      'You forget your face for a split second in a dark window.',
-      'The voice in your head starts using your full name.',
-      'A scar appears where a worry used to be.',
-      'You can feel a room remembering you after you leave it.',
-      'Your pulse feels like a knock from the inside.',
-      'You find your name on something you never owned.',
-      'Your dreams stop pretending they belong to you.',
+      "Your reflection is smiling when you’re not.",
+      "For a second you completely forget what your own face looks like.",
+      "The voice in your head just called you by your full legal name.",
+      "You feel something gently knocking from inside your chest.",
+      "You find your name written on something you’ve never owned.",
     ],
+    choices: [
+      { text: "Look away and distract yourself.", depthGain: 2, sanityLoss: 10 },
+      { text: "Stare deeper and wait.", depthGain: 7, sanityLoss: 22 },
+      { text: "Ask it what it wants from you.", depthGain: 12, sanityLoss: 30 },
+    ]
   },
+
+  // DEPTH 5 – Sexual Shame
   {
     depth: 5,
-    choices: [
-      { text: 'Deny it and stay where you are.', depth: 1, sanity: 5 },
-      { text: 'Ask for proof.', depth: 5, sanity: 8 },
-      { text: 'Accept the answer and keep going.', depth: 5, sanity: 10 },
-    ],
     texts: [
-      'You realize the darkness behind your eyes has been listening.',
-      'The thing in the mirror introduces itself without moving its mouth.',
-      'A future version of you begs you to stop asking questions.',
-      'Your name tastes unfamiliar when you say it aloud.',
-      'The room feels relieved when you sit still.',
-      'Your thoughts arrive with fingerprints that are not yours.',
-      'The abyss asks whether you want truth or comfort.',
-      'Something inside you answers before you do.',
+      "You suddenly recalled a sexual fantasy that genuinely disturbs you.",
+      "Something under the sheets touches you exactly how you like it — but your hands are on top of the blanket.",
+      "You got aroused by a thought that makes you feel ashamed.",
+      "Last night’s dream felt far too real and far too intimate with the wrong person.",
     ],
+    choices: [
+      { text: "Force the thought away immediately.", depthGain: 2, sanityLoss: 12 },
+      { text: "Let the memory continue playing.", depthGain: 9, sanityLoss: 26 },
+      { text: "Indulge in it completely.", depthGain: 15, sanityLoss: 38 },
+    ]
+  },
+
+  // DEPTH 6 – Deeply Invasive
+  {
+    depth: 6,
+    texts: [
+      "What is the most fucked up thing you’ve ever masturbated to?",
+      "If your parents read your search history, what would break their heart the most?",
+      "The last time you had sex, whose face were you actually imagining?",
+      "You realize one of your organs feels quietly disappointed in you.",
+    ],
+    choices: [
+      { text: "I’m not answering that.", depthGain: 3, sanityLoss: 15 },
+      { text: "Answer vaguely.", depthGain: 10, sanityLoss: 30 },
+      { text: "Be completely honest and detailed.", depthGain: 18, sanityLoss: 45 },
+    ]
+  },
+
+  // DEPTH 7 – Existential + Sexual
+  {
+    depth: 7,
+    texts: [
+      "Would you let an entity that looks and sounds exactly like you fuck you if it promised the full truth about your life?",
+      "How many times have you fantasized about your own funeral?",
+      "You’re starting to believe you’re the only real person. How does that feel?",
+      "Something inside you just whispered “I’ve never actually loved you” in your own voice.",
+    ],
+    choices: [
+      { text: "This is too much. I should stop.", depthGain: 4, sanityLoss: 20 },
+      { text: "Keep going… I need to know.", depthGain: 13, sanityLoss: 38 },
+      { text: "Yes. Hurt me. Show me everything.", depthGain: 22, sanityLoss: 55 },
+    ]
+  },
+
+  // DEPTH 8 – Full Abyss
+  {
+    depth: 8,
+    texts: [
+      "There never was a quiz. It’s only been the thing behind your eyes talking to you this whole time.",
+      "Say your own name out loud right now. Does it still feel like it belongs to you?",
+      "You peel back a piece of skin. Underneath, words are moving and spelling themselves.",
+      "The version of you that reaches the true bottom is currently screaming. Can you hear it?",
+    ],
+    choices: [
+      { text: "I want to stop now.", depthGain: 5, sanityLoss: 25 },
+      { text: "I can handle more.", depthGain: 16, sanityLoss: 48 },
+      { text: "Make it worse. Break me.", depthGain: 28, sanityLoss: 70 },
+    ]
   },
 ];
 
+// Generate all questions
 const abyssQuestions = abyssQuestionPools.flatMap((pool) =>
-  pool.texts.map((text, index) => createAbyssQuestion(`a${pool.depth}${index}`, pool.depth, text, pool.choices))
+  pool.texts.map((text, index) =>
+    createAbyssQuestion(`a${pool.depth}_${index}`, pool.depth, text, pool.choices)
+  )
 );
 
 export const QUIZZES: QuizDef[] = [
