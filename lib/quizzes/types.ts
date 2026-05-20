@@ -34,4 +34,5 @@ export interface QuizDef {
   questions: Question[];
   type?: 'standard' | 'rapid-fire' | 'trick' | 'infinite';
   hidden?: boolean;
+  password?: string;
 }

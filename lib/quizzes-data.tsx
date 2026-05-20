@@ -666,4 +666,184 @@ export const QUIZZES: QuizDef[] = [
     },
     questions: abyssQuestions,
   },
+  // QUIZ 11: Aura Analysis
+  {
+    id: 'aura',
+    title: 'Aura Analysis',
+    subtitle: 'Vibe Check Protocol',
+    description: 'What kind of energy do you actually project into a room?',
+    type: 'standard',
+    roles: {
+      BLACK_HOLE: {
+        title: "THE BLACK HOLE", subtitle: "Class: ENERGY_VACUUM", description: "You absorb all the energy in a room and give absolutely nothing back. You are exhausting to be around.", stats: [{ label: "Gravity", val: 100 }, { label: "Warmth", val: 0 }, { label: "Mystery", val: 80 }, { label: "Drain", val: 100 }], theme: "from-zinc-900 to-black border-zinc-800", textClass: "text-zinc-500", icon: <Moon className="w-8 h-8 text-zinc-500" />, rarity: 'epic', resultText: "You leave people needing a nap.", passive: "Energy Drain"
+      },
+      BLINDING_LIGHT: {
+        title: "BLINDING LIGHT", subtitle: "Class: TOXIC_POSITIVITY", description: "You are aggressively optimistic. You refuse to let anyone have a bad day. It is honestly terrifying.", stats: [{ label: "Brightness", val: 100 }, { label: "Realism", val: 0 }, { label: "Intensity", val: 95 }, { label: "Caffeine", val: 99 }], theme: "from-yellow-400/40 to-amber-900/80 border-yellow-400", textClass: "text-yellow-400", icon: <Sun className="w-8 h-8 text-yellow-400" />, rarity: 'rare', resultText: "Please let us be sad in peace.", passive: "Forced Smile"
+      },
+      STATIC_SHOCK: {
+        title: "STATIC SHOCK", subtitle: "Class: UNSTABLE_CURRENT", description: "Your vibe is unpredictable and slightly dangerous. People feel like they are walking on eggshells around you.", stats: [{ label: "Chaos", val: 100 }, { label: "Predictability", val: 0 }, { label: "Tension", val: 90 }, { label: "Spark", val: 85 }], theme: "from-cyan-500/40 to-blue-900/80 border-cyan-400", textClass: "text-cyan-400", icon: <Zap className="w-8 h-8 text-cyan-400" />, rarity: 'rare', resultText: "A walking hazard.", passive: "Jumpscare"
+      },
+      THE_MIRROR: {
+        title: "THE MIRROR", subtitle: "Class: REFLECTIVE_SURFACE", description: "You have no original personality. You just reflect the exact vibe of whoever you are talking to.", stats: [{ label: "Adaptability", val: 100 }, { label: "Originality", val: 0 }, { label: "Empathy", val: 99 }, { label: "Identity", val: 10 }], theme: "from-slate-400/30 to-zinc-800/80 border-slate-300", textClass: "text-slate-300", icon: <Shield className="w-8 h-8 text-slate-300" />, rarity: 'common', resultText: "Who are you when no one is watching?", passive: "Camouflage"
+      },
+      LAVENDER_HAZE: {
+        title: "LAVENDER HAZE", subtitle: "Class: DISSOCIATED_STATE", description: "You are physically present but mentally floating in a pastel void. Nothing really bothers you anymore.", stats: [{ label: "Chill", val: 100 }, { label: "Grounding", val: 0 }, { label: "Aesthetics", val: 90 }, { label: "Awareness", val: 20 }], theme: "from-purple-500/30 to-fuchsia-900/80 border-purple-400", textClass: "text-purple-400", icon: <Sparkles className="w-8 h-8 text-purple-400" />, rarity: 'mythic', resultText: "No thoughts, just vibes.", passive: "Float Away"
+      }
+    },
+    questions: [
+      { id: 'au1', text: 'You walk into a crowded party. What happens?', answers: [{ text: 'I stand in the corner and observe.', points: { BLACK_HOLE: 2, LAVENDER_HAZE: 1 } }, { text: 'I hype up everyone I see.', points: { BLINDING_LIGHT: 2 } }, { text: 'I immediately start matching the energy of the loudest group.', points: { THE_MIRROR: 2 } }, { text: 'I accidentally knock over a drink.', points: { STATIC_SHOCK: 2 } }] },
+      { id: 'au2', text: 'Someone starts venting to you about their bad day.', answers: [{ text: '"Just look on the bright side!"', points: { BLINDING_LIGHT: 2 } }, { text: '"Wow, that sucks. Same thing happened to me..."', points: { THE_MIRROR: 2 } }, { text: '"Damn, that\'s crazy." *zones out*', points: { LAVENDER_HAZE: 2, BLACK_HOLE: 1 } }, { text: '"Let\'s key their car right now."', points: { STATIC_SHOCK: 2 } }] },
+      { id: 'au3', text: 'How do you handle conflict?', answers: [{ text: 'Absorb the anger and stay silent.', points: { BLACK_HOLE: 2 } }, { text: 'Force everyone to hug it out immediately.', points: { BLINDING_LIGHT: 2 } }, { text: 'Agree with whoever is talking to me at the moment.', points: { THE_MIRROR: 2 } }, { text: 'Escalate it because I thrive in chaos.', points: { STATIC_SHOCK: 2 } }] },
+      { id: 'au4', text: 'Your ideal weekend plan?', answers: [{ text: 'Doing absolutely nothing in my room.', points: { BLACK_HOLE: 2, LAVENDER_HAZE: 2 } }, { text: 'A packed itinerary of wholesome activities.', points: { BLINDING_LIGHT: 2 } }, { text: 'Whatever my friends want to do.', points: { THE_MIRROR: 2 } }, { text: 'Last minute road trip with zero planning.', points: { STATIC_SHOCK: 2 } }] },
+      { id: 'au5', text: 'What is your internal monologue like?', answers: [{ text: 'Just elevator music.', points: { LAVENDER_HAZE: 2 } }, { text: 'A constant stream of motivational quotes.', points: { BLINDING_LIGHT: 2 } }, { text: 'Static and sudden intrusive thoughts.', points: { STATIC_SHOCK: 2 } }, { text: 'A dark, heavy silence.', points: { BLACK_HOLE: 2 } }] }
+    ]
+  },
+  // QUIZ 13: Toxic Trait Scanner
+  {
+    id: 'toxic',
+    title: 'Toxic Trait Scanner',
+    subtitle: 'Red Flag Diagnostic',
+    description: 'We all have one. What is your specific brand of toxicity?',
+    type: 'standard',
+    roles: {
+      GHOST_PROTOCOL: {
+        title: "GHOST PROTOCOL", subtitle: "Class: EVASION_EXPERT", description: "The moment things get real, you vanish. You have never successfully communicated a boundary in your life.", stats: [{ label: "Communication", val: 0 }, { label: "Flight Speed", val: 100 }, { label: "Avoidance", val: 99 }, { label: "Commitment", val: 5 }], theme: "from-slate-600/40 to-slate-900 border-slate-500", textClass: "text-slate-400", icon: <Ghost className="w-8 h-8 text-slate-400" />, rarity: 'common', resultText: "You left them on read again.", passive: "Smoke Bomb"
+      },
+      LOVE_BOMBER: {
+        title: "THE LOVE BOMBER", subtitle: "Class: OVERLOAD", description: "You plan your wedding on the second date, and then lose interest by the third. It's a rollercoaster no one asked for.", stats: [{ label: "Intensity", val: 100 }, { label: "Longevity", val: 10 }, { label: "Attachment", val: 90 }, { label: "Boredom", val: 95 }], theme: "from-rose-500/40 to-red-900 border-rose-500", textClass: "text-rose-400", icon: <HeartCrack className="w-8 h-8 text-rose-400" />, rarity: 'rare', resultText: "Too much, too soon, then nothing at all.", passive: "Flash Bang"
+      },
+      THE_REPAIRMAN: {
+        title: "THE REPAIRMAN", subtitle: "Class: SAVIOR_COMPLEX", description: "You are only attracted to people who are actively falling apart. You don't want a partner, you want a project.", stats: [{ label: "Fixing", val: 100 }, { label: "Boundaries", val: 0 }, { label: "Attraction to Mess", val: 99 }, { label: "Self-Care", val: 10 }], theme: "from-amber-500/40 to-orange-900 border-amber-500", textClass: "text-amber-400", icon: <Briefcase className="w-8 h-8 text-amber-400" />, rarity: 'epic', resultText: "They don't want to be fixed.", passive: "Duct Tape"
+      },
+      CHRONIC_VICTIM: {
+        title: "CHRONIC VICTIM", subtitle: "Class: DEFLECTION_MASTER", description: "Somehow, no matter what happens, it is never your fault. You could burn down a house and blame the matches.", stats: [{ label: "Accountability", val: 0 }, { label: "Deflection", val: 100 }, { label: "Pity Farming", val: 90 }, { label: "Drama", val: 85 }], theme: "from-purple-500/40 to-fuchsia-900 border-purple-500", textClass: "text-purple-400", icon: <AlertTriangle className="w-8 h-8 text-purple-400" />, rarity: 'legendary', resultText: "The common denominator is you.", passive: "Teflon Shield"
+      },
+      EMOTIONAL_VAMPIRE: {
+        title: "EMOTIONAL VAMPIRE", subtitle: "Class: SOUL_LEECH", description: "You drain the energy from everyone around you. Your problems are everyone's problems, but their problems don't matter.", stats: [{ label: "Empathy", val: 5 }, { label: "Draining", val: 100 }, { label: "Narcissism", val: 85 }, { label: "Self-Awareness", val: 10 }], theme: "from-red-900/60 to-black border-red-800", textClass: "text-red-600", icon: <Skull className="w-8 h-8 text-red-600" />, rarity: 'abyssal', resultText: "You leave husks behind.", passive: "Energy Siphon"
+      }
+    },
+    questions: [
+      { id: 'tx1', text: 'Things are going surprisingly well with a new person. You...', answers: [{ text: 'Find a tiny flaw and use it as an excuse to leave.', points: { GHOST_PROTOCOL: 2 } }, { text: 'Tell them I love them.', points: { LOVE_BOMBER: 2 } }, { text: 'Start looking for their deepest trauma to fix.', points: { THE_REPAIRMAN: 2 } }, { text: 'Complain that they aren\'t giving me enough attention.', points: { EMOTIONAL_VAMPIRE: 2, CHRONIC_VICTIM: 1 } }] },
+      { id: 'tx2', text: 'You get caught in a lie. Your response?', answers: [{ text: 'Stop responding entirely.', points: { GHOST_PROTOCOL: 2 } }, { text: 'Over-apologize and buy them expensive gifts.', points: { LOVE_BOMBER: 2 } }, { text: '"You made me lie because of how you react!"', points: { CHRONIC_VICTIM: 2 } }, { text: 'Turn it around so they end up comforting me.', points: { EMOTIONAL_VAMPIRE: 2, CHRONIC_VICTIM: 1 } }] },
+      { id: 'tx3', text: 'What is your type?', answers: [{ text: 'Emotionally unavailable people.', points: { GHOST_PROTOCOL: 2, THE_REPAIRMAN: 1 } }, { text: 'People who need to be saved.', points: { THE_REPAIRMAN: 2 } }, { text: 'Whoever will give me the most validation right now.', points: { LOVE_BOMBER: 2, EMOTIONAL_VAMPIRE: 1 } }, { text: 'People who always treat me terribly (so I can complain about it).', points: { CHRONIC_VICTIM: 2 } }] },
+      { id: 'tx4', text: 'A friend tries to set a boundary with you.', answers: [{ text: 'Respect it by never speaking to them again.', points: { GHOST_PROTOCOL: 2 } }, { text: 'Take it as a personal attack and cry.', points: { CHRONIC_VICTIM: 2, EMOTIONAL_VAMPIRE: 1 } }, { text: 'Cross it immediately to prove how close we are.', points: { LOVE_BOMBER: 2, THE_REPAIRMAN: 1 } }] },
+      { id: 'tx5', text: 'How do your relationships usually end?', answers: [{ text: 'I slowly fade out until they get the hint.', points: { GHOST_PROTOCOL: 2 } }, { text: 'I get bored when the honeymoon phase ends.', points: { LOVE_BOMBER: 2 } }, { text: 'They fix themselves and realize they don\'t need me.', points: { THE_REPAIRMAN: 2 } }, { text: 'They abandon me for literally no reason.', points: { CHRONIC_VICTIM: 2, EMOTIONAL_VAMPIRE: 1 } }] }
+    ]
+  },
+  // QUIZ 14: Relationship Dynamic Analyzer
+  {
+    id: 'relationship',
+    title: 'Relationship Dynamic',
+    subtitle: 'Situationship Autopsy',
+    description: 'Why are all your relationships ending the exact same way?',
+    type: 'standard',
+    roles: {
+      THE_CHASER: {
+        title: "THE CHASER", subtitle: "Class: UNAVAILABLE_HUNTER", description: "You are only interested until they actually like you back. The moment they show genuine affection, you get the ick.", stats: [{ label: "Pursuit", val: 100 }, { label: "Interest", val: 99 }, { label: "Commitment", val: 0 }, { label: "The Ick", val: 100 }], theme: "from-blue-600/40 to-blue-900 border-blue-500", textClass: "text-blue-400", icon: <Radar className="w-8 h-8 text-blue-400" />, rarity: 'rare', resultText: "You just like the chase.", passive: "Sudden Ick"
+      },
+      THE_AVOIDER: {
+        title: "THE AVOIDER", subtitle: "Class: INTIMACY_EVASION", description: "You keep everyone at arm's length because vulnerability is terrifying. You express love through memes and sarcasm.", stats: [{ label: "Distance", val: 100 }, { label: "Vulnerability", val: 0 }, { label: "Sarcasm", val: 99 }, { label: "Deflection", val: 90 }], theme: "from-zinc-500/40 to-zinc-900 border-zinc-500", textClass: "text-zinc-400", icon: <Shield className="w-8 h-8 text-zinc-400" />, rarity: 'common', resultText: "Let them in. It's okay.", passive: "Emotional Wall"
+      },
+      THE_FANTASIST: {
+        title: "THE FANTASIST", subtitle: "Class: DELUSIONAL_ROMANTIC", description: "You fall in love with the potential of a person, not the reality. You ignore all red flags because they don't fit your aesthetic vision.", stats: [{ label: "Delusion", val: 100 }, { label: "Red Flag Blindness", val: 99 }, { label: "Romanticizing", val: 100 }, { label: "Reality", val: 0 }], theme: "from-pink-400/40 to-rose-900 border-pink-400", textClass: "text-pink-300", icon: <Sparkles className="w-8 h-8 text-pink-300" />, rarity: 'epic', resultText: "You are dating an idea.", passive: "Rose-Tinted Glasses"
+      },
+      THE_OVERTHINKER: {
+        title: "THE OVERTHINKER", subtitle: "Class: TEXT_ANALYZER", description: "You analyze the punctuation of their texts and convince yourself they hate you because they used a period instead of an exclamation mark.", stats: [{ label: "Anxiety", val: 100 }, { label: "Analysis", val: 99 }, { label: "Chill", val: 0 }, { label: "Texting", val: 90 }], theme: "from-yellow-500/40 to-amber-900 border-yellow-500", textClass: "text-yellow-400", icon: <Brain className="w-8 h-8 text-yellow-400" />, rarity: 'rare', resultText: "They just fell asleep. Chill.", passive: "Read Receipt Panic"
+      },
+      THE_SECURE_ONE: {
+        title: "THE SECURE ONE", subtitle: "Class: MYTHOLOGICAL_BEING", description: "You communicate clearly, don't play games, and actually heal from past trauma before dating again. You are terrifyingly well-adjusted.", stats: [{ label: "Communication", val: 100 }, { label: "Boundaries", val: 100 }, { label: "Toxicity", val: 0 }, { label: "Boringness (to toxic people)", val: 100 }], theme: "from-emerald-500/40 to-teal-900 border-emerald-400", textClass: "text-emerald-400", icon: <Sun className="w-8 h-8 text-emerald-400" />, rarity: 'mythic', resultText: "Are you single? Asking for a friend.", passive: "Healthy Boundaries"
+      }
+    },
+    questions: [
+      { id: 're1', text: 'They leave you on read for 6 hours. What do you do?', answers: [{ text: 'Assume they died and check their location.', points: { THE_OVERTHINKER: 2 } }, { text: 'Ignore them back for 12 hours to win the power struggle.', points: { THE_CHASER: 2 } }, { text: 'Go about my day and assume they are busy.', points: { THE_SECURE_ONE: 2, THE_AVOIDER: 1 } }, { text: 'Daydream about our future wedding to cope.', points: { THE_FANTASIST: 2 } }] },
+      { id: 're2', text: 'You notice a major red flag on the first date.', answers: [{ text: '"I can fix them."', points: { THE_FANTASIST: 2 } }, { text: 'Politely decline a second date.', points: { THE_SECURE_ONE: 2 } }, { text: 'Become intensely attracted to them.', points: { THE_CHASER: 2 } }, { text: 'Use it as an excuse to never be vulnerable with them.', points: { THE_AVOIDER: 2, THE_OVERTHINKER: 1 } }] },
+      { id: 're3', text: 'They confess they have deep feelings for you.', answers: [{ text: 'Immediately lose all interest.', points: { THE_CHASER: 2 } }, { text: 'Panic and make a sarcastic joke.', points: { THE_AVOIDER: 2 } }, { text: 'Communicate my feelings honestly in return.', points: { THE_SECURE_ONE: 2 } }, { text: 'Overanalyze whether they actually mean it or are just saying it.', points: { THE_OVERTHINKER: 2, THE_FANTASIST: 1 } }] },
+      { id: 're4', text: 'What is your biggest fear in a relationship?', answers: [{ text: 'Being trapped and losing my independence.', points: { THE_AVOIDER: 2, THE_CHASER: 1 } }, { text: 'The reality not matching the fantasy in my head.', points: { THE_FANTASIST: 2 } }, { text: 'Them waking up one day and realizing they hate me.', points: { THE_OVERTHINKER: 2 } }, { text: 'Losing my sense of self.', points: { THE_SECURE_ONE: 2 } }] },
+      { id: 're5', text: 'How do you define a successful first date?', answers: [{ text: 'We communicated openly and felt a mutual connection.', points: { THE_SECURE_ONE: 2 } }, { text: 'They were hard to read, which makes me want to crack the code.', points: { THE_CHASER: 2 } }, { text: 'We didn\'t talk about anything deep or emotional.', points: { THE_AVOIDER: 2 } }, { text: 'I have already named our future children.', points: { THE_FANTASIST: 2, THE_OVERTHINKER: 1 } }] }
+    ]
+  },
+  // QUIZ 15: Do You Deserve An LOR
+  {
+    id: 'lor',
+    title: 'Do You Deserve an LOR?',
+    subtitle: 'Thriftz Intern Vibe Check',
+    description: 'Three-phase evaluation: quick dossier taps, live founder negotiation on WhatsApp-era Thriftz, then audit. Your choices decide if you deserve the letter.',
+    type: 'standard',
+    password: 'lovethythriftz',
+    roles: {
+      THE_GHOST_INTERN: {
+        title: "THE GHOST INTERN",
+        subtitle: "Class: WHATSAPP_PHANTOM",
+        description: "Joined onboarding, muted mic, vanished from the WhatsApp group. Last commit: README typo. Collectible tier: background NPC.",
+        stats: [{ label: "Contribution", val: 2 }, { label: "WhatsApp Activity", val: 1 }, { label: "LOR Justification", val: 0 }, { label: "Excuses", val: 99 }],
+        theme: "from-zinc-800 to-zinc-950 border-zinc-700",
+        textClass: "text-zinc-400",
+        icon: <Ghost className="w-8 h-8 text-zinc-400" />,
+        rarity: 'common',
+        resultText: "No LOR for you. We literally forgot your last name.",
+        passive: "Invisibility (Permanent)"
+      },
+      THE_SLACK_POLL_ENTHUSIAST: {
+        title: "POLL CONNOISSEUR",
+        subtitle: "Class: REACT_SPAMMER",
+        description: "Zero code, zero design — but every WhatsApp poll answered in under 3 seconds. Emoji reaction speedrun champion.",
+        stats: [{ label: "Contribution", val: 15 }, { label: "WhatsApp Activity", val: 100 }, { label: "LOR Justification", val: 20 }, { label: "Emoji Mastery", val: 99 }],
+        theme: "from-pink-900/40 to-purple-900 border-pink-500",
+        textClass: "text-pink-400",
+        icon: <MessageCircle className="w-8 h-8 text-pink-400" />,
+        rarity: 'rare',
+        resultText: "You might get a letter, but it will be written entirely in emojis.",
+        passive: "Lightning Fast WhatsApp Reacts"
+      },
+      THE_OVER_PROMISER: {
+        title: "THE OVER-PROMISER",
+        subtitle: "Class: HYPING_ENTITY",
+        description: "Promised a full Next.js page by Monday. Delivered a README tweak and 'midterm' radio silence. Hype stat maxed, delivery stat fried.",
+        stats: [{ label: "Promise Index", val: 100 }, { label: "Delivery Rate", val: 4 }, { label: "LOR Justification", val: 10 }, { label: "Midterm Excuses", val: 95 }],
+        theme: "from-orange-800/40 to-yellow-900 border-orange-500",
+        textClass: "text-orange-400",
+        icon: <Flame className="w-8 h-8 text-orange-400" />,
+        rarity: 'epic',
+        resultText: "We recommend you to other companies... companies we want to fail.",
+        passive: "Hype Train (Unstoppable)"
+      },
+      THE_LURKER_DEV: {
+        title: "THE PHANTOM DEV",
+        subtitle: "Class: SHADOW_DEVELOPER",
+        description: "Silent in WhatsApp, lethal at 4 AM. Pushed to main, broke prod, fixed it before anyone woke up. Stealth carry card.",
+        stats: [{ label: "Stealth", val: 99 }, { label: "Code Quality", val: 75 }, { label: "LOR Justification", val: 65 }, { label: "Production Crashes", val: 1 }],
+        theme: "from-blue-900/40 to-indigo-900 border-blue-500",
+        textClass: "text-blue-400",
+        icon: <Terminal className="w-8 h-8 text-blue-400" />,
+        rarity: 'epic',
+        resultText: "You deserve a letter, if you can confirm you are actually a human and not a LLM.",
+        passive: "4 AM Push (Direct to main)"
+      },
+      THE_ENTITLED_CHANCER: {
+        title: "THE AUDACIOUS INTERN",
+        subtitle: "Class: CONFIDENCE_OVERLOAD",
+        description: "Two hours of work in three months. Day two: demanded a letter praising their 'legendary Next.js leadership.' Audacity is their superpower.",
+        stats: [{ label: "Audacity", val: 100 }, { label: "Confidence", val: 99 }, { label: "LOR Justification", val: 5 }, { label: "Leadership Claims", val: 95 }],
+        theme: "from-amber-700/40 to-red-950 border-amber-500",
+        textClass: "text-amber-400",
+        icon: <Coffee className="w-8 h-8 text-amber-400" />,
+        rarity: 'legendary',
+        resultText: "You will probably succeed in life through sheer hubris, but you aren't getting an LOR from us.",
+        passive: "Gaslight, Gatekeep, Grandstand"
+      },
+      THE_LITERAL_SAVIOR: {
+        title: "THE LITERAL SAVIOR",
+        subtitle: "Class: UNPAID_CARRY",
+        description: "Carried the frontend, fixed founder CSS disasters, mentored interns on WhatsApp while taking exams. Golden carry — mythic tier.",
+        stats: [{ label: "Contribution", val: 99 }, { label: "WhatsApp Support", val: 95 }, { label: "LOR Justification", val: 100 }, { label: "Burnout", val: 99 }],
+        theme: "from-emerald-900/40 to-teal-950 border-emerald-400",
+        textClass: "text-emerald-400",
+        icon: <Sparkles className="w-8 h-8 text-emerald-400" />,
+        rarity: 'mythic',
+        resultText: "You deserve our startup's remaining equity, but since we have none, here is a golden LOR.",
+        passive: "Company Carry (Active)"
+      }
+    },
+    questions: []
+  }
 ]

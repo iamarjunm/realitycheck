@@ -224,6 +224,28 @@ export const QuizVibeBackground = ({
       return <RoastBackground />;
     case 'abyss':
       return <AbyssBackground depth={abyssDepth} />;
+    case 'aura':
+      return (
+        <div className="fixed inset-0 z-0 overflow-hidden bg-black pointer-events-none flex items-center justify-center">
+          <motion.div animate={{ scale: [1, 1.3, 1], rotate: [0, 180, 360] }} transition={{ duration: 15, repeat: Infinity, ease: 'linear' }} className="absolute w-[150vw] h-[150vw] bg-[conic-gradient(from_90deg,rgba(0,255,255,0.2),rgba(255,0,255,0.2),rgba(0,255,255,0.2))] blur-[80px] rounded-full mix-blend-screen opacity-50" />
+          <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPjxyZWN0IHdpZHRoPSI0IiBoZWlnaHQ9IjQiIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC41Ii8+PC9zdmc+')] mix-blend-overlay opacity-20 animate-pulse" />
+        </div>
+      );
+    case 'toxic':
+      return (
+        <div className="fixed inset-0 z-0 overflow-hidden bg-red-950 pointer-events-none flex flex-col items-center justify-center">
+          <motion.div animate={{ opacity: [0.3, 0.8, 0.3], scale: [1, 1.1, 1] }} transition={{ duration: 0.2, repeat: Infinity, ease: 'linear' }} className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(255,0,0,0.4)_0%,rgba(0,0,0,1)_80%)] mix-blend-color-dodge" />
+          <div className="absolute inset-0 bg-black/50" />
+          <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPjxyZWN0IHdpZHRoPSI0IiBoZWlnaHQ9IjQiIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC41Ii8+PC9zdmc+')] mix-blend-overlay opacity-40 animate-[pulse_0.1s_infinite]" />
+        </div>
+      );
+    case 'relationship':
+      return (
+        <div className="fixed inset-0 z-0 overflow-hidden bg-black pointer-events-none flex items-center justify-center">
+          <motion.div animate={{ rotate: [0, -10, 0], scale: [1, 1.1, 1] }} transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }} className="w-[120vw] h-[120vw] bg-gradient-to-tr from-pink-600/40 via-black to-blue-600/40 blur-[100px] mix-blend-screen" />
+          <motion.div animate={{ opacity: [0, 1, 0] }} transition={{ duration: 2, repeat: Infinity, ease: 'linear' }} className="absolute inset-0 bg-white/5 mix-blend-overlay" />
+        </div>
+      );
     default:
       return null;
   }

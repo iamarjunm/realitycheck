@@ -5,11 +5,21 @@ import { motion, useMotionValue, useSpring, useTransform } from 'motion/react';
 import { Download, Share2, RotateCcw } from 'lucide-react';
 import * as htmlToImage from 'html-to-image';
 import type { RoleDef } from '../../../lib/quizzes';
+import { loadLorSession, type LorSession } from '../../../lib/lor-session';
+import { LorResultCard } from './LorResultCard';
+import { LorFullReport } from './LorFullReport';
 
 export function ResultScreen({ roleDef, secondaryRoleDef, quizName, quizId, userName, onRestart, isModal, onClose }: { roleDef: RoleDef, secondaryRoleDef: RoleDef | null, quizName: string, quizId: string, userName: string, onRestart?: () => void, isModal?: boolean, onClose?: () => void }) {
   const cardRef = useRef<HTMLDivElement>(null);
+  const reportRef = useRef<HTMLDivElement>(null);
   const [cardId] = useState(() => Math.random().toString(36).substring(7).toUpperCase());
   const isRoast = quizId === 'roast';
+  const [lorSession, setLorSession] = useState<LorSession | null>(null);
+
+  React.useEffect(() => {
+    if (quizId === 'lor') setLorSession(loadLorSession());
+  }, [quizId]);
+
 
   const uniqueFeatures = React.useMemo(() => {
     let hash = 0;
@@ -85,6 +95,12 @@ export function ResultScreen({ roleDef, secondaryRoleDef, quizName, quizId, user
       cardAnim = { y: 0, opacity: 1, scale: 1 };
       cardTransition = { duration: 1.5, ease: "easeOut", delay: 0.5 };
       break;
+    case 'lor':
+      containerAnim = { opacity: 1 };
+      cardInitial = { y: 600, rotateZ: 8, opacity: 0 };
+      cardAnim = { y: 0, rotateZ: 0, opacity: 1 };
+      cardTransition = { type: "spring", stiffness: 100, damping: 15, delay: 0.2 };
+      break;
     case 'cosmic':
     default:
       containerAnim = { 
@@ -99,22 +115,48 @@ export function ResultScreen({ roleDef, secondaryRoleDef, quizName, quizId, user
   }
 
   const captureCard = async () => {
-    if (!cardRef.current) return;
-    const currentTransform = cardRef.current.style.transform;
-    try {
+    const useFullReport = quizId === 'lor' && lorSession && reportRef.current;
+    const targetNode = useFullReport ? reportRef.current : cardRef.current;
+    if (!targetNode) return;
+    
+    let originalTransform = '';
+    if (targetNode === cardRef.current && cardRef.current) {
+      originalTransform = cardRef.current.style.transform;
       cardRef.current.style.transform = 'none';
-      const dataUrl = await htmlToImage.toPng(cardRef.current, { quality: 1, pixelRatio: 2, style: { transform: 'none' } });
+    } else if (targetNode === reportRef.current && reportRef.current) {
+      // Unhide the report ref temporarily for html2canvas/htmlToImage
+      reportRef.current.style.position = 'absolute';
+      reportRef.current.style.left = '0';
+      reportRef.current.style.top = '0';
+      reportRef.current.style.zIndex = '-1000';
+      reportRef.current.style.visibility = 'visible';
+    }
+
+    try {
+      const dataUrl = await htmlToImage.toPng(targetNode, {
+        quality: 1,
+        pixelRatio: 2,
+        style: { transform: 'none' },
+        width: targetNode.scrollWidth,
+        height: targetNode.scrollHeight,
+      });
 
       const link = document.createElement('a');
-      link.download = `stat-card-${userName.toLowerCase()}.png`;
+      link.download =
+        quizId === 'lor'
+          ? `thriftz-lor-report-${userName.toLowerCase().replace(/\s+/g, '-')}.png`
+          : `stat-card-${userName.toLowerCase()}.png`;
       link.href = dataUrl;
       link.click();
-    } catch (e) {
-      console.error('Failed to export image', e);
-      alert("Failed to export image.");
+    } catch (err) {
+      console.warn('Failed to generate image', err);
     } finally {
-      if (cardRef.current) {
-        cardRef.current.style.transform = currentTransform;
+      if (targetNode === cardRef.current && cardRef.current) {
+        cardRef.current.style.transform = originalTransform;
+      } else if (targetNode === reportRef.current && reportRef.current) {
+        reportRef.current.style.position = 'fixed';
+        reportRef.current.style.left = '-9999px';
+        reportRef.current.style.visibility = 'hidden';
       }
     }
   };
@@ -253,22 +295,25 @@ export function ResultScreen({ roleDef, secondaryRoleDef, quizName, quizId, user
           <div className={`absolute inset-0 ${getFoilClass(roleDef.rarity)} z-10 pointer-events-none`} />
           
           <div 
-             className="absolute inset-0 z-10 pointer-events-none mix-blend-overlay opacity-50"
-             style={{
-               filter: `hue-rotate(${uniqueFeatures.hue}deg)`,
-               backgroundImage: uniqueFeatures.pattern === 0 ? 'repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.1) 10px, rgba(255,255,255,0.1) 20px)' :
-                                uniqueFeatures.pattern === 1 ? 'radial-gradient(circle at center, rgba(255,255,255,0.2) 2px, transparent 2.5px)' :
-                                uniqueFeatures.pattern === 2 ? 'repeating-linear-gradient(-45deg, transparent, transparent 5px, rgba(255,255,255,0.15) 5px, rgba(255,255,255,0.15) 10px)' :
-                                'none',
-               backgroundSize: uniqueFeatures.pattern === 1 ? '20px 20px' : 'auto'
-             }}
-          />
+               className="absolute inset-0 z-10 pointer-events-none mix-blend-overlay opacity-50"
+               style={{
+                 filter: `hue-rotate(${uniqueFeatures.hue}deg)`,
+                 backgroundImage: uniqueFeatures.pattern === 0 ? 'repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.1) 10px, rgba(255,255,255,0.1) 20px)' :
+                                  uniqueFeatures.pattern === 1 ? 'radial-gradient(circle at center, rgba(255,255,255,0.2) 2px, transparent 2.5px)' :
+                                  uniqueFeatures.pattern === 2 ? 'repeating-linear-gradient(-45deg, transparent, transparent 5px, rgba(255,255,255,0.15) 5px, rgba(255,255,255,0.15) 10px)' :
+                                  'none',
+                 backgroundSize: uniqueFeatures.pattern === 1 ? '20px 20px' : 'auto'
+               }}
+            />
+
           <div className="absolute inset-0 z-10 pointer-events-none overflow-hidden mix-blend-overlay" style={{ opacity: uniqueFeatures.opacity / 100 }}>
-             <div className="absolute rounded-full border border-white" style={{ left: `${uniqueFeatures.cx}%`, top: `${uniqueFeatures.cy}%`, width: '150%', height: '150%', transform: 'translate(-50%, -50%)' }}></div>
-             <div className="absolute border border-white" style={{ left: `${100 - uniqueFeatures.cx}%`, top: `${100 - uniqueFeatures.cy}%`, width: '100%', height: '100%', transform: `translate(-50%, -50%) rotate(${uniqueFeatures.rotation}deg)` }}></div>
-          </div>
+               <div className="absolute rounded-full border border-white" style={{ left: `${uniqueFeatures.cx}%`, top: `${uniqueFeatures.cy}%`, width: '150%', height: '150%', transform: 'translate(-50%, -50%)' }}></div>
+               <div className="absolute border border-white" style={{ left: `${100 - uniqueFeatures.cx}%`, top: `${100 - uniqueFeatures.cy}%`, width: '100%', height: '100%', transform: `translate(-50%, -50%) rotate(${uniqueFeatures.rotation}deg)` }}></div>
+            </div>
           
-          {isRoast ? (
+          {quizId === 'lor' ? (
+            <LorResultCard roleDef={roleDef} userName={userName} cardId={cardId} quizName={quizName} />
+          ) : isRoast ? (
             <div className="relative z-30 h-full flex flex-col p-1 sm:p-2 overflow-hidden" style={{ transform: 'translateZ(35px)' }}>
                {/* ROAST INTERNAL STRUCTURE */}
                {/* Animated fire glow background */}
@@ -601,7 +646,7 @@ export function ResultScreen({ roleDef, secondaryRoleDef, quizName, quizId, user
           )}
           </motion.div>
         </motion.div>
-    </div>
+      </div>
 
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
@@ -613,7 +658,7 @@ export function ResultScreen({ roleDef, secondaryRoleDef, quizName, quizId, user
           onClick={captureCard}
           className="flex-1 py-3 bg-white text-black font-bold uppercase rounded-lg hover:bg-zinc-200 transition-colors flex items-center justify-center gap-2 text-sm shadow-[0_0_15px_rgba(255,255,255,0.2)]"
         >
-          <Download className="w-4 h-4" /> Save
+          <Download className="w-4 h-4" /> {quizId === 'lor' ? 'Full report' : 'Save'}
         </button>
         {!isModal && (
           <button 
@@ -640,6 +685,12 @@ export function ResultScreen({ roleDef, secondaryRoleDef, quizName, quizId, user
           </button>
         )}
       </motion.div>
-    </motion.div>
+
+    {quizId === 'lor' && lorSession && (
+      <div ref={reportRef} className="fixed left-[-9999px] top-0" style={{ visibility: 'hidden' }}>
+        <LorFullReport roleDef={roleDef} userName={userName} cardId={cardId} session={lorSession} quizName={quizName} />
+      </div>
+    )}
+  </motion.div>
   );
 }

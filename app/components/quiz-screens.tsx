@@ -7,3 +7,4 @@ export { InfiniteQuizScreen } from './quiz/InfiniteQuizScreen';
 export { TerminalCalculationScreen } from './quiz/TerminalCalculationScreen';
 export { ResultScreen } from './quiz/ResultScreen';
 export { CollectionScreen } from './quiz/CollectionScreen';
+export { LorNegotiatorScreen } from './quiz/LorNegotiatorScreen';

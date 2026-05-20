@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ChevronRight, AlertTriangle, List } from 'lucide-react';
 import { QUIZZES } from '../lib/quizzes';
+import { clearLorSession } from '../lib/lor-session';
 import {
   QuizVibeBackground,
   QuizSelectScreen,
@@ -14,6 +15,7 @@ import {
   TerminalCalculationScreen,
   ResultScreen,
   CollectionScreen,
+  LorNegotiatorScreen,
 } from './components/quiz-screens';
 
 export default function NPCStatCardApp() {
@@ -57,6 +59,7 @@ export default function NPCStatCardApp() {
 
   const handleStart = () => {
     if (!userName.trim()) return;
+    if (activeQuizId === 'lor') clearLorSession();
     setGameState('quiz');
   };
 
@@ -145,6 +148,7 @@ export default function NPCStatCardApp() {
 
   const restartQuiz = () => {
     if (!activeQuiz) return;
+    if (activeQuiz.id === 'lor') clearLorSession();
 
     const initialScores: Record<string, number> = {};
     Object.keys(activeQuiz.roles).forEach((key) => {
@@ -174,9 +178,9 @@ export default function NPCStatCardApp() {
   };
 
   return (
-    <main className="min-h-[100dvh] w-screen bg-grid-white relative flex flex-col items-center justify-start p-4 overflow-x-hidden overflow-y-auto pt-16 sm:pt-4">
+    <main className="min-h-[100dvh] w-screen relative flex flex-col items-center justify-start p-4 overflow-x-hidden overflow-y-auto pt-16 sm:pt-4 crt-flicker bg-black text-white">
       <QuizVibeBackground quizId={activeQuizId} gameState={gameState} abyssDepth={currentDepth} />
-      <div className="absolute inset-0 noise-bg pointer-events-none" />
+      <div className="absolute inset-0 extreme-noise pointer-events-none" />
 
       {gameState !== 'select' && (
         <button
@@ -196,25 +200,33 @@ export default function NPCStatCardApp() {
 
         {gameState === 'intro' && activeQuiz && (
           <motion.div key="intro" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, filter: 'blur(10px)' }} className="z-10 flex flex-col items-center max-w-xl text-center space-y-8 my-auto">
-            <div className="space-y-4">
-              <div className="inline-flex items-center space-x-2 border border-cyan-500/50 bg-cyan-500/10 px-3 py-1 rounded-full text-cyan-400 font-mono text-xs sm:text-sm mb-2 sm:mb-4">
-                <AlertTriangle className="w-3 h-3 sm:w-4 sm:h-4" />
-                <span>WARNING: TRUTH PROTOCOL INITIATED</span>
+            <div className="space-y-6 relative z-10 mt-8">
+              <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full blur-3xl rounded-full pointer-events-none ${activeQuiz.id === 'lor' ? 'bg-[#8b5a2b]/20' : 'bg-cyan-500/10'}`} />
+              <div className={`relative inline-flex items-center space-x-2 bg-black border-2 font-black text-xs sm:text-sm px-4 py-1.5 shadow-[4px_4px_0_rgba(0,0,0,0.5)] transform -rotate-2 mb-4 ${activeQuiz.id === 'lor' ? 'border-[#8b5a2b] text-[#e5c158]' : 'border-red-500 text-red-500'}`}>
+                <AlertTriangle className="w-4 h-4 animate-ping" />
+                <span className="tracking-widest">{activeQuiz.id === 'lor' ? 'LOR EVALUATION PIPELINE' : 'WARNING: TRUTH PROTOCOL'}</span>
               </div>
-              <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold tracking-tighter text-glow-cyan uppercase">{activeQuiz.title}</h1>
-              <p className="text-lg sm:text-xl md:text-2xl font-mono text-cyan-200/70 tracking-widest uppercase">{activeQuiz.subtitle}</p>
+              <h1 className="relative text-4xl sm:text-5xl md:text-6xl font-black tracking-tighter text-white uppercase glitch-overlay" data-text={activeQuiz.title}>{activeQuiz.title}</h1>
+              <p className={`text-lg sm:text-xl md:text-2xl font-black tracking-[0.2em] uppercase bg-black/80 px-4 py-1 inline-block border-y-4 transform rotate-1 ${activeQuiz.id === 'lor' ? 'text-[#e5c158] border-[#8b5a2b]' : 'text-cyan-400 border-cyan-500'}`}>{activeQuiz.subtitle}</p>
             </div>
 
-            <p className="text-zinc-400 text-sm sm:text-lg max-w-md px-4">{activeQuiz.description}</p>
+            <p className={`text-zinc-300 font-mono text-sm sm:text-base max-w-md px-6 py-4 bg-zinc-900/80 border-l-4 relative z-10 shadow-lg ${activeQuiz.id === 'lor' ? 'border-[#8b5a2b]' : 'border-fuchsia-500'}`}>{activeQuiz.description}</p>
 
-            <div className="flex flex-col items-center w-full max-w-sm space-y-6 pt-4">
+            {activeQuiz.id === 'lor' && (
+              <div className="font-mono text-[10px] text-[#a27b5c] uppercase tracking-widest space-y-1 relative z-10">
+                <p>① Tap dossier (contribution + team takes) · ② Founder DM · ③ Collectible card</p>
+                <p className="text-zinc-500">All answers appear in your downloadable report</p>
+              </div>
+            )}
+
+            <div className="flex flex-col items-center w-full max-w-sm space-y-6 pt-6 relative z-10">
               <input
                 type="text"
                 maxLength={20}
                 value={userName}
                 onChange={(event) => setUserName(event.target.value)}
-                placeholder="Enter Entity Name..."
-                className="w-full bg-transparent border-b-2 border-cyan-500/30 text-center text-white text-2xl pb-2 focus:outline-none focus:border-cyan-400 transition-colors font-mono placeholder:text-zinc-700 uppercase"
+                placeholder={activeQuiz.id === 'lor' ? 'LEGAL_NAME_FOR_LOR_' : 'INPUT_ENTITY_NAME_'}
+                className={`w-full bg-black/50 border-4 text-center text-white text-2xl py-4 focus:outline-none transition-colors font-black placeholder:text-zinc-600 uppercase shadow-[6px_6px_0_rgba(0,0,0,0.8)] transform -rotate-1 ${activeQuiz.id === 'lor' ? 'border-[#8b5a2b]/60 focus:border-[#e5c158] focus:shadow-[6px_6px_0_rgba(139,90,43,0.5)]' : 'border-zinc-700 focus:border-cyan-400 focus:shadow-[6px_6px_0_rgba(34,211,238,0.5)]'}`}
                 onKeyDown={(event) => {
                   if (event.key === 'Enter' && userName.trim()) handleStart();
                 }}
@@ -225,11 +237,12 @@ export default function NPCStatCardApp() {
               <button
                 onClick={handleStart}
                 disabled={!userName.trim()}
-                className="group relative w-full py-4 bg-cyan-500 text-black font-bold font-mono text-xl uppercase tracking-wider overflow-hidden rounded-sm hover:-translate-y-1 transition-transform disabled:opacity-50 disabled:hover:translate-y-0 disabled:cursor-not-allowed"
+                className={`group relative w-full py-5 text-black font-black text-2xl uppercase tracking-widest border-4 border-black shadow-[8px_8px_0_rgba(0,0,0,0.5)] hover:shadow-[4px_4px_0_rgba(0,0,0,0.5)] hover:translate-x-1 hover:translate-y-1 transition-all disabled:opacity-50 disabled:hover:translate-x-0 disabled:hover:translate-y-0 disabled:shadow-none sticker-card ${activeQuiz.id === 'lor' ? 'bg-[#e5c158] hover:bg-[#f5e6b8]' : 'bg-cyan-400'}`}
+                style={{ '--rot': '1' } as React.CSSProperties}
               >
                 <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:not-disabled:translate-y-0 transition-transform duration-300" />
                 <span className="relative flex items-center justify-center">
-                  Initialize Connect <ChevronRight className="ml-2 w-5 h-5 group-hover:not-disabled:translate-x-1 transition-transform" />
+                  {activeQuiz.id === 'lor' ? 'BEGIN EVALUATION' : 'EXECUTE'} <ChevronRight className="ml-2 w-6 h-6 group-hover:not-disabled:translate-x-2 transition-transform" />
                 </span>
               </button>
             </div>
@@ -238,7 +251,9 @@ export default function NPCStatCardApp() {
 
         {gameState === 'quiz' &&
           activeQuiz &&
-          (activeQuiz.type === 'rapid-fire' ? (
+          (activeQuiz.id === 'lor' ? (
+            <LorNegotiatorScreen key="lor-negotiator" userName={userName} onAnswer={handleAnswer} />
+          ) : activeQuiz.type === 'rapid-fire' ? (
             <RapidFireQuizScreen key={`rapid-fire-quiz-${currentQuestionIdx}`} question={activeQuiz.questions[currentQuestionIdx]} progress={(currentQuestionIdx / activeQuiz.questions.length) * 100} onAnswer={handleAnswer} />
           ) : activeQuiz.type === 'infinite' ? (
             <InfiniteQuizScreen key="infinite-quiz" questions={activeQuiz.questions} currentDepth={currentDepth} progress={Math.min(((currentDepth % 4) / 4) * 100, 100)} questionSeed={abyssQuestionSeed} onAnswer={handleAnswer} onStopDescending={handleStopDescending} />
