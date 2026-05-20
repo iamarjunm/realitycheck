@@ -49,16 +49,16 @@ export function QuizSelectScreen({ onSelect, onViewCollection }: { onSelect: (id
       <header className="sticky top-0 z-50 bg-zinc-950/80 backdrop-blur-md border-b border-zinc-800 px-6 py-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-xl sm:text-2xl font-black text-white tracking-tighter uppercase flex items-center gap-2">
-            <LayoutGrid className="w-5 h-5 text-cyan-500" />
-            THRIFTZ MARKETPLACE LLP
+            <LayoutGrid className="w-5 h-5 text-cyan-400" />
+            Reality Check
           </h1>
-          <p className="text-zinc-500 font-mono text-[10px] sm:text-xs mt-1 uppercase tracking-widest">
-            Internal Associate Portal // System Diagnostic
+          <p className="text-zinc-400 font-mono text-[10px] sm:text-xs mt-1 uppercase tracking-[0.28em]">
+            Weirdness index // choose your diagnosis
           </p>
         </div>
         <button
           onClick={onViewCollection}
-          className="flex items-center gap-2 px-4 py-2 bg-zinc-900 border border-zinc-700 hover:border-yellow-500/50 hover:bg-yellow-500/10 hover:text-yellow-400 text-zinc-400 text-xs font-mono font-bold uppercase transition-colors rounded-sm"
+          className="flex items-center gap-2 px-4 py-2 bg-zinc-900 border border-zinc-700 hover:border-cyan-400/50 hover:bg-cyan-400/10 hover:text-cyan-300 text-zinc-400 text-xs font-mono font-bold uppercase transition-colors rounded-sm"
         >
           <Archive className="w-4 h-4" />
           Access Locked Vault
@@ -67,10 +67,13 @@ export function QuizSelectScreen({ onSelect, onViewCollection }: { onSelect: (id
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-6 py-12">
-        <div className="mb-10 text-center sm:text-left">
-          <h2 className="text-3xl sm:text-4xl font-black text-white mb-3">Available Modules</h2>
-          <p className="text-zinc-400 font-mono text-sm max-w-2xl mx-auto sm:mx-0">
-            Select an assessment or diagnostic module below to begin evaluation. All responses are recorded for performance review purposes.
+        <div className="mb-10 text-center sm:text-left space-y-3">
+          <div className="inline-flex items-center gap-2 rounded-full border border-cyan-400/20 bg-cyan-400/10 px-3 py-1 text-[10px] font-mono uppercase tracking-[0.3em] text-cyan-300">
+            Reality Check
+          </div>
+          <h2 className="text-3xl sm:text-4xl font-black text-white mb-3">Pick your poison</h2>
+          <p className="text-zinc-400 font-mono text-sm max-w-2xl mx-auto sm:mx-0 leading-relaxed">
+            One clean entry point. Open the module and see what kind of chaos you actually are.
           </p>
         </div>
 
