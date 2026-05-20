@@ -287,20 +287,31 @@ export function LorNegotiatorScreen({
               </div>
 
               <div className="space-y-2 max-h-[40vh] overflow-y-auto pr-1">
-                {currentIntakeStep?.options.map((opt) => (
-                  <button
-                    key={opt.value}
-                    type="button"
-                    onClick={() => setIntakeDraft(opt.value)}
-                    className={`w-full text-left p-3 rounded border text-xs sm:text-sm transition-all ${
-                      intakeDraft === opt.value
-                        ? 'bg-[#8b5a2b]/20 border-[#8b5a2b] text-[#f5e6b8]'
-                        : 'bg-zinc-900 border-zinc-800 text-zinc-300 hover:border-[#8b5a2b]/50'
-                    }`}
-                  >
-                    {opt.label}
-                  </button>
-                ))}
+                {currentIntakeStep?.type === 'select' && (
+                  currentIntakeStep.options?.map((opt) => (
+                    <button
+                      key={opt.value}
+                      type="button"
+                      onClick={() => setIntakeDraft(opt.value)}
+                      className={`w-full text-left p-3 rounded border text-xs sm:text-sm transition-all ${
+                        intakeDraft === opt.value
+                          ? 'bg-[#8b5a2b]/20 border-[#8b5a2b] text-[#f5e6b8]'
+                          : 'bg-zinc-900 border-zinc-800 text-zinc-300 hover:border-[#8b5a2b]/50'
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))
+                )}
+
+                {currentIntakeStep?.type === 'text' && (
+                  <textarea
+                    value={intakeDraft}
+                    onChange={(e) => setIntakeDraft(e.target.value)}
+                    placeholder={(currentIntakeStep?.hint) ?? ''}
+                    className="w-full min-h-[120px] p-3 rounded border bg-zinc-900 border-zinc-800 text-sm text-zinc-200 resize-y focus:outline-none"
+                  />
+                )}
               </div>
 
               <div className="flex gap-2 pt-2">

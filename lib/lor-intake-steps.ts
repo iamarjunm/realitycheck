@@ -2,10 +2,10 @@ import type { LorIntakeAnswers } from './lor-session';
 
 export type IntakeStep = {
   id: keyof LorIntakeAnswers;
-  type: 'select';
+  type: 'select' | 'text';
   question: string;
   hint?: string;
-  options: { value: string; label: string }[];
+  options?: { value: string; label: string }[]; // present when type === 'select'
 };
 
 export const LOR_INTAKE_STEPS: IntakeStep[] = [
@@ -63,17 +63,9 @@ export const LOR_INTAKE_STEPS: IntakeStep[] = [
   },
   {
     id: 'biggestContribution',
-    type: 'select',
-    question: 'Your biggest contribution to Thriftz',
-    options: [
-      { value: 'shipped_product', label: 'Shipped a real feature / page / flow' },
-      { value: 'fixed_outage', label: 'Fixed a live bug or outage' },
-      { value: 'campus_growth', label: 'Grew campus reach / affiliates / partnerships' },
-      { value: 'design_brand', label: 'Levelled up brand / posters / content' },
-      { value: 'whatsapp_carry', label: 'Kept the WhatsApp group alive & unblocked people' },
-      { value: 'mentored', label: 'Helped other interns ship their work' },
-      { value: 'minimal', label: 'Honestly… not much concrete' },
-    ],
+    type: 'text',
+    question: 'In your own words, what was your biggest contribution to Thriftz? (1–3 sentences)',
+    hint: 'Describe the work and its impact. Be specific where possible (feature, metric, or outcome).',
   },
   {
     id: 'commitVolume',
@@ -150,49 +142,32 @@ export const LOR_INTAKE_STEPS: IntakeStep[] = [
   },
   {
     id: 'deservesMost',
-    type: 'select',
-    question: 'Who on the team deserves an LOR the MOST (besides yourself)?',
-    options: [
-      { value: 'dev_carry', label: 'The dev who actually shipped / fixed prod' },
-      { value: 'community_carry', label: 'The person who held WhatsApp & affiliates together' },
-      { value: 'marketing_carry', label: 'The person who drove outreach & content' },
-      { value: 'quiet_grinder', label: 'The quiet intern who did more than they advertised' },
-      { value: 'founder', label: 'Honestly? Arjun / the founders — they carried us' },
-      { value: 'nobody', label: 'Nobody — we were all equally chaotic' },
-    ],
+    type: 'text',
+    question: 'Name the person who deserves an LOR the MOST (besides yourself) and why',
+    hint: 'Include the person\'s name and a short reason (role or specific action).',
   },
   {
     id: 'doesNotDeserve',
-    type: 'select',
-    question: "Who does NOT deserve an LOR and why (in your honest opinion)?",
-    options: [
-      { value: 'ghost_intern', label: 'The ghost — barely showed up, zero output' },
-      { value: 'hype_only', label: 'The hype machine — all talk, no delivery' },
-      { value: 'whatsapp_only', label: 'Emoji-only energy — polls but no real work' },
-      { value: 'blame_shifter', label: 'Always had excuses, never owned mistakes' },
-      { value: 'myself', label: 'Me — I know my file is weak' },
-      { value: 'no_one', label: "No one — everyone tried in their own way" },
-    ],
+    type: 'text',
+    question: 'Who do you think does NOT deserve an LOR and why (honest opinion)',
+    hint: 'Name and short reason. Be concise but truthful.',
   },
   {
     id: 'sadMoment',
-    type: 'select',
-    question: 'A moment at Thriftz that made you sad, stressed, or not enjoy it',
-    options: [
-      { value: 'unpaid_burnout', label: 'Unpaid burnout — too much work, no compensation' },
-      { value: 'ignored_ideas', label: 'My ideas / work got ignored in the group chat' },
-      { value: 'prod_disaster', label: 'A production disaster I got blamed for' },
-      { value: 'team_drama', label: 'Team drama or tension in WhatsApp' },
-      { value: 'founder_chaos', label: 'Chaotic founder energy / unclear direction' },
-      { value: 'nothing_major', label: 'Nothing major — rough but fine overall' },
-    ],
+    type: 'text',
+    question: 'Describe one incident at Thriftz that upset you or that you didn\'t like (briefly)',
+    hint: 'A short description of the incident and why it affected you.',
   },
 ];
 
 export function getIntakeAnswerLabel(id: keyof LorIntakeAnswers, value: string): string {
   const step = LOR_INTAKE_STEPS.find((s) => s.id === id);
   if (!step) return value;
-  return step.options.find((o) => o.value === value)?.label ?? value;
+  if (step.type === 'select' && step.options) {
+    return step.options.find((o) => o.value === value)?.label ?? value;
+  }
+  // For text answers, return the raw user-provided value
+  return value;
 }
 
 export function intakeToQA(intake: LorIntakeAnswers): { question: string; answer: string }[] {
