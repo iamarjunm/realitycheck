@@ -20,102 +20,151 @@ const getTimestamp = () => {
 
 const SCENARIOS = [
   {
-    reply: "yeah that sounds cool.",
-    delay: 2000,
-    options: ["did you want to go together?", "i've been meaning to check it out"],
+    reply: "oh wait, is that this friday?",
+    delay: 2500,
+    options: [
+      "yeah, remember we talked about it?", 
+      "did you forget?", 
+      "yeah. you still down?", 
+      "if you're too busy it's fine"
+    ],
   },
   {
-    reply: "maybe. i've been pretty busy lately tbh",
-    delay: 4000,
-    options: ["no worries, another time maybe?", "busy with what?"],
+    reply: "yeah no im down. just been a crazy week tbh",
+    delay: 4500,
+    options: [
+      "we can just chill instead if you want?", 
+      "everything okay?", 
+      "okay, but are we still going?", 
+      "i kind of figured"
+    ],
   },
   {
-    reply: "work mostly. you know how it is",
-    delay: 2000,
-    options: ["yeah totally get it.", "are we still good?"],
-  },
-  {
-    reply: "yeah of course, why wouldn't we be?",
-    delay: 5000,
-    options: ["idk, you just seem distant.", "just checking."],
-  },
-  {
-    reply: "im just not great at texting",
+    reply: "idk. let me check my schedule and let you know",
     delay: 3000,
-    options: ["we could call?", "it didn't use to be like this"],
+    options: [
+      "alright, let me know.", 
+      "when will you know?", 
+      "how do you not know your schedule for tomorrow?", 
+      "okay."
+    ],
   },
   {
-    reply: "can we talk about this later? im out with people",
-    delay: 5000,
-    options: ["oh. have fun.", "who are you out with?"],
+    reply: "prob soon. dont wait up for me though",
+    delay: 3500,
+    options: [
+      "so that's a no.", 
+      "what does that mean?", 
+      "can you just give me a straight answer?", 
+      "fine."
+    ],
   },
   {
-    reply: "just friends. chill",
-    delay: 1500,
-    options: ["im chill. text me tomorrow.", "whatever."],
-  },
-  {
-    reply: "lol ok.",
+    reply: "dude why are you being so intense",
     delay: 2000,
-    systemBeforeNext: "14 HOURS LATER",
-    options: ["hey, thinking about last night..."],
+    options: [
+      "im not being intense, i just want an answer", 
+      "im sorry.", 
+      "wow.", 
+      "nevermind."
+    ],
   },
   {
-    reply: "i miss you",
-    delay: 1500,
-    options: ["i miss you too", "where is this coming from?"],
+    reply: "it's fine. we're fine. i just need space rn",
+    delay: 5000,
+    options: [
+      "space from what? we barely talk", 
+      "okay.", 
+      "i'll leave you alone then.", 
+      "did i do something wrong?"
+    ],
   },
   {
-    reply: "just been thinking about us. you're too good for me",
+    reply: "you didn't do anything. it's me",
     delay: 4000,
-    options: ["don't say that.", "what does that mean?"],
+    systemBeforeNext: "2 DAYS LATER",
+    options: [
+      "hey.", 
+      "how are you?", 
+      "are we ever going to talk again?", 
+      "i miss you."
+    ],
   },
   {
-    reply: "i just don't know what i want right now.",
+    reply: "hey. miss u too. just going thru a lot",
     delay: 3000,
-    options: ["what are we doing then?", "i can wait for you."],
+    options: [
+      "i'm here for you, you know.", 
+      "can i see you?", 
+      "are we okay?", 
+      "i just want to understand."
+    ],
   },
   {
-    reply: "you shouldn't wait for me.",
+    reply: "i know. i just can't be what you need me to be right now",
+    delay: 3500,
+    options: [
+      "i'm not asking for much", 
+      "what do i need then?", 
+      "so this is it?", 
+      "please don't do this."
+    ],
+  },
+  {
+    reply: "i just think we're on different pages",
+    delay: 2500,
+    options: [
+      "we don't have to be.", 
+      "okay.", 
+      "what page are you on?",
+      "are you kidding me?"
+    ],
+  },
+  {
+    reply: "i dont want to hurt you",
     delay: 4000,
-    options: ["do you want me to leave you alone?", "i care about you."],
+    options: [
+      "you're hurting me right now.", 
+      "you won't.", 
+      "just tell me the truth.",
+      "too late."
+    ],
   },
   {
-    reply: "i care about you too. im just confused",
+    reply: "the truth is i like you, i just don't want a relationship",
     delay: 5000,
-    systemBeforeNext: "NEXT THURSDAY, 2:14 PM",
-    options: ["hey, are we still hanging out later?", "can we talk?"],
+    options: [
+      "that's not what you said a month ago.", 
+      "i'm not asking for a relationship.", 
+      "so what was all of this?", 
+      "i feel so stupid."
+    ],
   },
   {
-    reply: "cant tonight, something came up",
-    delay: 6000,
-    options: ["again?", "ok let me know when you're free."],
-  },
-  {
-    reply: "what? no. just busy.", 
-    delay: 8000,
-    options: ["it takes 2 seconds to text back."],
-  },
-  {
-    reply: "wow ok. if you're gonna be like that",
-    delay: 2000,
-    options: ["im sorry.", "wow what?"],
-  },
-  {
-    reply: "i dont want to do this right now",
+    reply: "im sorry. you're amazing, really.",
     delay: 3000,
     systemBeforeNext: "DELIVERED",
-    options: ["do what?", "please talk to me."],
+    options: [
+      "don't do that. don't pity me.", 
+      "please, can we just talk in person?", 
+      "so what, we just never speak again?", 
+      "i hate this."
+    ],
   },
   {
     reply: "...", 
-    delay: 10000,
+    delay: 8000,
     systemBeforeNext: "READ",
-    options: ["hello?", "are you ignoring me?"]
+    options: [
+      "hello?", 
+      "are you seriously just going to read this?", 
+      "say something.", 
+      "coward."
+    ]
   },
   {
     reply: "...", 
-    delay: 20000,
+    delay: 15000,
     options: ["?"]
   }
 ];
@@ -224,7 +273,7 @@ export function Situationship() {
         {/* Chat Area */}
         <div 
           ref={chatRef}
-          className="flex-grow p-4 overflow-y-auto space-y-4 scbar-hide bg-white will-change-scroll relative"
+          className="flex-grow min-h-0 p-4 overflow-y-auto space-y-4 scbar-hide bg-white will-change-scroll relative"
         >
           <AnimatePresence initial={false}>
             {messages.map((ms, i) => {
@@ -309,15 +358,15 @@ export function Situationship() {
         </div>
 
         {/* Input Area */}
-        <div className="p-4 bg-zinc-50 border-t border-zinc-200 relative overflow-hidden">
-          {chaos > 0.6 && <div className="absolute inset-0 bg-red-500/5 mix-blend-color-burn" />}
+        <div className="p-4 bg-zinc-50 border-t border-zinc-200 relative shrink-0">
+          {chaos > 0.6 && <div className="absolute inset-0 bg-red-500/5 mix-blend-color-burn pointer-events-none" />}
           <AnimatePresence mode="popLayout">
             {!isThemTyping && !ended ? (
               <motion.div 
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 20 }}
-                className="flex flex-col gap-2 relative z-10"
+                className="flex flex-col gap-2 relative z-10 max-h-[40vh] overflow-y-auto scbar-hide"
               >
                 <div className="text-[10px] text-zinc-400 uppercase tracking-widest text-center mb-1">Choose your response</div>
                 {SCENARIOS[scenarioIndex]?.options.map((opt, i) => (
@@ -326,7 +375,7 @@ export function Situationship() {
                     onClick={() => handleSend(opt)}
                     className="w-full text-left px-5 py-3.5 rounded-2xl bg-white border border-blue-500/20 hover:border-blue-500 hover:bg-blue-50 text-blue-600 font-medium text-[15px] transition-all shadow-sm active:scale-[0.98] outline-none hover:shadow-md"
                     style={{
-                       transform: chaos > 0.8 && Math.random() > 0.5 ? `translate(${(Math.random() - 0.5) * 5}px, ${(Math.random() - 0.5) * 5}px)` : 'none'
+                       transform: chaos > 0.8 ? `translate(${i === 0 ? '-1px' : '1px'}, ${i === 0 ? '1px' : '-1px'})` : 'none'
                     }}
                   >
                     {opt}
