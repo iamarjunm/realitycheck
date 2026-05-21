@@ -18,6 +18,7 @@ export function TypingTest() {
   const [startTime, setStartTime] = useState<number | null>(null);
   const [shake, setShake] = useState(false);
   const [stress, setStress] = useState(0);
+  const [showCollectibleCard, setShowCollectibleCard] = useState(false);
 
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
@@ -37,6 +38,19 @@ export function TypingTest() {
     }
     return () => clearInterval(interval);
   }, [phase, lastKeystrokeTime]);
+
+  useEffect(() => {
+    let cardTimer: ReturnType<typeof setTimeout> | undefined;
+    if (phase === 'result') {
+      setShowCollectibleCard(false);
+      cardTimer = setTimeout(() => setShowCollectibleCard(true), 2800);
+    } else {
+      setShowCollectibleCard(false);
+    }
+    return () => {
+      if (cardTimer) clearTimeout(cardTimer);
+    };
+  }, [phase]);
 
   useEffect(() => {
     if (phase === 'typing' || phase === 'judging') {
@@ -149,6 +163,7 @@ export function TypingTest() {
                 setStress(0);
                 setStartTime(null);
                 setLastKeystrokeTime(0);
+                setShowCollectibleCard(false);
               }}
               className="px-8 py-4 bg-black text-white rounded-none font-bold hover:bg-zinc-800 transition-colors uppercase tracking-widest text-xs"
             >
@@ -282,6 +297,53 @@ export function TypingTest() {
                 </p>
               </div>
             </div>
+
+            <AnimatePresence>
+              {showCollectibleCard && (
+                <motion.div
+                  initial={{ opacity: 0, y: 30, scale: 0.85, rotate: -12, filter: 'blur(14px)' }}
+                  animate={{ opacity: 1, y: 0, scale: 1, rotate: 0, filter: 'blur(0px)' }}
+                  exit={{ opacity: 0, y: -20, scale: 1.05 }}
+                  transition={{ duration: 0.9, ease: 'easeOut' }}
+                  className="mt-8 w-full max-w-md"
+                >
+                  <motion.div
+                    className="relative overflow-hidden rounded-[1.75rem] border border-fuchsia-400/50 bg-gradient-to-br from-fuchsia-950 via-zinc-950 to-black p-5 shadow-[0_0_60px_rgba(217,70,239,0.3)]"
+                    animate={{ rotate: [-1, 1, -1], y: [0, -6, 0] }}
+                    transition={{ repeat: Infinity, duration: 3.6, ease: 'easeInOut' }}
+                  >
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.16),transparent_45%)] opacity-90" />
+                    <div className="absolute inset-0 bg-[linear-gradient(135deg,transparent_0%,rgba(255,255,255,0.22)_48%,transparent_52%)] bg-[length:240%_100%] animate-[shine_2.4s_linear_infinite] opacity-70" />
+                    <div className="relative z-10">
+                      <div className="flex items-center justify-between text-[10px] font-mono uppercase tracking-[0.35em] text-fuchsia-100/70">
+                        <span>Collectible Card</span>
+                        <span>WPM ARCHIVE</span>
+                      </div>
+                      <div className="mt-4 flex items-end justify-between gap-4">
+                        <div>
+                          <div className="text-5xl font-black tracking-tighter text-white">{wpm || '--'}</div>
+                          <div className="text-xs font-mono uppercase tracking-[0.3em] text-fuchsia-200/70">Words per minute</div>
+                        </div>
+                        <div className="text-right text-fuchsia-100/70 text-xs font-mono uppercase tracking-widest">
+                          <div>hesitation {hesitationCount}</div>
+                          <div>errors {backspaces}</div>
+                        </div>
+                      </div>
+                      <div className="mt-5 h-24 rounded-2xl border border-white/10 bg-white/5 relative overflow-hidden">
+                        <motion.div
+                          className="absolute inset-y-3 left-3 right-3 rounded-xl bg-gradient-to-r from-cyan-400 via-white to-fuchsia-400 opacity-70"
+                          animate={{ x: ['-35%', '35%', '-35%'] }}
+                          transition={{ repeat: Infinity, duration: 2.8, ease: 'linear' }}
+                        />
+                        <div className="absolute inset-0 grid place-items-center text-center text-xs font-mono uppercase tracking-[0.4em] text-white/70">
+                          You type like you are trying not to be seen.
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             <button
               onClick={() => setPhase('intro')}

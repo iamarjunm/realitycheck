@@ -15,6 +15,7 @@ export function Profiler({ setActiveTab }: { setActiveTab?: (tab: 'profiler' | '
   const [startTime] = useState(Date.now());
   const [selectionCount, setSelectionCount] = useState(0);
   const [resultStep, setResultStep] = useState(0);
+  const [showCollectibleCard, setShowCollectibleCard] = useState(false);
   const [traumaValue, setTraumaValue] = useState(0);
   const [impressName, setImpressName] = useState('');
   const [shakeInt, setShakeInt] = useState(0);
@@ -84,11 +85,13 @@ export function Profiler({ setActiveTab }: { setActiveTab?: (tab: 'profiler' | '
 
   useEffect(() => {
     if (phase === 'result') {
+      setShowCollectibleCard(false);
       const t1 = setTimeout(() => setResultStep(1), 4000);
       const t2 = setTimeout(() => setResultStep(2), 8500);
       const t3 = setTimeout(() => setResultStep(3), 13000);
       const t4 = setTimeout(() => setResultStep(4), 16000);
-      return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); clearTimeout(t4); };
+      const t5 = setTimeout(() => setResultStep(5), 20500);
+      return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); clearTimeout(t4); clearTimeout(t5); };
     }
   }, [phase]);
 
@@ -593,7 +596,53 @@ export function Profiler({ setActiveTab }: { setActiveTab?: (tab: 'profiler' | '
                 </motion.div>
               )}
               
-              {resultStep >= 4 && (
+              {resultStep === 4 && (
+                <motion.div
+                  key="card"
+                  initial={{ opacity: 0, scale: 0.7, rotateX: 70, rotateZ: -10, filter: 'blur(16px)' }}
+                  animate={{ opacity: 1, scale: 1, rotateX: 0, rotateZ: 0, filter: 'blur(0px)' }}
+                  transition={{ duration: 1.2, ease: 'easeOut' }}
+                  className="relative w-full max-w-[460px] px-4"
+                >
+                  <motion.div
+                    className="absolute inset-0 rounded-[2rem] bg-cyan-500/20 blur-3xl"
+                    animate={{ scale: [0.9, 1.05, 0.92], opacity: [0.6, 1, 0.7] }}
+                    transition={{ repeat: Infinity, duration: 3.5 }}
+                  />
+                  <motion.div
+                    className="relative overflow-hidden rounded-[2rem] border border-cyan-300/50 bg-[#04131a] p-6 text-left shadow-[0_0_60px_rgba(34,211,238,0.28)]"
+                    animate={{ rotate: [-1.5, 1.5, -1.5], y: [0, -4, 0] }}
+                    transition={{ repeat: Infinity, duration: 4.5, ease: 'easeInOut' }}
+                  >
+                    <div className="absolute inset-0 opacity-20 bg-[linear-gradient(115deg,transparent_0%,rgba(255,255,255,0.18)_45%,transparent_55%)] bg-[length:220%_100%] animate-[shine_3s_linear_infinite]" />
+                    <div className="relative z-10">
+                      <div className="flex items-center justify-between mb-4">
+                        <span className="text-[10px] font-mono tracking-[0.35em] uppercase text-cyan-200/70">Collectible Dossier</span>
+                        <span className="text-[10px] font-mono tracking-widest text-cyan-100/60">RC-OBS-014</span>
+                      </div>
+                      <div className="flex items-center gap-4 mb-5">
+                        <div className="w-20 h-20 rounded-full border border-cyan-300/50 bg-cyan-400/10 flex items-center justify-center shadow-[0_0_30px_rgba(34,211,238,0.25)]">
+                          <div className="w-10 h-10 rounded-full border-4 border-cyan-300 animate-pulse" />
+                        </div>
+                        <div>
+                          <div className="text-cyan-100 text-2xl font-black tracking-tight uppercase">KINETIC PARANOIA</div>
+                          <div className="text-cyan-200/60 text-xs font-mono uppercase tracking-[0.25em]">Archived motion signature</div>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-3 text-xs font-mono uppercase tracking-widest">
+                        <div className="rounded-xl border border-cyan-300/20 bg-black/30 p-3 text-cyan-100">Hesitation {mouseData.hesitation * 250}ms</div>
+                        <div className="rounded-xl border border-cyan-300/20 bg-black/30 p-3 text-cyan-100">Escapes {tabSwitches}</div>
+                        <div className="rounded-xl border border-cyan-300/20 bg-black/30 p-3 text-cyan-100 col-span-2">Trajectory points {trajectory.length}</div>
+                      </div>
+                      <p className="mt-5 text-sm text-cyan-50/80 leading-relaxed font-serif italic">
+                        You do not enter a room. You arrive as a pattern, and the pattern was already tracked.
+                      </p>
+                    </div>
+                  </motion.div>
+                </motion.div>
+              )}
+
+              {resultStep >= 5 && (
                 <motion.div
                   key="menu"
                   initial={{ opacity: 0 }}

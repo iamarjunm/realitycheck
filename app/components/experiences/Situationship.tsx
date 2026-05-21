@@ -177,6 +177,7 @@ export function Situationship() {
   const [scenarioIndex, setScenarioIndex] = useState(0);
   const [isThemTyping, setIsThemTyping] = useState(false);
   const [ended, setEnded] = useState(false);
+  const [showCollectibleCard, setShowCollectibleCard] = useState(false);
   const [chaos, setChaos] = useState(0);
   const chatRef = useRef<HTMLDivElement>(null);
 
@@ -189,6 +190,19 @@ export function Situationship() {
   useEffect(() => {
     setChaos(scenarioIndex / SCENARIOS.length);
   }, [scenarioIndex]);
+
+  useEffect(() => {
+    let cardTimer: ReturnType<typeof setTimeout> | undefined;
+    if (ended) {
+      setShowCollectibleCard(false);
+      cardTimer = setTimeout(() => setShowCollectibleCard(true), 2600);
+    } else {
+      setShowCollectibleCard(false);
+    }
+    return () => {
+      if (cardTimer) clearTimeout(cardTimer);
+    };
+  }, [ended]);
 
   const handleSend = (text: string) => {
     if (ended) return;
@@ -246,7 +260,7 @@ export function Situationship() {
 
       <div className="text-center mb-6 max-w-lg relative z-20">
         <h2 className="text-3xl font-bold tracking-tight text-black">The Situationship Simulator</h2>
-        <p className="text-zinc-500 mt-2 text-sm">Hyper-realistic modern intimacy. No matter what you choose, they slip away.</p>
+        <p className="text-zinc-500 mt-2 text-sm">A conversation that feels normal right up until it doesn’t.</p>
       </div>
 
       <div 
@@ -347,6 +361,43 @@ export function Situationship() {
                <div className="px-4 py-2 bg-zinc-100 text-zinc-500 text-xs rounded-lg max-w-[200px] mt-4 font-mono">
                  Simulation complete. The outcome is always the same.
                </div>
+               <AnimatePresence>
+                 {showCollectibleCard && (
+                   <motion.div
+                     initial={{ opacity: 0, y: 30, scale: 0.75, rotate: 14, filter: 'blur(12px)' }}
+                     animate={{ opacity: 1, y: 0, scale: 1, rotate: 0, filter: 'blur(0px)' }}
+                     exit={{ opacity: 0, scale: 1.05, y: -20 }}
+                     transition={{ duration: 0.8, ease: 'easeOut' }}
+                     className="mt-6 w-full max-w-[240px]"
+                   >
+                     <motion.div
+                       className="relative overflow-hidden rounded-[1.75rem] border border-blue-400/40 bg-white shadow-[0_0_50px_rgba(59,130,246,0.25)] p-4"
+                       animate={{ rotate: [-3, 3, -3], y: [0, -4, 0] }}
+                       transition={{ repeat: Infinity, duration: 4, ease: 'easeInOut' }}
+                     >
+                       <div className="absolute inset-0 bg-[linear-gradient(115deg,transparent_0%,rgba(255,255,255,0.6)_45%,transparent_55%)] bg-[length:220%_100%] animate-[shine_2.8s_linear_infinite] opacity-70" />
+                       <div className="relative z-10">
+                         <div className="flex items-center justify-between text-[9px] font-mono uppercase tracking-[0.35em] text-blue-500/70">
+                           <span>Collectible</span>
+                           <span>ghosted</span>
+                         </div>
+                         <div className="mt-3 flex items-center gap-3">
+                           <div className="w-11 h-11 rounded-full bg-gradient-to-tr from-zinc-200 to-zinc-300 flex items-center justify-center border border-zinc-200">
+                             <span className="text-zinc-500 text-lg font-black">?</span>
+                           </div>
+                           <div>
+                             <div className="text-lg font-black tracking-tight text-black">READ RECEIPT</div>
+                             <div className="text-[10px] font-mono uppercase tracking-[0.25em] text-zinc-500">not returned</div>
+                           </div>
+                         </div>
+                         <div className="mt-4 rounded-2xl border border-blue-200 bg-blue-50 p-3 text-[11px] text-blue-700 font-mono uppercase tracking-[0.25em]">
+                           You kept the thread alive longer than it deserved.
+                         </div>
+                       </div>
+                     </motion.div>
+                   </motion.div>
+                 )}
+               </AnimatePresence>
                <button 
                  onClick={() => window.location.reload()}
                  className="mt-6 text-sm text-blue-500 font-medium hover:underline"
