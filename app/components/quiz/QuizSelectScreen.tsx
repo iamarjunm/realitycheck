@@ -2,12 +2,12 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ChevronRight, Archive, Briefcase, Flame, List, LayoutGrid, Terminal, Lock, FileText, Shield, MessageSquare } from 'lucide-react';
+import { ChevronRight, Archive, Briefcase, Flame, List, LayoutGrid, Terminal, Lock, FileText, Shield, MessageSquare, Radar, FlaskConical, Ghost, Brain, MessageCircleHeart } from 'lucide-react';
 import { QUIZZES } from '../../../lib/quizzes';
 
 const LOR_UNLOCK_KEY = 'thriftz_lor_unlocked';
 
-export function QuizSelectScreen({ onSelect, onViewCollection }: { onSelect: (id: string) => void; onViewCollection: () => void }) {
+export function QuizSelectScreen({ onSelect, onViewCollection, onOpenExperiments }: { onSelect: (id: string) => void; onViewCollection: () => void; onOpenExperiments: () => void }) {
   const visibleQuizzes = QUIZZES.filter((quiz) => !quiz.hidden);
   const [lorPasswordOpen, setLorPasswordOpen] = useState(false);
   const [lorPasswordInput, setLorPasswordInput] = useState('');
@@ -77,11 +77,41 @@ export function QuizSelectScreen({ onSelect, onViewCollection }: { onSelect: (id
           </p>
         </div>
 
+        <motion.button
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.08 }}
+          onClick={onOpenExperiments}
+          className="group w-full mb-8 text-left rounded-lg border border-fuchsia-500/30 bg-gradient-to-r from-fuchsia-900/20 to-zinc-900/50 p-4 hover:border-fuchsia-300 hover:shadow-[0_0_24px_rgba(217,70,239,0.2)] transition-all"
+        >
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <div className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-[0.25em] text-fuchsia-300 mb-2">
+                <FlaskConical className="w-3.5 h-3.5" />
+                Experiments Preview
+              </div>
+              <h3 className="text-lg sm:text-xl font-black text-white tracking-tight">The Weird Lab Is Open</h3>
+              <p className="text-zinc-300 text-sm mt-1 max-w-2xl">
+                Profiler, Typing Test, 3 AM Brain, and Situationship simulator in one parallel module.
+              </p>
+              <div className="mt-3 flex flex-wrap gap-2 text-[10px] font-mono uppercase tracking-wider">
+                <span className="px-2 py-1 rounded border border-fuchsia-400/30 text-fuchsia-200 inline-flex items-center gap-1"><Ghost className="w-3 h-3" />Profiler</span>
+                <span className="px-2 py-1 rounded border border-fuchsia-400/30 text-fuchsia-200 inline-flex items-center gap-1"><Brain className="w-3 h-3" />3 AM Brain</span>
+                <span className="px-2 py-1 rounded border border-fuchsia-400/30 text-fuchsia-200 inline-flex items-center gap-1"><MessageCircleHeart className="w-3 h-3" />Situationship</span>
+              </div>
+            </div>
+            <div className="text-fuchsia-300 group-hover:text-fuchsia-100 transition-colors flex items-center">
+              <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            </div>
+          </div>
+        </motion.button>
+
         {/* Grid Layout */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {visibleQuizzes.map((quiz, i) => {
             const isRoast = quiz.id === 'roast';
             const isLor = quiz.id === 'lor';
+            const isProfile = quiz.id === 'website_knows';
 
             return (
               <motion.div
@@ -91,6 +121,7 @@ export function QuizSelectScreen({ onSelect, onViewCollection }: { onSelect: (id
                 transition={{ delay: i * 0.1 }}
                 className={`group relative flex flex-col border p-6 rounded-lg transition-all cursor-pointer overflow-hidden ${
                   isLor ? 'lor-select-card border-[#8b5a2b]/50 hover:border-[#e5c158] hover:shadow-[0_0_30px_rgba(139,90,43,0.25)] min-h-[280px]' :
+                  isProfile ? 'bg-slate-950/70 border-cyan-500/30 hover:border-cyan-300 hover:shadow-[0_0_20px_rgba(34,211,238,0.18)]' :
                   isRoast ? 'bg-zinc-900/50 border-orange-500/30 hover:border-orange-500 hover:shadow-[0_0_20px_rgba(234,88,12,0.15)]' : 
                   'bg-zinc-900/50 border-zinc-800 hover:border-cyan-500 hover:shadow-[0_0_20px_rgba(34,211,238,0.15)]'
                 }`}
@@ -99,6 +130,7 @@ export function QuizSelectScreen({ onSelect, onViewCollection }: { onSelect: (id
                 {/* Background Glow */}
                 <div className={`absolute -inset-24 bg-gradient-to-tr ${
                   isLor ? 'from-[#8b5a2b]/20' :
+                  isProfile ? 'from-cyan-400/10' :
                   isRoast ? 'from-orange-500/10' : 
                   'from-cyan-500/10'
                 } to-transparent opacity-0 group-hover:opacity-100 transition-opacity blur-2xl z-0 pointer-events-none`} />
@@ -114,10 +146,11 @@ export function QuizSelectScreen({ onSelect, onViewCollection }: { onSelect: (id
                   <div className="flex items-start justify-between mb-4">
                     <div className={`p-3 rounded-md transition-colors ${
                       isLor ? 'bg-[#8b5a2b]/10 text-[#8b5a2b] group-hover:bg-[#8b5a2b]/20' :
+                      isProfile ? 'bg-cyan-400/10 text-cyan-300 group-hover:bg-cyan-400/20' :
                       isRoast ? 'bg-orange-500/10 text-orange-400 group-hover:bg-orange-500/20' : 
                       'bg-cyan-500/10 text-cyan-400 group-hover:bg-cyan-500/20'
                     }`}>
-                      {isLor ? <Briefcase className="w-5 h-5" /> : isRoast ? <Flame className="w-5 h-5" /> : <List className="w-5 h-5" />}
+                      {isLor ? <Briefcase className="w-5 h-5" /> : isProfile ? <Radar className="w-5 h-5" /> : isRoast ? <Flame className="w-5 h-5" /> : <List className="w-5 h-5" />}
                     </div>
                     <span className="font-mono text-[10px] text-zinc-600 group-hover:text-zinc-400 transition-colors uppercase tracking-widest">
                       ID: {quiz.id.substring(0,6)}
@@ -126,6 +159,7 @@ export function QuizSelectScreen({ onSelect, onViewCollection }: { onSelect: (id
 
                   <h3 className={`text-xl font-black mb-1 uppercase tracking-tight transition-colors ${
                     isLor ? 'text-[#e5c158] group-hover:text-amber-400' :
+                    isProfile ? 'text-cyan-200 group-hover:text-cyan-100' :
                     isRoast ? 'text-orange-200 group-hover:text-orange-300' : 
                     'text-zinc-100 group-hover:text-cyan-400'
                   }`}>
@@ -134,6 +168,7 @@ export function QuizSelectScreen({ onSelect, onViewCollection }: { onSelect: (id
                   
                   <p className={`text-xs font-mono uppercase tracking-widest mb-4 border-b pb-3 ${
                     isLor ? 'text-[#a27b5c] border-[#8b5a2b]/20' :
+                    isProfile ? 'text-cyan-300/80 border-cyan-500/20' :
                     isRoast ? 'text-orange-400/80 border-orange-900/30' : 
                     'text-cyan-600 border-zinc-800'
                   }`}>
@@ -161,8 +196,16 @@ export function QuizSelectScreen({ onSelect, onViewCollection }: { onSelect: (id
                     </div>
                   )}
 
+                  {isProfile && (
+                    <div className="grid grid-cols-2 gap-2 mb-4 font-mono text-[9px] uppercase">
+                      <div className="bg-black/40 border border-cyan-400/20 rounded p-2 text-center text-cyan-200">Direct Link Ready</div>
+                      <div className="bg-black/40 border border-cyan-400/20 rounded p-2 text-center text-cyan-200">Telemetry On</div>
+                    </div>
+                  )}
+
                   <div className={`mt-auto pt-4 border-t flex items-center justify-between text-xs font-black uppercase transition-colors ${
                     isLor ? 'border-[#8b5a2b]/20 text-[#a27b5c] group-hover:text-[#8b5a2b]' :
+                    isProfile ? 'border-cyan-500/20 text-cyan-300/80 group-hover:text-cyan-200' :
                     isRoast ? 'border-orange-500/20 text-orange-500/70 group-hover:text-orange-400' : 
                     'border-zinc-800 text-zinc-500 group-hover:text-cyan-400'
                   }`}>

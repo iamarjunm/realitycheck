@@ -32,7 +32,7 @@ export interface QuizDef {
   description: string;
   roles: Record<string, RoleDef>;
   questions: Question[];
-  type?: 'standard' | 'rapid-fire' | 'trick' | 'infinite';
+  type?: 'standard' | 'rapid-fire' | 'trick' | 'infinite' | 'profile';
   hidden?: boolean;
   password?: string;
 }

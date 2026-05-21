@@ -845,5 +845,5 @@ export const QUIZZES: QuizDef[] = [
       }
     },
     questions: []
-  }
+  },
 ]

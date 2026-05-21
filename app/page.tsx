@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'motion/react';
 import { ChevronRight, AlertTriangle, List } from 'lucide-react';
 import { QUIZZES } from '../lib/quizzes';
@@ -19,6 +20,7 @@ import {
 } from './components/quiz-screens';
 
 export default function NPCStatCardApp() {
+  const router = useRouter();
   const [gameState, setGameState] = useState<'select' | 'intro' | 'quiz' | 'calculating' | 'result' | 'collection'>('select');
   const [activeQuizId, setActiveQuizId] = useState<string | null>(null);
   const [currentQuestionIdx, setCurrentQuestionIdx] = useState(0);
@@ -31,9 +33,9 @@ export default function NPCStatCardApp() {
 
   const activeQuiz = QUIZZES.find((quiz) => quiz.id === activeQuizId);
 
-  const selectQuiz = (id: string) => {
+  const selectQuiz = (id: string, options?: { force?: boolean }) => {
     let finalId = id;
-    if (Math.random() < 0.15 && id !== 'trick') {
+    if (!options?.force && Math.random() < 0.15 && id !== 'trick') {
       finalId = 'trick';
     }
 
@@ -57,6 +59,15 @@ export default function NPCStatCardApp() {
     setGameState('intro');
   };
 
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const quizId = params.get('quiz');
+    if (!quizId || gameState !== 'select') return;
+    const directQuiz = QUIZZES.find((quiz) => quiz.id === quizId);
+    if (!directQuiz) return;
+    selectQuiz(quizId, { force: true });
+  }, [gameState]);
+
   const handleStart = () => {
     if (!userName.trim()) return;
     if (activeQuizId === 'lor') clearLorSession();
@@ -79,6 +90,7 @@ export default function NPCStatCardApp() {
     setScores((previousScores) => {
       const updatedScores = { ...previousScores };
       for (const [role, pointsValue] of Object.entries(points)) {
+        if (role.startsWith('__')) continue;
         if (updatedScores[role] !== undefined) updatedScores[role] += pointsValue;
         else updatedScores[role] = pointsValue;
       }
@@ -194,7 +206,14 @@ export default function NPCStatCardApp() {
       )}
 
       <AnimatePresence mode="wait">
-        {gameState === 'select' && <QuizSelectScreen key="select" onSelect={selectQuiz} onViewCollection={() => setGameState('collection')} />}
+        {gameState === 'select' && (
+          <QuizSelectScreen
+            key="select"
+            onSelect={selectQuiz}
+            onViewCollection={() => setGameState('collection')}
+            onOpenExperiments={() => router.push('/experiences')}
+          />
+        )}
 
         {gameState === 'collection' && <CollectionScreen key="collection" />}
 
@@ -257,6 +276,8 @@ export default function NPCStatCardApp() {
             <RapidFireQuizScreen key={`rapid-fire-quiz-${currentQuestionIdx}`} question={activeQuiz.questions[currentQuestionIdx]} progress={(currentQuestionIdx / activeQuiz.questions.length) * 100} onAnswer={handleAnswer} />
           ) : activeQuiz.type === 'infinite' ? (
             <InfiniteQuizScreen key="infinite-quiz" questions={activeQuiz.questions} currentDepth={currentDepth} progress={Math.min(((currentDepth % 4) / 4) * 100, 100)} questionSeed={abyssQuestionSeed} onAnswer={handleAnswer} onStopDescending={handleStopDescending} />
+          ) : activeQuiz.type === 'profile' ? (
+            <WebsiteKnowsTooMuchScreen key={`profile-quiz-${currentQuestionIdx}`} question={activeQuiz.questions[currentQuestionIdx]} progress={(currentQuestionIdx / activeQuiz.questions.length) * 100} onAnswer={handleAnswer} />
           ) : activeQuiz.type === 'trick' ? (
             <TrickQuizScreen key={`trick-quiz-${currentQuestionIdx}`} question={activeQuiz.questions[currentQuestionIdx]} progress={(currentQuestionIdx / activeQuiz.questions.length) * 100} onAnswer={handleAnswer} />
           ) : (
