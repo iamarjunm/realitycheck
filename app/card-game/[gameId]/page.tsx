@@ -120,6 +120,12 @@ export default function GameRoom() {
     return () => unsub();
   }, [gameId, loading]);
 
+  useEffect(() => {
+    if (game?.currentTurn === 'betting' && game.player1Bet === null && game.player2Bet === null) {
+      setMyBet(0);
+    }
+  }, [game?.currentTurn, game?.player1Bet, game?.player2Bet]);
+
   const toggleSelectedCard = (card: string) => {
     setSelectedCards(previous => {
       if (previous.includes(card)) {
@@ -236,6 +242,8 @@ export default function GameRoom() {
         ...updates,
         player1Tokens: p1Tokens,
         player2Tokens: p2Tokens,
+        player1Bet: null,
+        player2Bet: null,
         currentTurn: newTurn,
         activePlayerId,
         roundWinner: p1b > p2b ? game.player1 : p2b > p1b ? game.player2 : 'tie',
