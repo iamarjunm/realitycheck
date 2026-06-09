@@ -1,9 +1,9 @@
 "use client"
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { db, auth } from '@/lib/firebase';
-import { doc, onSnapshot, updateDoc, arrayUnion } from 'firebase/firestore';
+import { doc, onSnapshot, updateDoc, arrayUnion, deleteDoc } from 'firebase/firestore';
 import { AnimatePresence, motion } from 'motion/react';
 import { Crosshair, UserRound, ArrowRight, ShieldAlert, Info, X, Zap } from 'lucide-react';
 import { playSound } from '@/lib/sounds';
@@ -164,11 +164,12 @@ type GameData = {
   winner: string | null;
   handWinners: string[];
   latestReaction?: { uid: string, r: string, ts: number } | null;
+    turnEndsAt?: number;
 };
 
 const formatCard = (c: string) => {
     const isRed = c.includes('♥') || c.includes('♦');
-    return <span className={isRed ? 'text-red-500' : 'text-zinc-200'}>{c}</span>;
+    return <span className={isRed ? 'text-red-500' : 'text-zinc-900'}>{c}</span>;
 };
 
 const formatSnipeObj = (s: Snipe | null) => {
@@ -196,6 +197,8 @@ const getPlayerPosition = (i: number, total: number, meIdx: number) => {
     };
 };
 
+const getAvatarUrl = (avatar: string) => `https://api.dicebear.com/9.x/bottts/svg?seed=${encodeURIComponent(avatar)}`;
+
 export default function MultiSniperGameRoom() {
   const router = useRouter();
   const params = useParams();
@@ -212,6 +215,9 @@ export default function MultiSniperGameRoom() {
   
   const [selectedSnipeType, setSelectedSnipeType] = useState<number | null>(null);
   const [selectedSnipeRank, setSelectedSnipeRank] = useState<number | null>(null);
+    const [turnSecondsLeft, setTurnSecondsLeft] = useState(30);
+    const turnTimeoutTriggered = useRef(false);
+        const [leaveBusy, setLeaveBusy] = useState(false);
 
   const SNIPE_RANKS = [
     { label: '2', value: 2 }, { label: '3', value: 3 }, { label: '4', value: 4 },
@@ -241,6 +247,30 @@ export default function MultiSniperGameRoom() {
   const amIPlayer = meIdx !== -1;
   const myPlayer = amIPlayer ? game.players[meIdx] : null;
 
+  useEffect(() => {
+      if (!game || game.state !== 'playing' || game.phase === 'sniping') {
+          setTurnSecondsLeft(30);
+          turnTimeoutTriggered.current = false;
+          return;
+      }
+
+      const endsAt = game.turnEndsAt ?? (Date.now() + 30000);
+
+      const updateCountdown = () => {
+          const remaining = Math.max(0, Math.ceil((endsAt - Date.now()) / 1000));
+          setTurnSecondsLeft(remaining);
+
+          if (remaining === 0 && game.turnIdx === meIdx && !turnTimeoutTriggered.current) {
+              turnTimeoutTriggered.current = true;
+              handleAction('fold');
+          }
+      };
+
+      updateCountdown();
+      const interval = setInterval(updateCountdown, 250);
+      return () => clearInterval(interval);
+  }, [game?.turnEndsAt, game?.turnIdx, game?.phase, game?.state, meIdx]);
+
   const handleJoin = async () => {
     if (amIPlayer || game.players.length >= game.maxPlayers) return;
     const newPlayer: PlayerState = {
@@ -258,6 +288,84 @@ export default function MultiSniperGameRoom() {
         players: [...game.players, newPlayer],
         logs: arrayUnion(`${newPlayer.nickname} joined. (${game.players.length + 1}/${game.maxPlayers})`)
     });
+  };
+
+  const handleLeaveGame = async () => {
+      if (!auth.currentUser) {
+          router.push('/sniper-holdem');
+          return;
+      }
+
+      setLeaveBusy(true);
+
+      try {
+          const uid = auth.currentUser.uid;
+          const leavingIndex = game.players.findIndex(p => p.uid === uid);
+
+          if (leavingIndex === -1) {
+              router.push('/sniper-holdem');
+              return;
+          }
+
+          const leavingPlayer = game.players[leavingIndex];
+          const remainingPlayers = game.players.filter(p => p.uid !== uid);
+
+          if (remainingPlayers.length === 0) {
+              await deleteDoc(doc(db, "sniper_holdem_games", gameId));
+              router.push('/sniper-holdem');
+              return;
+          }
+
+          const isPlaying = game.state === 'playing';
+          const nextPlayers = remainingPlayers.map(p => ({
+              ...p,
+              cards: isPlaying && remainingPlayers.length >= 2 ? p.cards : [],
+              bet: isPlaying && remainingPlayers.length >= 2 ? p.bet : 0,
+              snipe: isPlaying && remainingPlayers.length >= 2 ? p.snipe : null,
+              hasFolded: isPlaying && remainingPlayers.length >= 2 ? p.hasFolded : false,
+          }));
+
+          const updates: any = {
+              players: nextPlayers,
+              logs: arrayUnion(`${leavingPlayer.nickname} left the game.`)
+          };
+
+          if (game.creatorId === uid) {
+              updates.creatorId = remainingPlayers[0].uid;
+          }
+
+          if (!isPlaying || remainingPlayers.length < 2) {
+              updates.state = 'waiting';
+              updates.phase = 'preflop';
+              updates.communityCards = [];
+              updates.deck = [];
+              updates.pot = 0;
+              updates.currentBet = 0;
+              updates.dealerIdx = 0;
+              updates.turnIdx = 0;
+              updates.playersActed = 0;
+              updates.winner = null;
+              updates.handWinners = [];
+              updates.turnEndsAt = null;
+          } else {
+              const adjustIndex = (index: number) => {
+                  if (index < leavingIndex) return index;
+                  if (index > leavingIndex) return index - 1;
+                  return Math.min(index, nextPlayers.length - 1);
+              };
+
+              updates.dealerIdx = adjustIndex(game.dealerIdx);
+              updates.turnIdx = adjustIndex(game.turnIdx);
+              updates.turnEndsAt = Date.now() + 30000;
+          }
+
+          await updateDoc(doc(db, "sniper_holdem_games", gameId), updates);
+          router.push('/sniper-holdem');
+      } catch (error) {
+          console.error(error);
+      } finally {
+          setLeaveBusy(false);
+      }
   };
 
   const handleStart = async () => {
@@ -305,6 +413,7 @@ export default function MultiSniperGameRoom() {
         currentBet: 20,
         dealerIdx: 0,
         turnIdx: turnIdx,
+        turnEndsAt: Date.now() + 30000,
         phase: 'preflop',
         playersActed: 0,
         logs: arrayUnion(`Game started! Blinds posted.`)
@@ -372,6 +481,7 @@ export default function MultiSniperGameRoom() {
               nextIdx = (nextIdx + 1) % updatedPlayers.length;
           }
           updates.turnIdx = nextIdx;
+          updates.turnEndsAt = Date.now() + 30000;
       } else {
           // Find next player
           let nextIdx = (updates.turnIdx !== undefined ? updates.turnIdx : g.turnIdx);
@@ -379,6 +489,7 @@ export default function MultiSniperGameRoom() {
               nextIdx = (nextIdx + 1) % updatedPlayers.length;
           } while (updatedPlayers[nextIdx].hasFolded || updatedPlayers[nextIdx].chips === 0);
           updates.turnIdx = nextIdx;
+          updates.turnEndsAt = Date.now() + 30000;
       }
       
       updates.players = updatedPlayers;
@@ -567,6 +678,7 @@ export default function MultiSniperGameRoom() {
           currentBet: 20,
           dealerIdx: nextDealerIdx,
           turnIdx: turnIdx,
+          turnEndsAt: Date.now() + 30000,
           phase: 'preflop',
           playersActed: 0,
           winner: null,
@@ -579,82 +691,139 @@ export default function MultiSniperGameRoom() {
 
   return (
     <>
-    <div className="min-h-screen bg-zinc-950 text-white p-4 font-sans relative overflow-hidden flex flex-col md:flex-row gap-4">
+    <div className="relative min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top,_rgba(220,38,38,0.16),transparent_28%),linear-gradient(180deg,#050505_0%,#09090b_45%,#111111_100%)] p-4 font-sans text-white">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_15%_20%,rgba(255,255,255,0.04),transparent_20%),radial-gradient(circle_at_82%_16%,rgba(220,38,38,0.12),transparent_22%),radial-gradient(circle_at_50%_82%,rgba(220,38,38,0.07),transparent_24%)]"></div>
+      <div className="relative z-10 flex min-h-[calc(100vh-2rem)] flex-col gap-4 md:flex-row">
       
       {/* Table Side */}
       <div className="flex-1 flex flex-col relative z-10 gap-4">
           {/* Header */}
-          <div className="bg-black/80 rounded-2xl p-4 border border-red-900/40 flex justify-between items-center shadow-lg backdrop-blur">
-              <div className="flex items-center gap-4">
-                  <div className="bg-red-950/50 p-2 rounded-lg border border-red-500/30">
-                      <Crosshair className="text-red-500 animate-pulse" size={24} />
+          <div className="relative overflow-hidden rounded-[28px] border border-red-900/40 bg-black/72 p-4 shadow-[0_0_40px_rgba(0,0,0,0.45)] backdrop-blur-xl">
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(220,38,38,0.15),transparent_34%)]"></div>
+              <div className="relative flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+                  <div className="flex items-center gap-4">
+                      <div className="rounded-2xl border border-red-500/30 bg-red-950/60 p-3 shadow-[0_0_25px_rgba(220,38,38,0.18)]">
+                          <Crosshair className="text-red-500" size={24} />
+                      </div>
+                      <div>
+                          <div className="mb-2 flex flex-wrap items-center gap-2">
+                              <span className="rounded-full border border-red-500/20 bg-red-500/10 px-3 py-1 text-[9px] font-black uppercase tracking-[0.32em] text-red-300">Sniper Hold&apos;em</span>
+                              <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[9px] font-black uppercase tracking-[0.28em] text-zinc-300">{game.state}</span>
+                              <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[9px] font-black uppercase tracking-[0.28em] text-zinc-300">{game.players.length}/{game.maxPlayers} agents</span>
+                          </div>
+                          <h1 className="text-2xl font-black uppercase tracking-tighter text-white drop-shadow-[0_0_12px_rgba(220,38,38,0.22)] sm:text-3xl">Live Table Control</h1>
+                          <p className="mt-1 max-w-2xl text-[11px] uppercase tracking-[0.24em] text-zinc-500">Pot {game.pot} CR • Current bet {game.currentBet} CR • Phase {game.phase}</p>
+                      </div>
                   </div>
-                  <div>
-                      <h1 className="font-black uppercase tracking-widest text-lg drop-shadow-[0_0_10px_rgba(220,38,38,0.5)]">Sniper <span className="text-red-500">Hold&apos;em</span></h1>
-                      <div className="text-zinc-500 text-[10px] uppercase font-bold tracking-widest">{game.state.toUpperCase()} • POT: {game.pot}</div>
+                  <div className="flex flex-wrap items-center gap-2">
+                      {game.state === 'playing' && game.phase !== 'sniping' && (
+                          <div className={`rounded-2xl border px-4 py-2 text-xs font-black uppercase tracking-widest ${turnSecondsLeft <= 5 ? 'border-red-500/40 bg-red-950/60 text-red-200' : 'border-white/10 bg-white/5 text-zinc-200'}`}>
+                              Turn {turnSecondsLeft}s
+                          </div>
+                      )}
+                      <button 
+                        onClick={() => setShowRankings(true)}
+                        className="inline-flex items-center gap-1.5 rounded-2xl border border-red-500/20 bg-red-950/40 px-4 py-2 text-xs font-black uppercase tracking-widest text-red-100 transition-colors hover:bg-red-900/60"
+                      >
+                          <Info size={14} /> Rankings
+                      </button>
+                      <div className="rounded-2xl border border-white/10 bg-zinc-900/70 px-4 py-2 font-mono text-sm shadow-inner">
+                          <span className="mr-2 text-[10px] uppercase font-bold text-zinc-500">Code</span>
+                          <span className="font-bold tracking-widest">{gameId}</span>
+                      </div>
+                      {amIPlayer && (
+                          <button
+                            onClick={handleLeaveGame}
+                            disabled={leaveBusy}
+                            className="rounded-2xl border border-white/10 bg-zinc-950 px-4 py-2 text-xs font-black uppercase tracking-widest text-zinc-300 transition-colors hover:bg-white/5 disabled:cursor-not-allowed disabled:opacity-60"
+                          >
+                              {leaveBusy ? 'Leaving...' : 'Leave Game'}
+                          </button>
+                      )}
+                      {isCreator && game.state === 'waiting' && game.players.length >= 2 && (
+                          <button onClick={handleStart} className="rounded-2xl border border-red-400/40 bg-white px-5 py-2 text-xs font-black uppercase tracking-widest text-black transition-all hover:bg-zinc-100 shadow-[0_0_15px_rgba(255,255,255,0.18)]">Start Protocol</button>
+                      )}
                   </div>
-              </div>
-              <div className="flex items-center gap-3">
-                  <button 
-                    onClick={() => setShowRankings(true)}
-                    className="flex items-center gap-1 bg-red-900/30 hover:bg-red-900/60 text-red-200 px-3 py-2 rounded-xl text-xs font-bold uppercase transition-colors mr-2 border border-red-500/30"
-                  >
-                      <Info size={14} /> Rankings
-                  </button>
-                  <div className="bg-zinc-900 px-4 py-2 rounded-xl border border-white/5 font-mono text-sm shadow-inner group relative cursor-pointer">
-                      <span className="text-zinc-500 mr-2 text-[10px] uppercase font-bold">Code</span>
-                      <span className="font-bold tracking-widest">{gameId}</span>
-                  </div>
-                  {isCreator && game.state === 'waiting' && game.players.length >= 2 && (
-                      <button onClick={handleStart} className="bg-white text-black hover:bg-zinc-200 font-bold py-2 px-6 rounded-xl transition-all shadow-[0_0_15px_rgba(255,255,255,0.2)]">Start Protocol</button>
-                  )}
               </div>
           </div>
 
           {/* Table */}
-          <div className="flex-1 bg-gradient-to-br from-zinc-900 to-black rounded-[100px] border-4 border-zinc-800 relative shadow-[inset_0_0_100px_rgba(0,0,0,1)] flex items-center justify-center p-8 overflow-hidden mx-4 my-8">
+          <div className="relative mx-0 my-2 flex flex-1 items-center justify-center overflow-hidden rounded-[40px] border border-white/10 bg-[radial-gradient(ellipse_at_center,rgba(127,29,29,0.24),rgba(0,0,0,0.9)_56%)] p-4 shadow-[inset_0_0_100px_rgba(0,0,0,1)] sm:p-8">
               <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-red-950/20 via-transparent to-transparent opacity-50 pointer-events-none"></div>
               
               {/* Join Overlay inside Table area if waiting and NOT player */}
               {!amIPlayer && game.state === 'waiting' && (
-                  <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-                      <div className="bg-zinc-950 p-8 rounded-3xl border border-red-900/50 shadow-2xl max-w-sm w-full animate-in zoom-in-95 pointer-events-auto">
-                          <h2 className="text-xl font-black uppercase text-center mb-6 tracking-widest text-white">Join Mission</h2>
-                          
-                          <div className="space-y-4">
-                              <div>
-                                  <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Codename</label>
-                                  <input 
-                                      type="text" 
-                                      value={joinNickname} 
-                                      onChange={e => setJoinNickname(e.target.value)}
-                                      placeholder="Enter Nickname"
-                                      className="w-full bg-black border border-white/10 rounded-xl px-4 py-3 font-bold mt-1 text-white focus:outline-none focus:border-red-500"
-                                  />
+                  <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/65 p-4 backdrop-blur-sm">
+                      <div className="pointer-events-auto w-full max-w-3xl animate-in zoom-in-95 overflow-hidden rounded-[28px] border border-red-900/50 bg-zinc-950/96 shadow-[0_0_60px_rgba(0,0,0,0.58)]">
+                          <div className="grid gap-0 md:grid-cols-[1.05fr_0.95fr]">
+                              <div className="border-b border-white/5 p-6 md:border-b-0 md:border-r md:p-7">
+                                  <div className="mb-5 flex items-center justify-between gap-4">
+                                      <div>
+                                          <div className="text-[10px] font-black uppercase tracking-[0.34em] text-red-400">Join Mission</div>
+                                          <h2 className="mt-2 text-2xl font-black uppercase tracking-tighter text-white">Choose your operator</h2>
+                                      </div>
+                                      <button onClick={handleLeaveGame} className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-[10px] font-black uppercase tracking-[0.3em] text-zinc-300 transition-colors hover:bg-white/10">Exit</button>
+                                  </div>
+
+                                  <div className="mb-5 rounded-3xl border border-white/5 bg-black/60 p-4">
+                                      <div className="flex items-center gap-4">
+                                          <div className="flex h-18 w-18 items-center justify-center overflow-hidden rounded-2xl border border-red-500/20 bg-white/5 p-2 shadow-[0_0_18px_rgba(220,38,38,0.1)]">
+                                              <img src={getAvatarUrl(joinAvatar)} alt={joinAvatar} className="h-full w-full object-contain" />
+                                          </div>
+                                          <div className="min-w-0">
+                                              <div className="text-[10px] font-black uppercase tracking-[0.28em] text-zinc-500">Operator Preview</div>
+                                              <div className="mt-1 truncate text-xl font-black uppercase tracking-tighter text-white">{joinNickname.trim() || 'Anonymous'} <span className="text-red-400">{joinAvatar}</span></div>
+                                              <div className="mt-1 text-[11px] uppercase tracking-[0.22em] text-zinc-500">You are selecting a seat in an active table</div>
+                                          </div>
+                                      </div>
+                                  </div>
+
+                                  <div className="space-y-4">
+                                      <div>
+                                          <label className="text-[10px] font-bold uppercase tracking-[0.22em] text-zinc-500">Codename</label>
+                                          <input 
+                                              type="text" 
+                                              value={joinNickname} 
+                                              onChange={e => setJoinNickname(e.target.value)}
+                                              placeholder="Enter nickname"
+                                              className="mt-2 w-full rounded-2xl border border-white/10 bg-black px-4 py-3 font-bold text-white outline-none transition-colors placeholder:text-zinc-700 focus:border-red-500"
+                                          />
+                                      </div>
+
+                                      <button 
+                                          onClick={handleJoin} 
+                                          disabled={game.players.length >= game.maxPlayers}
+                                          className="flex w-full items-center justify-center rounded-2xl bg-red-600 px-5 py-4 text-sm font-black uppercase tracking-[0.22em] text-white shadow-[0_0_24px_rgba(220,38,38,0.22)] transition-all hover:bg-red-500 disabled:cursor-not-allowed disabled:opacity-50"
+                                      >
+                                          {game.players.length >= game.maxPlayers ? 'Lobby Full' : 'Join Table'}
+                                      </button>
+                                  </div>
                               </div>
 
-                              <div>
-                                  <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-1 block">Select Avatar</label>
-                                  <div className="grid grid-cols-4 gap-2 bg-black p-2 rounded-xl border border-white/10">
+                              <div className="p-6 md:p-7">
+                                  <div className="mb-4 flex items-end justify-between gap-4">
+                                      <div>
+                                          <div className="text-[10px] font-black uppercase tracking-[0.34em] text-zinc-500">Avatar Selection</div>
+                                          <p className="mt-2 text-xs uppercase tracking-[0.24em] text-zinc-500">Pick the face you want on the table.</p>
+                                      </div>
+                                      <div className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] font-black uppercase tracking-[0.22em] text-zinc-300">{game.players.length}/{game.maxPlayers}</div>
+                                  </div>
+
+                                  <div className="grid grid-cols-3 gap-3 sm:grid-cols-4">
                                       {AVATARS.map(av => (
                                           <button 
                                               key={av} 
                                               onClick={() => setJoinAvatar(av)}
-                                              className={`text-2xl p-1 rounded-lg transition-transform ${joinAvatar === av ? 'bg-red-900/50 border border-red-500 scale-110 shadow-lg' : 'hover:scale-110 opacity-60 hover:opacity-100'}`}
+                                              className={`group flex flex-col items-center gap-2 rounded-2xl border p-2 transition-all ${joinAvatar === av ? 'border-red-500 bg-red-950/70 shadow-[0_0_20px_rgba(220,38,38,0.18)] scale-[1.03]' : 'border-white/5 bg-black/50 hover:border-red-500/30 hover:bg-white/5'}`}
                                           >
-                                              {av}
+                                              <div className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-xl bg-white/5 p-1.5">
+                                                  <img src={getAvatarUrl(av)} alt={av} className="h-full w-full object-contain transition-transform group-hover:scale-105" />
+                                              </div>
+                                              <span className="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-300">{av}</span>
                                           </button>
                                       ))}
                                   </div>
                               </div>
-
-                              <button 
-                                  onClick={handleJoin} 
-                                  disabled={game.players.length >= game.maxPlayers}
-                                  className="w-full mt-4 bg-red-600 hover:bg-red-500 text-white font-black py-4 rounded-xl uppercase tracking-widest transition-colors shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
-                              >
-                                  {game.players.length >= game.maxPlayers ? 'Lobby Full' : 'Infiltrate Server'}
-                              </button>
                           </div>
                       </div>
                   </div>
@@ -699,7 +868,7 @@ export default function MultiSniperGameRoom() {
                                   {game.dealerIdx === i && <div className="absolute -top-3 -right-3 w-6 h-6 bg-white text-black rounded-full font-black text-xs flex items-center justify-center shadow-lg border-2 border-black">D</div>}
                                   
                                   <div className="w-16 h-16 mb-2 relative">
-                                      <img src={`https://api.dicebear.com/9.x/bottts/svg?seed=${p.avatar}`} alt={p.avatar} className="w-full h-full object-contain" />
+                                      <img src={getAvatarUrl(p.avatar)} alt={p.avatar} className="w-full h-full object-contain" />
                                       {game.latestReaction?.uid === p.uid && Date.now() - game.latestReaction.ts < 3000 && (
                                           <motion.div initial={{ scale: 0, y: 10 }} animate={{ scale: 1, y: -20 }} exit={{ scale: 0 }} className="absolute -top-4 -right-4 text-3xl z-50">
                                               {game.latestReaction.r}
@@ -752,8 +921,8 @@ export default function MultiSniperGameRoom() {
       <div className="w-full md:w-96 flex flex-col gap-4 relative z-20">
           
           {/* Action Pad */}
-          {amIPlayer && myPlayer && !myPlayer.hasFolded && (
-             <div className="bg-black/90 p-6 rounded-3xl border border-white/10 shadow-2xl backdrop-blur-xl">
+             {amIPlayer && myPlayer && !myPlayer.hasFolded && (
+                 <div className="bg-black/90 p-6 rounded-[28px] border border-white/10 shadow-2xl backdrop-blur-xl">
                  <div className="flex justify-between items-center mb-4">
                      <h2 className="text-sm font-black uppercase tracking-widest text-zinc-500 flex items-center gap-2">
                          <ShieldAlert size={16} /> Command Interface
@@ -827,8 +996,8 @@ export default function MultiSniperGameRoom() {
                      </div>
                  ) : isMyTurn ? (
                      <div className="grid grid-cols-2 gap-3 animate-in slide-in-from-bottom duration-300 relative">
-                         <button onClick={() => handleAction('fold')} className="col-span-2 bg-zinc-900 border border-white/5 text-zinc-400 py-3 rounded-xl font-bold uppercase hover:bg-red-950 hover:text-red-400 transition-colors">Fold</button>
-                         <button onClick={() => handleAction('call')} className="col-span-2 bg-zinc-800 text-white py-4 rounded-xl font-black uppercase tracking-widest hover:bg-zinc-700 transition-colors shadow-lg border border-white/10">
+                         <button onClick={() => handleAction('fold')} className="col-span-2 rounded-xl border border-white/5 bg-zinc-900 py-3 font-bold uppercase text-zinc-400 transition-colors hover:bg-red-950 hover:text-red-400">Fold</button>
+                         <button onClick={() => handleAction('call')} className="col-span-2 rounded-xl border border-white/10 bg-zinc-800 py-4 font-black uppercase tracking-widest text-white transition-colors shadow-lg hover:bg-zinc-700">
                             {game.currentBet > myPlayer.bet ? `Call ${game.currentBet - myPlayer.bet} CR` : 'Check'}
                          </button>
                          <input 
@@ -836,12 +1005,12 @@ export default function MultiSniperGameRoom() {
                              placeholder="Amount" 
                              value={raiseAmount} 
                              onChange={e => setRaiseAmount(e.target.value)} 
-                             className="bg-black border border-white/10 px-4 rounded-xl text-center font-mono font-bold focus:outline-none focus:border-white transition-colors text-lg"
+                             className="rounded-xl border border-white/10 bg-black px-4 text-center font-mono text-lg font-bold transition-colors focus:border-white focus:outline-none"
                          />
-                         <button onClick={() => handleAction('raise')} className="bg-white text-black py-4 rounded-xl font-black uppercase tracking-widest hover:bg-zinc-200 transition-all shadow-[0_0_20px_rgba(255,255,255,0.1)]">Bet</button>
+                         <button onClick={() => handleAction('raise')} className="rounded-xl bg-white py-4 font-black uppercase tracking-widest text-black transition-all shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:bg-zinc-200">Bet</button>
                      </div>
                  ) : (
-                     <div className="flex items-center justify-center py-10 opacity-50 border border-dashed border-white/10 rounded-xl">
+                     <div className="flex items-center justify-center rounded-xl border border-dashed border-white/10 py-10 opacity-50">
                          <div className="text-xs uppercase font-bold tracking-widest text-zinc-500 animate-pulse">Awaiting Turn...</div>
                      </div>
                  )}
@@ -855,9 +1024,9 @@ export default function MultiSniperGameRoom() {
           )}
 
           {/* Activity Log */}
-          <div className="bg-black overflow-hidden border border-white/5 rounded-3xl flex-1 flex flex-col relative shadow-inner">
+          <div className="flex flex-1 flex-col overflow-hidden rounded-[28px] border border-white/5 bg-black/80 shadow-inner">
               <div className="absolute top-0 left-0 w-full h-8 bg-gradient-to-b from-black to-transparent z-10 pointer-events-none"></div>
-              <div className="flex-1 overflow-y-auto p-6 flex flex-col justify-end space-y-3 pb-8 scbar-hide">
+              <div className="flex-1 overflow-y-auto p-5 flex flex-col justify-end space-y-3 pb-8 scbar-hide">
                   <AnimatePresence initial={false}>
                       {game.logs.slice(-50).map((log, i) => (
                           <motion.div 
@@ -881,6 +1050,7 @@ export default function MultiSniperGameRoom() {
         .scbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
       `}} />
     </div>
+        </div>
     
     {/* Hand Rankings Modal */}
     <AnimatePresence>
