@@ -1,4 +1,4 @@
-/* eslint-disable react-hooks/purity, react/no-unescaped-entities */
+/* eslint-disable react-hooks/exhaustive-deps, react/no-unescaped-entities */
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
@@ -21,178 +21,489 @@ const getTimestamp = () => {
 
 type Option = string | { text: string; sendAs?: string; unclickable?: boolean };
 
-const SCENARIOS: {
+type Scenario = {
   reply: string;
   delay: number;
   options: Option[];
   systemBeforeNext?: string;
   typingPattern?: 'normal' | 'hesitant' | 'ghost';
   endSimulation?: boolean;
-}[] = [
+};
+
+type Storyline = {
+  title: string;
+  description: string;
+  initialMessages: Partial<Message>[];
+  scenarios: Scenario[];
+};
+
+const STORYLINES: Storyline[] = [
   {
-    reply: "oh wait, is that this friday?",
-    delay: 2000,
-    typingPattern: 'normal',
-    options: [
-      "yeah, remember we talked about it?",
-      "did you forget?",
-      "yeah. you still down?"
+    title: "The Concert Flake",
+    description: "They were totally down, until it was actually time to commit.",
+    initialMessages: [
+      { id: '1', text: 'so about that concert on friday', sender: 'me', status: 'read' },
+      { id: '2', text: 'what about it', sender: 'them' }
     ],
-  },
-  {
-    reply: "yeah no im down. just been a crazy week tbh",
-    delay: 4000,
-    typingPattern: 'hesitant',
-    options: [
-      "we can just chill instead if you want?",
-      "everything okay?",
-      "okay, but are we still going?"
-    ],
-  },
-  {
-    reply: "idk. let me check my schedule and let you know",
-    delay: 3000,
-    options: [
-      "alright, let me know.",
-      "when will you know?",
-      "okay."
-    ],
-  },
-  {
-    reply: "prob soon. dont wait up for me though",
-    delay: 3500,
-    options: [
-      "so that's a no.",
-      "what does that mean?",
-      "fine."
-    ],
-  },
-  {
-    reply: "dude why are you being so intense",
-    delay: 2000,
-    typingPattern: 'hesitant',
-    options: [
-      "im not being intense, i just want an answer",
-      { text: "im sorry.", sendAs: "im sorry. im just stressed." },
-      "nevermind."
-    ],
-  },
-  {
-    reply: "it's fine. we're fine. i just need space rn",
-    delay: 5000,
-    options: [
-      "space from what? we barely talk",
-      "okay.",
-      "did i do something wrong?"
-    ],
-  },
-  {
-    reply: "you didn't do anything. it's me",
-    delay: 4000,
-    systemBeforeNext: "2 DAYS LATER",
-    typingPattern: 'ghost',
-    options: [
-      "hey.",
-      "are we ever going to talk again?",
-      { text: "i miss you.", sendAs: "i hate this." }
-    ],
-  },
-  {
-    reply: "hey. miss u too. just going thru a lot",
-    delay: 3000,
-    options: [
-      "i'm here for you, you know.",
-      "are we okay?",
-      "i just want to understand."
-    ],
-  },
-  {
-    reply: "i know. i just can't be what you need me to be right now",
-    delay: 3500,
-    typingPattern: 'hesitant',
-    options: [
-      "i'm not asking for much",
-      "so this is it?",
-      { text: "please don't do this.", sendAs: "please." }
-    ],
-  },
-  {
-    reply: "i just think we're on different pages",
-    delay: 2500,
-    options: [
-      "we don't have to be.",
-      "what page are you on?",
-      { text: "are you kidding me?", sendAs: "i can change." }
-    ],
-  },
-  {
-    reply: "i dont want to hurt you",
-    delay: 4500,
-    typingPattern: 'ghost',
-    options: [
-      "you're hurting me right now.",
-      "just tell me the truth.",
-      { text: "too late.", sendAs: "i'm already hurting." }
-    ],
-  },
-  {
-    reply: "the truth is i like you, i just don't want a relationship",
-    delay: 5000,
-    options: [
-      "that's not what you said a month ago.",
-      "i'm not asking for a relationship.",
-      { text: "so what was all of this?", sendAs: "was any of it real?" }
-    ],
-  },
-  {
-    reply: "im sorry. you're amazing, really.",
-    delay: 3000,
-    systemBeforeNext: "DELIVERED",
-    typingPattern: 'hesitant',
-    options: [
-      { text: "don't do that. don't pity me.", sendAs: "don't." },
-      { text: "please, can we just talk in person?", sendAs: "please. please. please." },
-      { text: "i hate this.", sendAs: "i hate you." },
-      { text: "i'm done.", unclickable: true }
-    ],
-  },
-  {
-    reply: "...", 
-    delay: 8000,
-    systemBeforeNext: "READ",
-    typingPattern: 'ghost',
-    options: [
-      "hello?",
-      "say something.",
-      { text: "coward.", sendAs: "i'm sorry, come back." }
+    scenarios: [
+      {
+        reply: "oh wait, is that this friday?",
+        delay: 2000,
+        typingPattern: 'normal',
+        options: [
+          "yeah, remember we talked about it?",
+          "did you forget?",
+          "yeah. you still down?"
+        ],
+      },
+      {
+        reply: "yeah no im down. just been a crazy week tbh",
+        delay: 4000,
+        typingPattern: 'hesitant',
+        options: [
+          "we can just chill instead if you want?",
+          "everything okay?",
+          "okay, but are we still going?"
+        ],
+      },
+      {
+        reply: "idk. let me check my schedule and let you know",
+        delay: 3000,
+        options: [
+          "alright, let me know.",
+          "when will you know?",
+          "okay."
+        ],
+      },
+      {
+        reply: "prob soon. dont wait up for me though",
+        delay: 3500,
+        options: [
+          "so that's a no.",
+          "what does that mean?",
+          "fine."
+        ],
+      },
+      {
+        reply: "dude why are you being so intense",
+        delay: 2000,
+        typingPattern: 'hesitant',
+        options: [
+          "im not being intense, i just want an answer",
+          { text: "im sorry.", sendAs: "im sorry. im just stressed." },
+          "nevermind."
+        ],
+      },
+      {
+        reply: "it's fine. we're fine. i just need space rn",
+        delay: 5000,
+        options: [
+          "space from what? we barely talk",
+          "okay.",
+          "did i do something wrong?"
+        ],
+      },
+      {
+        reply: "you didn't do anything. it's me",
+        delay: 4000,
+        systemBeforeNext: "2 DAYS LATER",
+        typingPattern: 'ghost',
+        options: [
+          "hey.",
+          "are we ever going to talk again?",
+          { text: "i miss you.", sendAs: "i hate this." }
+        ],
+      },
+      {
+        reply: "hey. miss u too. just going thru a lot",
+        delay: 3000,
+        options: [
+          "i'm here for you, you know.",
+          "are we okay?",
+          "i just want to understand."
+        ],
+      },
+      {
+        reply: "i know. i just can't be what you need me to be right now",
+        delay: 3500,
+        typingPattern: 'hesitant',
+        options: [
+          "i'm not asking for much",
+          "so this is it?",
+          { text: "please don't do this.", sendAs: "please." }
+        ],
+      },
+      {
+        reply: "i just think we're on different pages",
+        delay: 2500,
+        options: [
+          "we don't have to be.",
+          "what page are you on?",
+          { text: "are you kidding me?", sendAs: "i can change." }
+        ],
+      },
+      {
+        reply: "i dont want to hurt you",
+        delay: 4500,
+        typingPattern: 'ghost',
+        options: [
+          "you're hurting me right now.",
+          "just tell me the truth.",
+          { text: "too late.", sendAs: "i'm already hurting." }
+        ],
+      },
+      {
+        reply: "the truth is i like you, i just don't want a relationship",
+        delay: 5000,
+        options: [
+          "that's not what you said a month ago.",
+          "i'm not asking for a relationship.",
+          { text: "so what was all of this?", sendAs: "was any of it real?" }
+        ],
+      },
+      {
+        reply: "im sorry. you're amazing, really.",
+        delay: 3000,
+        systemBeforeNext: "DELIVERED",
+        typingPattern: 'hesitant',
+        options: [
+          { text: "don't do that. don't pity me.", sendAs: "don't." },
+          { text: "please, can we just talk in person?", sendAs: "please. please. please." },
+          { text: "i hate this.", sendAs: "i hate you." },
+          { text: "i'm done.", unclickable: true }
+        ],
+      },
+      {
+        reply: "...", 
+        delay: 8000,
+        systemBeforeNext: "READ",
+        typingPattern: 'ghost',
+        options: [
+          "hello?",
+          "say something.",
+          { text: "coward.", sendAs: "i'm sorry, come back." }
+        ]
+      },
+      {
+        reply: "...", 
+        delay: 15000,
+        endSimulation: true,
+        options: [
+          { text: "?", sendAs: "why am i like this" },
+          { text: "leave them alone", unclickable: true },
+          { text: "im sorry", sendAs: "please look at me" }
+        ]
+      }
     ]
   },
   {
-    reply: "...", 
-    delay: 15000,
-    endSimulation: true,
-    options: [
-      { text: "?", sendAs: "why am i like this" },
-      { text: "leave them alone", unclickable: true },
-      { text: "im sorry", sendAs: "please look at me" }
+    title: "The 2AM 'Thinking of You'",
+    description: "Late night vulnerability followed immediately by daylight avoidance.",
+    initialMessages: [
+      { id: '2', text: 'hey', sender: 'them', status: 'read' }
+    ],
+    scenarios: [
+      {
+        reply: "just thinking about u",
+        delay: 1500,
+        typingPattern: 'hesitant',
+        options: [
+          "oh really?",
+          "same",
+          "it's 2am",
+        ],
+      },
+      {
+        reply: "yeah haha couldn't sleep",
+        delay: 3000,
+        options: [
+          "what's on your mind?",
+          "should i come over?",
+          "you should try to sleep"
+        ],
+      },
+      {
+        reply: "idk just stuff. feeling weird.",
+        delay: 4500,
+        typingPattern: 'normal',
+        options: [
+          "weird how?",
+          "do you want to talk about it?",
+          "i can come over if you want"
+        ],
+      },
+      {
+        reply: "maybe. you don't have to though.",
+        delay: 5000,
+        typingPattern: 'hesitant',
+        options: [
+          "i want to.",
+          "are you sure?",
+          "okay i'm on my way"
+        ],
+      },
+      {
+        reply: "actually wait, it's late.",
+        delay: 6000,
+        systemBeforeNext: "10 MINUTES LATER",
+        typingPattern: 'ghost',
+        options: [
+          "i'm already dressed.",
+          "okay? so don't come over?",
+          "are you kidding me?"
+        ],
+      },
+      {
+        reply: "im sorry im just a mess right now",
+        delay: 3000,
+        options: [
+          "it's fine.",
+          "you always do this.",
+          "let me just be there for you."
+        ],
+      },
+      {
+        reply: "you deserve better than this",
+        delay: 4000,
+        options: [
+          "don't say that.",
+          "i get to decide what i deserve.",
+          "yeah, i do."
+        ],
+      },
+      {
+        reply: "i know. i just need to figure myself out.",
+        delay: 5000,
+        typingPattern: 'hesitant',
+        options: [
+          "so figure it out with me.",
+          "what does that even mean?",
+          "okay, goodnight."
+        ],
+      },
+      {
+        reply: "goodnight. im sorry.",
+        delay: 3000,
+        systemBeforeNext: "NEXT DAY - 4:00 PM",
+        typingPattern: 'ghost',
+        options: [
+          "how are you feeling today?",
+          "hey.",
+          "are we gonna talk about last night?"
+        ],
+      },
+      {
+        reply: "hey. much better today, thanks for asking",
+        delay: 4000,
+        options: [
+          "glad to hear it.",
+          "did you still want to hang out?",
+          "cool."
+        ],
+      },
+      {
+        reply: "im actually swamped with work today :/",
+        delay: 3500,
+        typingPattern: 'ghost',
+        options: [
+          "of course you are.",
+          "no worries, maybe later?",
+          "okay."
+        ],
+      },
+      {
+        reply: "yeah maybe!",
+        delay: 2000,
+        options: [
+          { text: "...", sendAs: "you're doing it again." },
+          "let me know when you're free",
+          "wow."
+        ],
+      },
+      {
+        reply: "...",
+        delay: 9000,
+        systemBeforeNext: "READ",
+        typingPattern: 'ghost',
+        options: [
+          "hello?",
+          "what are we even doing?",
+          { text: "whatever.", sendAs: "i can't keep doing this." }
+        ],
+      },
+      {
+        reply: "...",
+        delay: 15000,
+        endSimulation: true,
+        options: [
+          { text: "?", sendAs: "why do i let you do this" },
+          { text: "stop responding", unclickable: true },
+          { text: "please", sendAs: "just tell me what you want" }
+        ],
+      }
+    ]
+  },
+  {
+    title: "The Hoodie Excuse",
+    description: "Reaching out for a lost item, promising coffee, and completely ghosting.",
+    initialMessages: [
+      { id: '1', text: 'Hey, sorry I missed your call earlier', sender: 'me', status: 'read' },
+      { id: '2', text: 'no worries! was just wondering if u had my black hoodie?', sender: 'them' }
+    ],
+    scenarios: [
+      {
+        reply: "Wait nvm I found it haha",
+        delay: 4000,
+        typingPattern: 'normal',
+        options: [
+          "oh okay lol",
+          "scared me for a sec",
+          "all good"
+        ]
+      },
+      {
+        reply: "how have u been tho?",
+        delay: 3500,
+        options: [
+          "i've been good, you?",
+          "surviving haha",
+          "good. busy."
+        ]
+      },
+      {
+        reply: "same same. been thinking about you recently.",
+        delay: 6000,
+        typingPattern: 'hesitant',
+        options: [
+          "really?",
+          "what about?",
+          "don't do this."
+        ]
+      },
+      {
+        reply: "just how things ended. i kinda regret it",
+        delay: 5000,
+        options: [
+          "you ended it, not me.",
+          "we can talk about it?",
+          "it is what it is"
+        ]
+      },
+      {
+        reply: "i know. i was just overwhelmed.",
+        delay: 4000,
+        options: [
+          "and now?",
+          "so why text me?",
+          "i missed you too."
+        ]
+      },
+      {
+        reply: "i just wanted to see how you were. i miss talking to you",
+        delay: 4500,
+        typingPattern: 'hesitant',
+        options: [
+          "we can talk.",
+          "i miss you too.",
+          "this is confusing."
+        ]
+      },
+      {
+        reply: "yeah i dont want to confuse you. im sorry.",
+        delay: 3000,
+        options: [
+          "you already did.",
+          "so what do you want?",
+          "it's fine."
+        ]
+      },
+      {
+        reply: "i just... idk. maybe we can get coffee sometime?",
+        delay: 6000,
+        typingPattern: 'ghost',
+        options: [
+          "i'd like that.",
+          "when?",
+          "i don't think that's a good idea."
+        ]
+      },
+      {
+        reply: "let me figure out my week and i'll text you?",
+        delay: 4000,
+        options: [
+          "okay, sounds good.",
+          "sure.",
+          "don't say that if you don't mean it."
+        ]
+      },
+      {
+        reply: "i mean it! i'll text you.",
+        delay: 2000,
+        systemBeforeNext: "1 WEEK LATER",
+        typingPattern: 'ghost',
+        options: [
+          "hey, still want to get that coffee?",
+          "long week?",
+          "guess you figured it out."
+        ]
+      },
+      {
+        reply: "omg hey! so sorry, it's been insane.",
+        delay: 5000,
+        options: [
+          "it's okay, are you free this weekend?",
+          "no worries.",
+          "right."
+        ]
+      },
+      {
+        reply: "this weekend is tough actually. maybe next?",
+        delay: 4000,
+        options: [
+          "okay, next week.",
+          "are you just blowing me off?",
+          { text: "nevermind.", sendAs: "i'm so stupid." }
+        ]
+      },
+      {
+        reply: "...",
+        delay: 10000,
+        systemBeforeNext: "DELIVERED",
+        typingPattern: 'ghost',
+        options: [
+          "hello?",
+          "so that's a yes.",
+          { text: "i hate you.", sendAs: "why did you even text me?" }
+        ]
+      },
+      {
+        reply: "...",
+        delay: 20000,
+        endSimulation: true,
+        options: [
+          { text: "?", sendAs: "i fall for it every time" },
+          { text: "block them", unclickable: true },
+          { text: "im sorry", sendAs: "was it something i said" }
+        ]
+      }
     ]
   }
 ];
 
-export function Situationship() {
+export default function Situationship() {
   const [phase, setPhase] = useState<'setup' | 'chat'>('setup');
   const [setupStep, setSetupStep] = useState(0);
   const [targetPronoun, setTargetPronoun] = useState('Them');
+  const [activeStorylineIndex, setActiveStorylineIndex] = useState(0);
 
-  const [messages, setMessages] = useState<Message[]>([
-    { id: '1', text: 'so about that concert on friday', sender: 'me', status: 'read', timestamp: getTimestamp() },
-    { id: '2', text: 'what about it', sender: 'them', timestamp: getTimestamp() }
-  ]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [scenarioIndex, setScenarioIndex] = useState(0);
   const [isThemTyping, setIsThemTyping] = useState(false);
   const [isWaiting, setIsWaiting] = useState(false);
   const [ended, setEnded] = useState(false);
-  const chaos = scenarioIndex / SCENARIOS.length;
+  
+  const currentScenarios = STORYLINES[activeStorylineIndex].scenarios;
+  const chaos = scenarioIndex / currentScenarios.length;
   const chatRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -200,6 +511,17 @@ export function Situationship() {
       chatRef.current.scrollTo({ top: chatRef.current.scrollHeight, behavior: 'smooth' });
     }
   }, [messages, isThemTyping]);
+
+  const handleStorylineSelect = (index: number) => {
+    setActiveStorylineIndex(index);
+    const msgs = STORYLINES[index].initialMessages.map(m => ({
+      ...m, 
+      timestamp: getTimestamp()
+    })) as Message[];
+    setMessages(msgs);
+    setSetupStep(4);
+    setTimeout(() => setPhase('chat'), 2500);
+  };
 
   const handleSend = async (opt: Option) => {
     if (ended || isWaiting) return;
@@ -216,7 +538,7 @@ export function Situationship() {
     await new Promise(r => setTimeout(r, 800 + Math.random() * 500));
     setMessages(prev => prev.map(m => m.id === newMsg.id ? { ...m, status: 'delivered' } : m));
 
-    const nextScenario = SCENARIOS[scenarioIndex];
+    const nextScenario = currentScenarios[scenarioIndex];
     if (!nextScenario) return;
     
     if (nextScenario.endSimulation) {
@@ -327,7 +649,6 @@ export function Situationship() {
                     onClick={() => {
                       setTargetPronoun(g.pro);
                       setSetupStep(3);
-                      setTimeout(() => setPhase('chat'), 2500);
                     }}
                     className="w-full p-4 bg-white border border-zinc-200 rounded-2xl text-center font-medium hover:border-black transition-all active:scale-[0.98] shadow-sm hover:shadow-md text-black"
                   >
@@ -337,9 +658,28 @@ export function Situationship() {
               </div>
             </motion.div>
           )}
-          
+
           {setupStep === 3 && (
-            <motion.div key="step3" initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} className="flex flex-col items-center z-10">
+            <motion.div key="step3" initial={{opacity:0, y:20}} animate={{opacity:1, y:0}} exit={{opacity:0, y:-10}} className="w-full max-w-md z-10 px-4">
+              <h2 className="text-3xl font-bold text-center mb-2 tracking-tight text-black">Choose your delusion</h2>
+              <p className="text-zinc-500 text-center text-sm mb-8">Pick the flavor of emotional unavailability you want to experience.</p>
+               <div className="flex flex-col gap-4">
+                {STORYLINES.map((story, idx) => (
+                  <button 
+                    key={idx}
+                    onClick={() => handleStorylineSelect(idx)}
+                    className="w-full p-5 bg-white border border-zinc-200 rounded-2xl text-left hover:border-black transition-all active:scale-[0.98] shadow-sm hover:shadow-md group"
+                  >
+                    <h3 className="font-bold text-black mb-1 group-hover:text-blue-600 transition-colors">{story.title}</h3>
+                    <p className="text-sm text-zinc-500">{story.description}</p>
+                  </button>
+                ))}
+              </div>
+            </motion.div>
+          )}
+          
+          {setupStep === 4 && (
+            <motion.div key="step4" initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} className="flex flex-col items-center z-10">
               <div className="w-8 h-8 border-[3px] border-black border-t-transparent rounded-full animate-spin mb-6" />
               <p className="text-zinc-500 font-mono text-xs uppercase tracking-widest animate-pulse">Generating False Hope...</p>
             </motion.div>
@@ -392,7 +732,7 @@ export function Situationship() {
           className="flex-grow min-h-0 p-4 overflow-y-auto space-y-4 scbar-hide bg-white will-change-scroll relative"
         >
           <AnimatePresence initial={false}>
-            {messages.map((ms, i) => {
+            {messages.map((ms) => {
               if (ms.sender === 'system') {
                 return (
                   <motion.div key={ms.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex justify-center my-6">
@@ -486,7 +826,7 @@ export function Situationship() {
                 className="flex flex-col gap-2 relative z-10 max-h-[40vh] overflow-y-auto scbar-hide"
               >
                 <div className="text-[10px] text-zinc-400 uppercase tracking-widest text-center mb-1">Choose your response</div>
-                {SCENARIOS[scenarioIndex]?.options.map((opt, i) => {
+                {currentScenarios[scenarioIndex]?.options.map((opt, i) => {
                   const text = typeof opt === 'string' ? opt : opt.text;
                   const unclickable = typeof opt === 'object' && opt.unclickable;
                   return (
