@@ -7,6 +7,11 @@ import { doc, updateDoc, onSnapshot, arrayUnion } from 'firebase/firestore';
 import type { DocumentSnapshot } from 'firebase/firestore';
 import { signInAnonymously } from 'firebase/auth';
 
+const sanitizeLog = (log: string) =>
+  log
+    .replace(/Bets revealed: P1 bet \d+, P2 bet \d+\.\s*/i, 'Bets revealed. ')
+    .replace(/placed a bet\./i, 'locked in a bet.');
+
 const CARDS = [
   'A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'
 ];
@@ -95,8 +100,7 @@ export default function GameRoom() {
 
   const myCards = isPlayer1 ? game.player1Cards : isPlayer2 ? game.player2Cards : [];
   const opponentCards = isPlayer1 ? game.player2Cards : isPlayer2 ? game.player1Cards : [];
-  const myTokens = isPlayer1 ? game.player1Tokens : game.player2Tokens;
-  const opponentTokens = isPlayer1 ? game.player2Tokens : game.player1Tokens;
+  const myTokens = isPlayer1 ? game.player1Tokens : isPlayer2 ? game.player2Tokens : 0;
 
   const myBetSubmitted = isPlayer1 ? game.player1Bet !== null : game.player2Bet !== null;
   const opponentBetSubmitted = isPlayer1 ? game.player2Bet !== null : game.player1Bet !== null;
@@ -122,10 +126,10 @@ export default function GameRoom() {
       let activePlayerId = p1b > p2b ? game.player1 : p2b > p1b ? game.player2 : null;
       let newTurn = p1b === p2b ? 'betting' : 'action';
       
-      if (p1b > p2b) p1Tokens -= p1b;
-      else if (p2b > p1b) p2Tokens -= p2b;
+      p1Tokens -= p1b;
+      p2Tokens -= p2b;
 
-      let logMsg = `Bets revealed: P1 bet ${p1b}, P2 bet ${p2b}. ${winnerName === 'Tie' ? 'Tie! Bet again.' : winnerName + ' wins the bid.'}`;
+      let logMsg = `Bets revealed. Both players lose their bets. ${winnerName === 'Tie' ? 'Tie! Bet again.' : winnerName + ' wins the bid.'}`;
       
       if (winnerName === 'Tie') {
         // Start another betting round immediately
@@ -143,7 +147,7 @@ export default function GameRoom() {
         logs: arrayUnion(logMsg)
       });
     } else {
-      updates.logs = arrayUnion(`Player ${isPlayer1 ? '1' : '2'} placed a bet.`);
+      updates.logs = arrayUnion(`Player ${isPlayer1 ? '1' : '2'} locked in a bet.`);
       await updateDoc(doc(db, "games", gameId), updates);
     }
   };
@@ -238,8 +242,7 @@ export default function GameRoom() {
           {/* Opponent Area */}
           <div className="bg-zinc-900/50 rounded-2xl p-6 border border-zinc-800">
             <div className="flex justify-between mb-4 items-center">
-              <h3 className="font-bold text-zinc-400 uppercase text-sm tracking-wider">Opponent's Cards</h3>
-              <span className="bg-zinc-800 px-3 py-1 rounded-full text-xs font-mono">Tokens: {opponentTokens}</span>
+              <h3 className="font-bold text-zinc-400 uppercase text-sm tracking-wider">Opponent&apos;s Cards</h3>
             </div>
             <div className="flex flex-wrap gap-2 justify-center">
               {opponentCards.map((c, i) => renderCard(c, game.state !== 'finished'))}
@@ -272,7 +275,7 @@ export default function GameRoom() {
                     ))}
                   </div>
                   <button onClick={submitBet} className="mt-4 w-full bg-white text-black py-4 rounded-xl font-bold uppercase tracking-widest hover:bg-zinc-200 transition">
-                    Place Bet ({myBet})
+                    Lock Bet
                   </button>
                 </div>
               )}
@@ -335,7 +338,7 @@ export default function GameRoom() {
           <div className="bg-black/80 px-6 py-4 font-bold border-b border-zinc-800 text-sm tracking-widest text-zinc-400 uppercase">Event Log</div>
           <div className="p-4 flex-grow overflow-y-auto space-y-3 font-mono text-[11px] max-h-[600px] flex flex-col-reverse">
             {[...game.logs].reverse().map((l, i) => (
-              <div key={i} className="text-zinc-400 border-l border-zinc-700 pl-3 py-1.5">{l}</div>
+              <div key={i} className="text-zinc-400 border-l border-zinc-700 pl-3 py-1.5">{sanitizeLog(l)}</div>
             ))}
           </div>
         </div>

@@ -236,42 +236,15 @@ export default function MultiSniperGameRoom() {
     return () => unsub();
   }, [gameId]);
 
-  if (!game || !auth.currentUser) return (
-    <div className="min-h-screen bg-black flex items-center justify-center text-red-500">
-      <Crosshair className="w-16 h-16 animate-spin" />
-    </div>
-  );
-
-  const isCreator = auth.currentUser.uid === game.creatorId;
-  const meIdx = game.players.findIndex(p => p.uid === auth.currentUser!.uid);
+  const meIdx = game && auth.currentUser
+    ? game.players.findIndex(p => p.uid === auth.currentUser!.uid)
+    : -1;
   const amIPlayer = meIdx !== -1;
-  const myPlayer = amIPlayer ? game.players[meIdx] : null;
-
-  useEffect(() => {
-      if (!game || game.state !== 'playing' || game.phase === 'sniping') {
-          setTurnSecondsLeft(30);
-          turnTimeoutTriggered.current = false;
-          return;
-      }
-
-      const endsAt = game.turnEndsAt ?? (Date.now() + 30000);
-
-      const updateCountdown = () => {
-          const remaining = Math.max(0, Math.ceil((endsAt - Date.now()) / 1000));
-          setTurnSecondsLeft(remaining);
-
-          if (remaining === 0 && game.turnIdx === meIdx && !turnTimeoutTriggered.current) {
-              turnTimeoutTriggered.current = true;
-              handleAction('fold');
-          }
-      };
-
-      updateCountdown();
-      const interval = setInterval(updateCountdown, 250);
-      return () => clearInterval(interval);
-  }, [game?.turnEndsAt, game?.turnIdx, game?.phase, game?.state, meIdx]);
+  const myPlayer = game && amIPlayer ? game.players[meIdx] : null;
+  const isCreator = !!(game && auth.currentUser && auth.currentUser.uid === game.creatorId);
 
   const handleJoin = async () => {
+    if (!game || !auth.currentUser) return;
     if (amIPlayer || game.players.length >= game.maxPlayers) return;
     const newPlayer: PlayerState = {
         uid: auth.currentUser!.uid,
@@ -291,7 +264,7 @@ export default function MultiSniperGameRoom() {
   };
 
   const handleLeaveGame = async () => {
-      if (!auth.currentUser) {
+      if (!auth.currentUser || !game) {
           router.push('/sniper-holdem');
           return;
       }
@@ -369,7 +342,7 @@ export default function MultiSniperGameRoom() {
   };
 
   const handleStart = async () => {
-    if (!isCreator || game.players.length < 2) return;
+    if (!game || !isCreator || game.players.length < 2) return;
     
     // Initial Deal
     let deck = buildDeck();
@@ -497,7 +470,6 @@ export default function MultiSniperGameRoom() {
 
   const evaluateShowdown = (updates: any, updatedPlayers: PlayerState[], g: GameData) => {
       updates.phase = 'showdown';
-      const allSnipes = updatedPlayers.map(p => p.snipe).filter(s => s !== null) as Snipe[];
 
       let hands = updatedPlayers.map(p => {
           let h = getBestHand([...p.cards, ...(updates.communityCards || g.communityCards)]);
@@ -506,20 +478,32 @@ export default function MultiSniperGameRoom() {
 
       let logs = ["SHOWDOWN!"];
       
-      hands.forEach((p, idx) => {
+      hands.forEach((p) => {
           if (p.hasFolded) return;
           logs.push(`${p.nickname} shows ${p.handData.name}.`);
-          // Sniper mechanics
-          let matchedSnipe = allSnipes.some(s => s.type === p.handData.type && s.rank === p.handData.primaryRank);
-          if (matchedSnipe) {
-              p.handData.score = -1;
-              logs.push(`⚠️ BOOM! ${p.nickname}'s hand perfectly matched a snipe! Hand destroyed to bottom ranking (-1).`);
+      });
+
+      // Correct snipe: the sniped player (hand owner) loses
+      hands.forEach((targetHand) => {
+          if (targetHand.hasFolded) return;
+
+          const sniper = updatedPlayers.find((p) => {
+              if (!p.snipe || p.hasFolded || p.uid === targetHand.uid) return false;
+              return (
+                  p.snipe.type === targetHand.handData.type &&
+                  p.snipe.rank === targetHand.handData.primaryRank
+              );
+          });
+
+          if (sniper) {
+              targetHand.handData.score = -1;
+              logs.push(`⚠️ BOOM! ${targetHand.nickname} was correctly sniped by ${sniper.nickname} — eliminated from pot.`);
               playSound('snipe');
           }
       });
 
       // Find winners
-      let activeHands = hands.filter(h => !h.hasFolded);
+      let activeHands = hands.filter(h => !h.hasFolded && h.handData.score !== -1);
       let maxScore = Math.max(...activeHands.map(h => h.handData.score));
       let winners = activeHands.filter(h => h.handData.score === maxScore);
 
@@ -543,7 +527,7 @@ export default function MultiSniperGameRoom() {
   };
 
   const handleAction = async (action: 'fold' | 'call' | 'raise') => {
-      if (game.turnIdx !== meIdx) return;
+      if (!game || !myPlayer || game.turnIdx !== meIdx) return;
       
       let amount = 0;
       let toCall = game.currentBet - myPlayer!.bet;
@@ -588,6 +572,31 @@ export default function MultiSniperGameRoom() {
       setRaiseAmount('');
   };
 
+  useEffect(() => {
+      if (!game || !auth.currentUser || game.state !== 'playing' || game.phase === 'sniping') {
+          setTurnSecondsLeft(30);
+          turnTimeoutTriggered.current = false;
+          return;
+      }
+
+      const endsAt = game.turnEndsAt ?? (Date.now() + 30000);
+      const myIdx = game.players.findIndex(p => p.uid === auth.currentUser!.uid);
+
+      const updateCountdown = () => {
+          const remaining = Math.max(0, Math.ceil((endsAt - Date.now()) / 1000));
+          setTurnSecondsLeft(remaining);
+
+          if (remaining === 0 && game.turnIdx === myIdx && !turnTimeoutTriggered.current) {
+              turnTimeoutTriggered.current = true;
+              handleAction('fold');
+          }
+      };
+
+      updateCountdown();
+      const interval = setInterval(updateCountdown, 250);
+      return () => clearInterval(interval);
+  }, [game?.turnEndsAt, game?.turnIdx, game?.phase, game?.state, game?.players, meIdx]);
+
   const sendReaction = async (r: string) => {
       playSound('reaction');
       setShowReactions(false);
@@ -597,7 +606,7 @@ export default function MultiSniperGameRoom() {
   };
 
   const handleSnipe = async () => {
-      if (selectedSnipeType === null || selectedSnipeRank === null) return;
+      if (!game || selectedSnipeType === null || selectedSnipeRank === null) return;
       
       const updatedPlayers = [...game.players];
       updatedPlayers[meIdx].snipe = { type: selectedSnipeType, rank: selectedSnipeRank };
@@ -619,7 +628,7 @@ export default function MultiSniperGameRoom() {
   };
 
   const handleNextHand = async () => {
-      if (!isCreator) return;
+      if (!game || !isCreator) return;
       
       let activePlayers = game.players.filter(p => p.chips > 0);
       if (activePlayers.length < 2) {
@@ -686,6 +695,12 @@ export default function MultiSniperGameRoom() {
           logs: ["--- NEW HAND ---", "Blinds posted."]
       });
   };
+
+  if (!game || !auth.currentUser) return (
+    <div className="min-h-screen bg-black flex items-center justify-center text-red-500">
+      <Crosshair className="w-16 h-16 animate-spin" />
+    </div>
+  );
 
   const isMyTurn = game.state === 'playing' && game.phase !== 'sniping' && game.turnIdx === meIdx;
 
@@ -950,7 +965,7 @@ export default function MultiSniperGameRoom() {
                         <div className="space-y-1">
                             <h3 className="text-xs font-bold text-red-500 uppercase tracking-widest border-b border-red-500/20 pb-2 mb-4">Engage Target Coordinates</h3>
                             <p className="text-[10px] text-zinc-400 font-mono mb-4 leading-relaxed bg-red-500/5 p-3 rounded-lg border border-red-500/10">
-                                If *any* player perfectly matches your Snipe (Type & Primary Rank), their final rank collapses to absolute zero.
+                                If another player&apos;s hand perfectly matches your snipe (Type &amp; Primary Rank), they are eliminated from the pot.
                             </p>
                         </div>
                         
