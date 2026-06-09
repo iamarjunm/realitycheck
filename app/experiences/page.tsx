@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Profiler } from '../components/experiences/Profiler';
 import { TypingTest } from '../components/experiences/TypingTest';
 import { BrainAt3AM } from '../components/experiences/BrainAt3AM';
-import { Situationship } from '../components/experiences/Situationship';
+import Situationship from '../components/experiences/Situationship';
 import { Ghost, Keyboard, Brain, MessageCircleHeart, ArrowLeft } from 'lucide-react';
 
 export default function Home() {
