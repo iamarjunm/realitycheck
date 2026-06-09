@@ -4,5 +4,11 @@ service cloud.firestore {
     match /games/{gameId} {
       allow read, write: if true;
     }
+    match /doubt_and_bet_games/{gameId} {
+      allow read, write: if true;
+    }
+    match /sniper_holdem_games/{gameId} {
+      allow read, write: if true;
+    }
   }
 }

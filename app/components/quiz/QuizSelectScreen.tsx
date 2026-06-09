@@ -2,12 +2,12 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ChevronRight, Archive, Briefcase, Flame, List, LayoutGrid, Terminal, Lock, FileText, Shield, MessageSquare, Radar, FlaskConical, Ghost, Brain, MessageCircleHeart } from 'lucide-react';
+import { ChevronRight, Archive, Briefcase, Flame, List, LayoutGrid, Terminal, Lock, FileText, Shield, MessageSquare, Radar } from 'lucide-react';
 import { QUIZZES } from '../../../lib/quizzes';
 
 const LOR_UNLOCK_KEY = 'thriftz_lor_unlocked';
 
-export function QuizSelectScreen({ onSelect, onViewCollection, onOpenExperiments }: { onSelect: (id: string) => void; onViewCollection: () => void; onOpenExperiments: () => void }) {
+export function QuizSelectScreen({ onSelect, onViewCollection }: { onSelect: (id: string) => void; onViewCollection: () => void }) {
   const visibleQuizzes = QUIZZES.filter((quiz) => !quiz.hidden);
   const [lorPasswordOpen, setLorPasswordOpen] = useState(false);
   const [lorPasswordInput, setLorPasswordInput] = useState('');
@@ -76,35 +76,6 @@ export function QuizSelectScreen({ onSelect, onViewCollection, onOpenExperiments
             One clean entry point. Open the module and see what kind of chaos you actually are.
           </p>
         </div>
-
-        <motion.button
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.08 }}
-          onClick={onOpenExperiments}
-          className="group w-full mb-8 text-left rounded-lg border border-fuchsia-500/30 bg-gradient-to-r from-fuchsia-900/20 to-zinc-900/50 p-4 hover:border-fuchsia-300 hover:shadow-[0_0_24px_rgba(217,70,239,0.2)] transition-all"
-        >
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <div className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-[0.25em] text-fuchsia-300 mb-2">
-                <FlaskConical className="w-3.5 h-3.5" />
-                Experiments Preview
-              </div>
-              <h3 className="text-lg sm:text-xl font-black text-white tracking-tight">The Weird Lab Is Open</h3>
-              <p className="text-zinc-300 text-sm mt-1 max-w-2xl">
-                Profiler, Typing Test, 3 AM Brain, and Situationship simulator in one parallel module.
-              </p>
-              <div className="mt-3 flex flex-wrap gap-2 text-[10px] font-mono uppercase tracking-wider">
-                <span className="px-2 py-1 rounded border border-fuchsia-400/30 text-fuchsia-200 inline-flex items-center gap-1"><Ghost className="w-3 h-3" />Profiler</span>
-                <span className="px-2 py-1 rounded border border-fuchsia-400/30 text-fuchsia-200 inline-flex items-center gap-1"><Brain className="w-3 h-3" />3 AM Brain</span>
-                <span className="px-2 py-1 rounded border border-fuchsia-400/30 text-fuchsia-200 inline-flex items-center gap-1"><MessageCircleHeart className="w-3 h-3" />Situationship</span>
-              </div>
-            </div>
-            <div className="text-fuchsia-300 group-hover:text-fuchsia-100 transition-colors flex items-center">
-              <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </div>
-          </div>
-        </motion.button>
 
         {/* Grid Layout */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">

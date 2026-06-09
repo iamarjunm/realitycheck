@@ -7,6 +7,7 @@ import { doc, onSnapshot, updateDoc, arrayUnion, deleteDoc } from 'firebase/fire
 import { AnimatePresence, motion } from 'motion/react';
 import { Crosshair, UserRound, ArrowRight, ShieldAlert, Info, X, Zap } from 'lucide-react';
 import { playSound } from '@/lib/sounds';
+import { PokerTable } from '../../components/poker/PokerTable';
 
 const SUITS = ['♠', '♥', '♦', '♣'];
 const RANKS = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
@@ -184,8 +185,9 @@ const getPlayerPosition = (i: number, total: number, meIdx: number) => {
     
     const angle = (Math.PI / 2) + (relIdx * (2 * Math.PI / total));
     
-    const radiusX = 40;
-    const radiusY = 35;
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 640;
+    const radiusX = isMobile ? 40 : 45;
+    const radiusY = isMobile ? 38 : 42;
     
     const top = 50 + Math.sin(angle) * radiusY;
     const left = 50 + Math.cos(angle) * radiusX;
@@ -763,13 +765,31 @@ export default function MultiSniperGameRoom() {
           </div>
 
           {/* Table */}
-          <div className="relative mx-0 my-2 flex flex-1 items-center justify-center overflow-hidden rounded-[40px] border border-white/10 bg-[radial-gradient(ellipse_at_center,rgba(127,29,29,0.24),rgba(0,0,0,0.9)_56%)] p-4 shadow-[inset_0_0_100px_rgba(0,0,0,1)] sm:p-8">
-              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-red-950/20 via-transparent to-transparent opacity-50 pointer-events-none"></div>
-              
+          <div className="relative mx-0 my-2 flex flex-1 flex-col items-center justify-center overflow-hidden rounded-[40px] border border-red-900/30 bg-[#080808] p-4 sm:p-6 shadow-[inset_0_0_80px_rgba(0,0,0,0.9)]">
+              <PokerTable
+                variant="crimson"
+                potLabel={`POT ${game.pot} CR · BET ${game.currentBet} CR`}
+                phaseLabel={game.phase.replace('_', ' ')}
+                className="flex-1 w-full !min-h-[380px]"
+                center={
+                  <div className="flex gap-2 p-4 bg-black/50 rounded-2xl border border-white/10 backdrop-blur-md shadow-2xl">
+                    {game.communityCards.map((c, i) => (
+                      <motion.div initial={{ y: -50, opacity: 0, rotateY: 180 }} animate={{ y: 0, opacity: 1, rotateY: 0 }} transition={{ delay: i * 0.1 }} key={i} className="w-14 h-20 sm:w-16 sm:h-24 bg-white rounded-lg shadow-xl flex items-center justify-center text-2xl sm:text-3xl font-bold border-2 border-zinc-200">
+                        {formatCard(c)}
+                      </motion.div>
+                    ))}
+                    {[...Array(5 - game.communityCards.length)].map((_, i) => (
+                      <div key={'empty'+i} className="w-14 h-20 sm:w-16 sm:h-24 border border-dashed border-white/15 rounded-lg flex items-center justify-center bg-black/40">
+                        <Crosshair className="text-white/10" size={20} />
+                      </div>
+                    ))}
+                  </div>
+                }
+              >
               {/* Join Overlay inside Table area if waiting and NOT player */}
               {!amIPlayer && game.state === 'waiting' && (
-                  <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/65 p-4 backdrop-blur-sm">
-                      <div className="pointer-events-auto w-full max-w-3xl animate-in zoom-in-95 overflow-hidden rounded-[28px] border border-red-900/50 bg-zinc-950/96 shadow-[0_0_60px_rgba(0,0,0,0.58)]">
+                  <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/65 p-4 backdrop-blur-sm pointer-events-auto">
+                      <div className="w-full max-w-3xl animate-in zoom-in-95 overflow-hidden rounded-[28px] border border-red-900/50 bg-zinc-950/96 shadow-[0_0_60px_rgba(0,0,0,0.58)]">
                           <div className="grid gap-0 md:grid-cols-[1.05fr_0.95fr]">
                               <div className="border-b border-white/5 p-6 md:border-b-0 md:border-r md:p-7">
                                   <div className="mb-5 flex items-center justify-between gap-4">
@@ -844,20 +864,6 @@ export default function MultiSniperGameRoom() {
                   </div>
               )}
 
-              {/* Community Cards */}
-              <div className="flex gap-2 p-6 bg-black/40 rounded-2xl border border-white/5 backdrop-blur-sm z-10 shadow-2xl">
-                  {game.communityCards.map((c, i) => (
-                      <motion.div initial={{ y: -50, opacity: 0, rotateY: 180 }} animate={{ y: 0, opacity: 1, rotateY: 0 }} transition={{ delay: i * 0.1 }} key={i} className="w-16 h-24 bg-white rounded-lg shadow-xl flex items-center justify-center text-3xl font-bold border-2 border-zinc-200">
-                          {formatCard(c)}
-                      </motion.div>
-                  ))}
-                  {[...Array(5 - game.communityCards.length)].map((_, i) => (
-                      <div key={'empty'+i} className="w-16 h-24 border border-white/10 rounded-lg flex items-center justify-center bg-black/50 shadow-inner">
-                          <Crosshair className="text-white/5" size={24} />
-                      </div>
-                  ))}
-              </div>
-
               {game.state === 'finished' && game.winner && (
                   <motion.div initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="absolute z-50 text-center pointer-events-none">
                       <div className="text-6xl font-black text-yellow-400 drop-shadow-[0_0_30px_rgba(250,204,21,0.8)] mb-2 uppercase italic tracking-widest">{game.winner}</div>
@@ -899,16 +905,16 @@ export default function MultiSniperGameRoom() {
                                       {p.chips} CR
                                   </div>
 
-                                  <div className="flex gap-2">
+                                  <div className="flex gap-2 flex-nowrap justify-center">
                                       {(game.phase === 'showdown' || p.uid === auth.currentUser?.uid) && p.cards.length > 0 ? (
                                         p.cards.map((c, j) => (
-                                            <div key={j} className="w-10 h-14 bg-white rounded border border-zinc-300 flex items-center justify-center text-lg font-bold shadow-md">
+                                            <div key={j} className="w-10 h-14 bg-white rounded border border-zinc-300 flex items-center justify-center text-lg font-bold shadow-md shrink-0">
                                                 {formatCard(c)}
                                             </div>
                                         ))
                                       ) : p.cards.length > 0 ? (
                                         [1, 2].map((j) => (
-                                            <div key={j} className="w-10 h-14 bg-[repeating-linear-gradient(45deg,transparent,transparent_2px,rgba(255,255,255,0.05)_2px,rgba(255,255,255,0.05)_4px)] bg-red-950 rounded border border-red-500/20 flex items-center justify-center shadow-md">
+                                            <div key={j} className="w-10 h-14 bg-[repeating-linear-gradient(45deg,transparent,transparent_2px,rgba(255,255,255,0.05)_2px,rgba(255,255,255,0.05)_4px)] bg-red-950 rounded border border-red-500/20 flex items-center justify-center shadow-md shrink-0">
                                                 <Crosshair size={12} className="text-red-500/20" />
                                             </div>
                                         ))
@@ -929,6 +935,7 @@ export default function MultiSniperGameRoom() {
                       );
                   })}
               </div>
+              </PokerTable>
           </div>
       </div>
 

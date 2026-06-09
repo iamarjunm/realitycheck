@@ -1,301 +1,138 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { motion, AnimatePresence } from 'motion/react';
-import { ChevronRight, AlertTriangle, List } from 'lucide-react';
-import { QUIZZES } from '../lib/quizzes';
-import { clearLorSession } from '../lib/lor-session';
-import {
-  QuizVibeBackground,
-  QuizSelectScreen,
-  RapidFireQuizScreen,
-  TrickQuizScreen,
-  QuizScreen,
-  InfiniteQuizScreen,
-  TerminalCalculationScreen,
-  ResultScreen,
-  CollectionScreen,
-  LorNegotiatorScreen,
-} from './components/quiz-screens';
+import Link from 'next/link';
+import { motion } from 'motion/react';
+import { LayoutGrid, FlaskConical, Spade, ChevronRight, Crosshair, Flame } from 'lucide-react';
 
-export default function NPCStatCardApp() {
-  const router = useRouter();
-  const [gameState, setGameState] = useState<'select' | 'intro' | 'quiz' | 'calculating' | 'result' | 'collection'>('select');
-  const [activeQuizId, setActiveQuizId] = useState<string | null>(null);
-  const [currentQuestionIdx, setCurrentQuestionIdx] = useState(0);
-  const [currentDepth, setCurrentDepth] = useState(0);
-  const [abyssQuestionSeed, setAbyssQuestionSeed] = useState(0);
-  const [userName, setUserName] = useState('');
-  const [scores, setScores] = useState<Record<string, number>>({});
-  const [finalRole, setFinalRole] = useState<string | null>(null);
-  const [secondaryRole, setSecondaryRole] = useState<string | null>(null);
+const PORTALS = [
+  {
+    href: '/quizzes',
+    title: 'Quizzes',
+    subtitle: 'Diagnose your chaos',
+    description: 'Stat cards, roasts, LOR evaluations, and reality checks. Pick a module and get your collectible result.',
+    icon: LayoutGrid,
+    accent: 'cyan',
+    gradient: 'from-cyan-500/20 via-cyan-900/10 to-transparent',
+    border: 'border-cyan-500/30 hover:border-cyan-400/60',
+    glow: 'group-hover:shadow-[0_0_40px_rgba(34,211,238,0.15)]',
+    text: 'text-cyan-400',
+    badge: 'NPC Stat Cards',
+  },
+  {
+    href: '/experiences',
+    title: 'Experiences',
+    subtitle: 'The weird lab',
+    description: 'Profiler, typing test, 3 AM brain, situationship simulator — experimental side quests.',
+    icon: FlaskConical,
+    accent: 'fuchsia',
+    gradient: 'from-fuchsia-500/20 via-fuchsia-900/10 to-transparent',
+    border: 'border-fuchsia-500/30 hover:border-fuchsia-400/60',
+    glow: 'group-hover:shadow-[0_0_40px_rgba(217,70,239,0.15)]',
+    text: 'text-fuchsia-400',
+    badge: 'Experiments',
+  },
+  {
+    href: '/card-games',
+    title: 'Card Games',
+    subtitle: 'High-stakes tables',
+    description: 'Death Parade, Sniper Hold\'em, and Doubt & Bet. Create a lobby, invite friends, play live.',
+    icon: Spade,
+    accent: 'amber',
+    gradient: 'from-amber-500/15 via-emerald-900/10 to-transparent',
+    border: 'border-amber-500/25 hover:border-amber-400/50',
+    glow: 'group-hover:shadow-[0_0_40px_rgba(245,158,11,0.12)]',
+    text: 'text-amber-400',
+    badge: 'Multiplayer',
+  },
+] as const;
 
-  const activeQuiz = QUIZZES.find((quiz) => quiz.id === activeQuizId);
-
-  const selectQuiz = (id: string, options?: { force?: boolean }) => {
-    let finalId = id;
-    if (!options?.force && Math.random() < 0.15 && id !== 'trick') {
-      finalId = 'trick';
-    }
-
-    const quiz = QUIZZES.find((entry) => entry.id === finalId);
-    const initialScores: Record<string, number> = {};
-
-    if (quiz) {
-      Object.keys(quiz.roles).forEach((key) => {
-        initialScores[key] = 0;
-      });
-    }
-
-    setActiveQuizId(finalId);
-    setCurrentQuestionIdx(0);
-    setCurrentDepth(0);
-    setAbyssQuestionSeed(0);
-    setScores(initialScores);
-    setFinalRole(null);
-    setSecondaryRole(null);
-    setUserName('');
-    setGameState('intro');
-  };
-
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const quizId = params.get('quiz');
-    if (!quizId || gameState !== 'select') return;
-    const directQuiz = QUIZZES.find((quiz) => quiz.id === quizId);
-    if (!directQuiz) return;
-    selectQuiz(quizId, { force: true });
-  }, [gameState]);
-
-  const handleStart = () => {
-    if (!userName.trim()) return;
-    if (activeQuizId === 'lor') clearLorSession();
-    setGameState('quiz');
-  };
-
-  const handleAnswer = (points: Record<string, number>, forceEnd?: boolean) => {
-    if (activeQuiz?.type === 'infinite') {
-      if (forceEnd) {
-        setGameState('calculating');
-        return;
-      }
-
-      const depthGain = Math.max(0, Number(points.depth ?? 1));
-      setCurrentDepth((previousDepth) => previousDepth + depthGain);
-      setAbyssQuestionSeed((previousSeed) => previousSeed + 1);
-      return;
-    }
-
-    setScores((previousScores) => {
-      const updatedScores = { ...previousScores };
-      for (const [role, pointsValue] of Object.entries(points)) {
-        if (role.startsWith('__')) continue;
-        if (updatedScores[role] !== undefined) updatedScores[role] += pointsValue;
-        else updatedScores[role] = pointsValue;
-      }
-      return updatedScores;
-    });
-
-    setCurrentQuestionIdx((previousIndex) => {
-      if (forceEnd) {
-        setGameState('calculating');
-        return previousIndex;
-      }
-
-      if (activeQuiz && previousIndex < activeQuiz.questions.length - 1) {
-        return previousIndex + 1;
-      }
-
-      setGameState('calculating');
-      return previousIndex;
-    });
-  };
-
-  const handleStopDescending = () => {
-    setGameState('calculating');
-  };
-
-  const getAbyssRoleForDepth = (depth: number) => {
-    const abyssRoles = ['ABYSS_0', 'ABYSS_1', 'ABYSS_2', 'ABYSS_3', 'ABYSS_4', 'ABYSS_5'];
-    return abyssRoles[Math.min(Math.floor(depth / 4), abyssRoles.length - 1)] ?? 'ABYSS_0';
-  };
-
-  useEffect(() => {
-    if (gameState !== 'calculating' || !activeQuiz) return;
-
-    const timeoutId = setTimeout(() => {
-      let winningRole = 'BACKGROUND_EXTRA';
-      let secondaryWinningRole: string | null = null;
-
-      if (activeQuiz.type === 'infinite') {
-        winningRole = getAbyssRoleForDepth(currentDepth);
-      } else {
-        const sortedScores = Object.entries(scores).sort((left, right) => right[1] - left[1]);
-        winningRole = sortedScores[0]?.[0] || 'BACKGROUND_EXTRA';
-
-        if (sortedScores.length > 1 && sortedScores[0][1] - sortedScores[1][1] <= 2 && sortedScores[1][1] > 0) {
-          secondaryWinningRole = sortedScores[1][0];
-        }
-      }
-
-      setFinalRole(winningRole);
-      setSecondaryRole(secondaryWinningRole);
-      setGameState('result');
-
-      try {
-        const unlockedJson = localStorage.getItem('unlockedCards');
-        const unlockedCards = unlockedJson ? JSON.parse(unlockedJson) : [];
-        if (!unlockedCards.includes(winningRole)) {
-          unlockedCards.push(winningRole);
-          localStorage.setItem('unlockedCards', JSON.stringify(unlockedCards));
-        }
-      } catch (error) {
-        console.error('Could not access localStorage', error);
-      }
-    }, 3000);
-
-    return () => clearTimeout(timeoutId);
-  }, [gameState, activeQuiz, scores, currentDepth]);
-
-  const restartQuiz = () => {
-    if (!activeQuiz) return;
-    if (activeQuiz.id === 'lor') clearLorSession();
-
-    const initialScores: Record<string, number> = {};
-    Object.keys(activeQuiz.roles).forEach((key) => {
-      initialScores[key] = 0;
-    });
-
-    setScores(initialScores);
-    setCurrentQuestionIdx(0);
-    setCurrentDepth(0);
-    setAbyssQuestionSeed(0);
-    setFinalRole(null);
-    setSecondaryRole(null);
-    setUserName('');
-    setGameState('intro');
-  };
-
-  const backToSelect = () => {
-    setActiveQuizId(null);
-    setCurrentQuestionIdx(0);
-    setCurrentDepth(0);
-    setAbyssQuestionSeed(0);
-    setScores({});
-    setFinalRole(null);
-    setSecondaryRole(null);
-    setUserName('');
-    setGameState('select');
-  };
-
+export default function HomePage() {
   return (
-    <main className="min-h-[100dvh] w-screen relative flex flex-col items-center justify-start p-4 overflow-x-hidden overflow-y-auto pt-16 sm:pt-4 crt-flicker bg-black text-white">
-      <QuizVibeBackground quizId={activeQuizId} gameState={gameState} abyssDepth={currentDepth} />
-      <div className="absolute inset-0 extreme-noise pointer-events-none" />
+    <div className="min-h-screen bg-black text-white relative overflow-hidden">
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-cyan-500/5 rounded-full blur-[120px]" />
+        <div className="absolute bottom-0 left-0 w-[500px] h-[400px] bg-fuchsia-600/5 rounded-full blur-[100px]" />
+        <div className="absolute bottom-0 right-0 w-[500px] h-[400px] bg-amber-600/5 rounded-full blur-[100px]" />
+        <div className="absolute inset-0 bg-grid-white opacity-40" />
+      </div>
 
-      {gameState !== 'select' && (
-        <button
-          onClick={backToSelect}
-          className="absolute top-4 left-4 z-50 text-cyan-500 hover:text-cyan-400 font-mono text-sm flex items-center bg-black/40 px-3 py-1.5 rounded-full border border-cyan-500/30 backdrop-blur-md transition-all"
+      <div className="relative z-10 max-w-6xl mx-auto px-6 py-16 sm:py-24">
+        <motion.header
+          initial={{ opacity: 0, y: -16 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center mb-16 sm:mb-20"
         >
-          <List className="w-4 h-4 mr-2" />
-          <span className="hidden sm:inline">CHANGE MODULE</span>
-          <span className="sm:hidden">MENU</span>
-        </button>
-      )}
+          <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-[10px] font-mono uppercase tracking-[0.35em] text-zinc-400 mb-6">
+            Welcome to
+          </div>
+          <h1 className="text-5xl sm:text-7xl font-black uppercase tracking-tighter text-white mb-4">
+            Reality <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-fuchsia-400 to-amber-400">Check</span>
+          </h1>
+          <p className="text-zinc-500 font-mono text-sm max-w-lg mx-auto leading-relaxed">
+            Three doors. Quizzes to roast yourself, experiments to break your brain, and card tables to lose chips on.
+          </p>
+        </motion.header>
 
-      <AnimatePresence mode="wait">
-        {gameState === 'select' && (
-          <QuizSelectScreen
-            key="select"
-            onSelect={selectQuiz}
-            onViewCollection={() => setGameState('collection')}
-            onOpenExperiments={() => router.push('/experiences')}
-          />
-        )}
-
-        {gameState === 'collection' && <CollectionScreen key="collection" />}
-
-        {gameState === 'intro' && activeQuiz && (
-          <motion.div key="intro" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, filter: 'blur(10px)' }} className="z-10 flex flex-col items-center max-w-xl text-center space-y-8 my-auto">
-            <div className="space-y-6 relative z-10 mt-8">
-              <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full blur-3xl rounded-full pointer-events-none ${activeQuiz.id === 'lor' ? 'bg-[#8b5a2b]/20' : 'bg-cyan-500/10'}`} />
-              <div className={`relative inline-flex items-center space-x-2 bg-black border-2 font-black text-xs sm:text-sm px-4 py-1.5 shadow-[4px_4px_0_rgba(0,0,0,0.5)] transform -rotate-2 mb-4 ${activeQuiz.id === 'lor' ? 'border-[#8b5a2b] text-[#e5c158]' : 'border-red-500 text-red-500'}`}>
-                <AlertTriangle className="w-4 h-4 animate-ping" />
-                <span className="tracking-widest">{activeQuiz.id === 'lor' ? 'LOR EVALUATION PIPELINE' : 'WARNING: TRUTH PROTOCOL'}</span>
-              </div>
-              <h1 className="relative text-4xl sm:text-5xl md:text-6xl font-black tracking-tighter text-white uppercase glitch-overlay" data-text={activeQuiz.title}>{activeQuiz.title}</h1>
-              <p className={`text-lg sm:text-xl md:text-2xl font-black tracking-[0.2em] uppercase bg-black/80 px-4 py-1 inline-block border-y-4 transform rotate-1 ${activeQuiz.id === 'lor' ? 'text-[#e5c158] border-[#8b5a2b]' : 'text-cyan-400 border-cyan-500'}`}>{activeQuiz.subtitle}</p>
-            </div>
-
-            <p className={`text-zinc-300 font-mono text-sm sm:text-base max-w-md px-6 py-4 bg-zinc-900/80 border-l-4 relative z-10 shadow-lg ${activeQuiz.id === 'lor' ? 'border-[#8b5a2b]' : 'border-fuchsia-500'}`}>{activeQuiz.description}</p>
-
-            {activeQuiz.id === 'lor' && (
-              <div className="font-mono text-[10px] text-[#a27b5c] uppercase tracking-widest space-y-1 relative z-10">
-                <p>① Tap dossier (contribution + team takes) · ② Founder DM · ③ Collectible card</p>
-                <p className="text-zinc-500">All answers appear in your downloadable report</p>
-              </div>
-            )}
-
-            <div className="flex flex-col items-center w-full max-w-sm space-y-6 pt-6 relative z-10">
-              <input
-                type="text"
-                maxLength={20}
-                value={userName}
-                onChange={(event) => setUserName(event.target.value)}
-                placeholder={activeQuiz.id === 'lor' ? 'LEGAL_NAME_FOR_LOR_' : 'INPUT_ENTITY_NAME_'}
-                className={`w-full bg-black/50 border-4 text-center text-white text-2xl py-4 focus:outline-none transition-colors font-black placeholder:text-zinc-600 uppercase shadow-[6px_6px_0_rgba(0,0,0,0.8)] transform -rotate-1 ${activeQuiz.id === 'lor' ? 'border-[#8b5a2b]/60 focus:border-[#e5c158] focus:shadow-[6px_6px_0_rgba(139,90,43,0.5)]' : 'border-zinc-700 focus:border-cyan-400 focus:shadow-[6px_6px_0_rgba(34,211,238,0.5)]'}`}
-                onKeyDown={(event) => {
-                  if (event.key === 'Enter' && userName.trim()) handleStart();
-                }}
-                suppressHydrationWarning
-                autoComplete="off"
-                data-1p-ignore
-              />
-              <button
-                onClick={handleStart}
-                disabled={!userName.trim()}
-                className={`group relative w-full py-5 text-black font-black text-2xl uppercase tracking-widest border-4 border-black shadow-[8px_8px_0_rgba(0,0,0,0.5)] hover:shadow-[4px_4px_0_rgba(0,0,0,0.5)] hover:translate-x-1 hover:translate-y-1 transition-all disabled:opacity-50 disabled:hover:translate-x-0 disabled:hover:translate-y-0 disabled:shadow-none sticker-card ${activeQuiz.id === 'lor' ? 'bg-[#e5c158] hover:bg-[#f5e6b8]' : 'bg-cyan-400'}`}
-                style={{ '--rot': '1' } as React.CSSProperties}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {PORTALS.map((portal, i) => {
+            const Icon = portal.icon;
+            return (
+              <motion.div
+                key={portal.href}
+                initial={{ opacity: 0, y: 24 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.1 }}
               >
-                <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:not-disabled:translate-y-0 transition-transform duration-300" />
-                <span className="relative flex items-center justify-center">
-                  {activeQuiz.id === 'lor' ? 'BEGIN EVALUATION' : 'EXECUTE'} <ChevronRight className="ml-2 w-6 h-6 group-hover:not-disabled:translate-x-2 transition-transform" />
-                </span>
-              </button>
-            </div>
-          </motion.div>
-        )}
+                <Link
+                  href={portal.href}
+                  className={`group relative flex flex-col h-full min-h-[280px] rounded-2xl border bg-zinc-950/80 backdrop-blur-sm p-6 transition-all duration-300 ${portal.border} ${portal.glow}`}
+                >
+                  <div className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${portal.gradient} opacity-0 group-hover:opacity-100 transition-opacity`} />
 
-        {gameState === 'quiz' &&
-          activeQuiz &&
-          (activeQuiz.id === 'lor' ? (
-            <LorNegotiatorScreen key="lor-negotiator" userName={userName} onAnswer={handleAnswer} />
-          ) : activeQuiz.type === 'rapid-fire' ? (
-            <RapidFireQuizScreen key={`rapid-fire-quiz-${currentQuestionIdx}`} question={activeQuiz.questions[currentQuestionIdx]} progress={(currentQuestionIdx / activeQuiz.questions.length) * 100} onAnswer={handleAnswer} />
-          ) : activeQuiz.type === 'infinite' ? (
-            <InfiniteQuizScreen key="infinite-quiz" questions={activeQuiz.questions} currentDepth={currentDepth} progress={Math.min(((currentDepth % 4) / 4) * 100, 100)} questionSeed={abyssQuestionSeed} onAnswer={handleAnswer} onStopDescending={handleStopDescending} />
-          ) : activeQuiz.type === 'trick' ? (
-            <TrickQuizScreen key={`trick-quiz-${currentQuestionIdx}`} question={activeQuiz.questions[currentQuestionIdx]} progress={(currentQuestionIdx / activeQuiz.questions.length) * 100} onAnswer={handleAnswer} />
-          ) : (
-            <QuizScreen key={`quiz-${currentQuestionIdx}`} quizId={activeQuiz.id} question={activeQuiz.questions[currentQuestionIdx]} progress={(currentQuestionIdx / activeQuiz.questions.length) * 100} onAnswer={handleAnswer} />
-          ))}
+                  <div className="relative z-10 flex flex-col h-full">
+                    <div className="flex items-start justify-between mb-5">
+                      <div className={`p-3 rounded-xl border border-white/10 bg-black/40 ${portal.text}`}>
+                        <Icon size={22} />
+                      </div>
+                      <span className={`text-[9px] font-mono uppercase tracking-widest ${portal.text} opacity-70`}>
+                        {portal.badge}
+                      </span>
+                    </div>
 
-        {gameState === 'calculating' && <TerminalCalculationScreen key="calc" />}
+                    <h2 className="text-2xl font-black uppercase tracking-tight text-white mb-1 group-hover:text-white">
+                      {portal.title}
+                    </h2>
+                    <p className={`text-xs font-mono uppercase tracking-widest mb-4 ${portal.text}`}>
+                      {portal.subtitle}
+                    </p>
+                    <p className="text-sm text-zinc-400 leading-relaxed flex-1 mb-6">
+                      {portal.description}
+                    </p>
 
-        {gameState === 'result' && finalRole && activeQuiz && (
-          <ResultScreen
-            key="result"
-            roleDef={activeQuiz.roles[finalRole]}
-            secondaryRoleDef={secondaryRole ? activeQuiz.roles[secondaryRole] : null}
-            quizName={activeQuiz.title}
-            quizId={activeQuiz.id}
-            userName={userName}
-            onRestart={restartQuiz}
-          />
-        )}
-      </AnimatePresence>
-    </main>
+                    <div className={`flex items-center justify-between text-xs font-black uppercase tracking-widest ${portal.text} opacity-80 group-hover:opacity-100`}>
+                      <span>Enter</span>
+                      <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                    </div>
+                  </div>
+                </Link>
+              </motion.div>
+            );
+          })}
+        </div>
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.4 }}
+          className="mt-12 flex flex-wrap justify-center gap-4 text-[10px] font-mono uppercase tracking-widest text-zinc-600"
+        >
+          <span className="inline-flex items-center gap-1.5"><Crosshair size={12} className="text-red-500/60" /> Sniper Hold&apos;em</span>
+          <span className="text-zinc-800">·</span>
+          <span className="inline-flex items-center gap-1.5"><Flame size={12} className="text-purple-500/60" /> Doubt &amp; Bet</span>
+          <span className="text-zinc-800">·</span>
+          <span className="inline-flex items-center gap-1.5"><Spade size={12} className="text-emerald-500/60" /> Death Parade</span>
+        </motion.div>
+      </div>
+    </div>
   );
 }

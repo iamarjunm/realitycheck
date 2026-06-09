@@ -6,6 +6,9 @@ import { db, auth } from '@/lib/firebase';
 import { doc, updateDoc, onSnapshot, arrayUnion } from 'firebase/firestore';
 import type { DocumentSnapshot } from 'firebase/firestore';
 import { signInAnonymously } from 'firebase/auth';
+import Link from 'next/link';
+import { ArrowLeft } from 'lucide-react';
+import { PokerTable } from '@/app/components/poker/PokerTable';
 
 const RANKS = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
 const SUITS = ['H', 'C', 'D', 'S'];
@@ -484,141 +487,117 @@ export default function GameRoom() {
     );
   };
 
+  const turnLabel =
+    game.currentTurn === 'betting' && !myBetSubmitted ? 'Your turn to bet' :
+    game.currentTurn === 'betting' && myBetSubmitted ? 'Waiting for opponent bet' :
+    game.currentTurn === 'action' && isActivePlayer ? 'Your action' :
+    game.currentTurn === 'action' ? 'Opponent deciding' :
+    game.currentTurn === 'answering' && game.activePlayerId !== auth.currentUser?.uid ? 'Answer the question' :
+    game.currentTurn === 'answering' ? 'Waiting for answer' : 'Playing';
+
   return (
-    <div className="min-h-screen p-4 max-w-4xl mx-auto flex flex-col gap-6 text-white pt-24">
-      {/* Header */}
-      <div className="bg-zinc-900/80 backdrop-blur rounded-2xl p-4 border border-zinc-800 flex justify-between items-center text-center sm:text-left">
-        <div>
-          <h1 className="font-bold text-xl tracking-wide uppercase">Death Parade</h1>
-          <p className="text-zinc-500 text-sm font-mono">Round {game.roundCount}</p>
-        </div>
-        {!isSpectator && (
-          <div className="bg-white text-black px-4 py-2 rounded-full text-sm font-bold font-mono">
-            Your Tokens: {myTokens}
+    <div className="min-h-screen bg-[#050a08] text-white flex flex-col lg:flex-row gap-0 lg:gap-4 p-4">
+      <div className="flex-1 flex flex-col gap-4 min-h-0">
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-emerald-900/40 bg-black/60 px-4 py-3 backdrop-blur">
+          <div className="flex items-center gap-4">
+            <Link href="/card-games" className="text-zinc-500 hover:text-white transition-colors"><ArrowLeft size={18} /></Link>
+            <div>
+              <h1 className="font-black uppercase tracking-tight text-lg">Death Parade</h1>
+              <p className="text-[10px] font-mono uppercase tracking-widest text-zinc-500">Round {game.roundCount ?? '—'}</p>
+            </div>
           </div>
-        )}
-        {game.state === 'finished' && (
-          <div className="bg-green-600 px-6 py-2 rounded-xl font-bold">
-            Player {game.winner === game.player1 ? '1' : '2'} WINS!
+          {!isSpectator && (
+            <div className="rounded-full border border-emerald-500/30 bg-emerald-950/50 px-4 py-1.5 text-sm font-bold font-mono text-emerald-200">
+              Your Tokens: {myTokens}
+            </div>
+          )}
+          {game.state === 'finished' && (
+            <div className="rounded-xl bg-emerald-600 px-5 py-2 font-black uppercase text-sm">
+              Player {game.winner === game.player1 ? '1' : '2'} Wins
+            </div>
+          )}
+        </div>
+
+        <div className="flex-1 relative rounded-[2rem] border border-emerald-900/30 bg-[#060d0a] p-4 min-h-[420px]">
+          <PokerTable
+            variant="emerald"
+            potLabel={!isSpectator ? `YOUR TOKENS: ${myTokens}` : 'SPECTATING'}
+            phaseLabel={turnLabel}
+            className="h-full !min-h-[360px]"
+          >
+            {/* Opponent — top of table */}
+            <div className="absolute top-[8%] left-1/2 -translate-x-1/2 z-20 flex flex-col items-center">
+              <div className="mb-2 text-[10px] font-bold uppercase tracking-[0.3em] text-zinc-500">Opponent</div>
+              <div className="flex gap-1.5 sm:gap-2 flex-wrap justify-center max-w-[90vw]">
+                {opponentCards.map((c, i) => renderCard(c, game.state !== 'finished'))}
+              </div>
+            </div>
+
+            {/* Your hand — bottom of table */}
+            {!isSpectator && (
+              <div className="absolute bottom-[6%] left-1/2 -translate-x-1/2 z-20 flex flex-col items-center">
+                <div className="mb-2 text-[10px] font-bold uppercase tracking-[0.3em] text-emerald-400/80">Your Hand</div>
+                <div className="flex gap-1.5 sm:gap-2 flex-wrap justify-center">
+                  {myCards.map((c, i) => renderCard(c, false))}
+                </div>
+              </div>
+            )}
+          </PokerTable>
+        </div>
+
+        {game.state === 'playing' && (
+          <div className="rounded-2xl border border-white/10 bg-zinc-950/90 p-5 backdrop-blur shadow-xl">
+            <h3 className="font-black mb-4 text-center text-xs uppercase tracking-[0.25em] text-zinc-400">{turnLabel}</h3>
+
+            {game.currentTurn === 'betting' && !myBetSubmitted && (
+              <div className="flex flex-col gap-4">
+                <div className="flex flex-wrap gap-2 justify-center">
+                  {[0,1,2,3,4,5,6,7,8,9,10,11,12].filter(n => n <= myTokens).map(n => (
+                    <button key={n} onClick={() => setMyBet(n)} className={`h-11 w-11 rounded-full font-bold transition ${myBet === n ? 'bg-emerald-400 text-black scale-110 shadow-lg' : 'bg-zinc-900 border border-white/10 hover:border-emerald-500/50'}`}>{n}</button>
+                  ))}
+                </div>
+                <button onClick={submitBet} className="w-full bg-white text-black py-3.5 rounded-xl font-black uppercase tracking-widest hover:bg-zinc-100 transition">Lock Bet</button>
+              </div>
+            )}
+
+            {game.currentTurn === 'action' && isActivePlayer && (
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="rounded-xl border border-white/10 bg-black/40 p-4">
+                  <h4 className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-3">Ask</h4>
+                  <div className="flex gap-2">
+                    <input value={question} onChange={e => setQuestion(e.target.value)} placeholder="Any red cards?" className="flex-1 bg-zinc-900 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500 border border-transparent" />
+                    <button onClick={askQuestion} disabled={!question} className="bg-emerald-500 text-black px-4 py-2 rounded-lg font-bold text-sm disabled:opacity-40">Ask</button>
+                  </div>
+                </div>
+                <div className="rounded-xl border border-white/10 bg-black/40 p-4">
+                  <h4 className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-3">Final guess</h4>
+                  <div className="grid grid-cols-4 gap-1.5 mb-3">
+                    {guessCards.map((g, i) => (
+                      <input key={i} value={guessCards[i]} onChange={e => { const n = [...guessCards]; n[i] = e.target.value; setGuessCards(n); }} className="w-full text-center bg-zinc-900 rounded py-1.5 text-xs uppercase font-bold" placeholder={`${i+1}`} />
+                    ))}
+                  </div>
+                  <button onClick={makeGuess} className="w-full bg-red-600 hover:bg-red-500 py-2.5 rounded-lg font-bold uppercase text-xs tracking-widest">Submit Guess</button>
+                </div>
+              </div>
+            )}
+
+            {game.currentTurn === 'answering' && game.activePlayerId !== auth.currentUser?.uid && (
+              <div className="text-center py-2">
+                <p className="text-lg italic text-zinc-300 mb-6">&ldquo;{game.pendingQuestion}&rdquo;</p>
+                <button onClick={promptAndSubmitAnswer} className="rounded-xl bg-white px-8 py-3 font-bold text-black hover:bg-zinc-100">Answer</button>
+              </div>
+            )}
           </div>
         )}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        
-        {/* Play Area */}
-        <div className="md:col-span-2 flex flex-col gap-6">
-          
-          {/* Opponent Area */}
-          <div className="bg-zinc-900/50 rounded-2xl p-6 border border-zinc-800">
-            <div className="flex justify-between mb-4 items-center">
-              <h3 className="font-bold text-zinc-400 uppercase text-sm tracking-wider">Opponent's Cards</h3>
-            </div>
-            <div className="flex flex-wrap gap-2 justify-center">
-              {opponentCards.map((c, i) => renderCard(c, game.state !== 'finished'))}
-            </div>
-          </div>
-
-          {/* Action Area */}
-          {game.state === 'playing' && (
-            <div className="bg-zinc-900 rounded-2xl p-6 border border-zinc-800 shadow-xl">
-              <h3 className="font-bold mb-6 text-center text-zinc-300">
-                {game.currentTurn === 'betting' && !myBetSubmitted && "YOUR TURN TO BET"}
-                {game.currentTurn === 'betting' && myBetSubmitted && "WAITING FOR OPPONENT TO BET..."}
-                {game.currentTurn === 'action' && isActivePlayer && "YOUR ACTION: ASK OR GUESS"}
-                {game.currentTurn === 'action' && !isActivePlayer && "OPPONENT IS DECIDING..."}
-                {game.currentTurn === 'answering' && game.activePlayerId !== auth.currentUser?.uid && "ANSWER THE QUESTION"}
-                {game.currentTurn === 'answering' && game.activePlayerId === auth.currentUser?.uid && "WAITING FOR ANSWER..."}
-              </h3>
-
-              {game.currentTurn === 'betting' && !myBetSubmitted && (
-                <div className="flex flex-col gap-4">
-                  <div className="flex flex-wrap gap-2 justify-center">
-                    {[0,1,2,3,4,5,6,7,8,9,10,11,12].filter(n => n <= myTokens).map(n => (
-                      <button 
-                        key={n} 
-                        onClick={() => setMyBet(n)}
-                        className={`w-12 h-12 rounded-full font-bold transition ${myBet === n ? 'bg-white text-black scale-110' : 'bg-zinc-800 hover:bg-zinc-700'}`}
-                      >
-                        {n}
-                      </button>
-                    ))}
-                  </div>
-                  <button onClick={submitBet} className="mt-4 w-full bg-white text-black py-4 rounded-xl font-bold uppercase tracking-widest hover:bg-zinc-200 transition">
-                    Lock Bet
-                  </button>
-                </div>
-              )}
-
-              {game.currentTurn === 'action' && isActivePlayer && (
-                <div className="flex flex-col gap-6">
-                  <div className="border border-zinc-800 bg-black/40 rounded-xl p-4">
-                    <h4 className="font-bold text-sm text-zinc-400 mb-3 uppercase tracking-wider">Ask something</h4>
-                    <div className="flex gap-2">
-                      <input 
-                        value={question} onChange={e => setQuestion(e.target.value)} 
-                        placeholder="e.g. Do you have any red cards?" 
-                        className="flex-grow bg-zinc-800 rounded-lg px-4 focus:outline-none"
-                      />
-                      <button onClick={askQuestion} disabled={!question} className="bg-white text-black px-6 py-2 rounded-lg font-bold disabled:opacity-50">Ask</button>
-                    </div>
-                  </div>
-                  <div className="border border-zinc-800 bg-black/40 rounded-xl p-4">
-                    <h4 className="font-bold text-sm text-zinc-400 mb-3 uppercase tracking-wider">Guess exact sequence (e.g. AH, 2C...)</h4>
-                    <div className="grid grid-cols-4 sm:grid-cols-8 gap-2 mb-4">
-                      {guessCards.map((g, i) => (
-                        <input key={i} value={guessCards[i]} onChange={e => {
-                          const n = [...guessCards]; n[i] = e.target.value; setGuessCards(n);
-                        }} className="w-full text-center bg-zinc-800 rounded py-2 text-sm uppercase focus:outline-none font-bold placeholder:text-zinc-600" placeholder={`#${i+1}`} />
-                      ))}
-                    </div>
-                    <button onClick={makeGuess} className="w-full bg-red-600 hover:bg-red-500 transition text-white py-3 rounded-lg font-bold uppercase tracking-widest">Submit Final Guess</button>
-                  </div>
-                </div>
-              )}
-
-              {game.currentTurn === 'answering' && game.activePlayerId !== auth.currentUser?.uid && (
-                <div className="text-center py-4">
-                  <div className="text-2xl font-serif italic mb-8 break-words text-zinc-300">"{game.pendingQuestion}"</div>
-                  <button
-                    onClick={promptAndSubmitAnswer}
-                    className="rounded-xl bg-white px-10 py-4 text-lg font-bold tracking-wider text-black transition hover:bg-zinc-200"
-                  >
-                    Answer in Popup
-                  </button>
-                </div>
-              )}
-
-            </div>
-          )}
-
-          {/* My Area */}
-          <div className="bg-zinc-900/50 rounded-2xl p-6 border border-zinc-800">
-            <div className="flex justify-between mb-4 items-center">
-              <h3 className="font-bold text-white uppercase text-sm tracking-wider">Your Cards</h3>
-              {!isSpectator && (
-                <span className="bg-white text-black px-3 py-1 rounded-full text-xs font-bold font-mono">
-                  Tokens: {myTokens}
-                </span>
-              )}
-            </div>
-            <div className="flex flex-wrap gap-2 justify-center">
-              {myCards.map((c, i) => renderCard(c, false))}
-            </div>
-          </div>
-
+      <div className="lg:w-72 xl:w-80 flex flex-col rounded-2xl border border-white/10 bg-zinc-950/80 overflow-hidden max-h-[40vh] lg:max-h-none lg:min-h-[500px]">
+        <div className="px-4 py-3 border-b border-white/10 text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500">Event Log</div>
+        <div className="flex-1 overflow-y-auto p-4 space-y-2 font-mono text-[11px]">
+          {[...game.logs].reverse().map((l, i) => (
+            <div key={i} className="text-zinc-500 border-l-2 border-emerald-900 pl-3 py-1">{sanitizeLog(l)}</div>
+          ))}
         </div>
-
-        {/* Sidebar Logs */}
-        <div className="bg-zinc-900 rounded-2xl border border-zinc-800 flex flex-col overflow-hidden max-h-[80vh]">
-          <div className="bg-black/80 px-6 py-4 font-bold border-b border-zinc-800 text-sm tracking-widest text-zinc-400 uppercase">Event Log</div>
-          <div className="p-4 flex-grow overflow-y-auto space-y-3 font-mono text-[11px] max-h-[600px] flex flex-col-reverse">
-            {[...game.logs].reverse().map((l, i) => (
-              <div key={i} className="text-zinc-400 border-l border-zinc-700 pl-3 py-1.5">{sanitizeLog(l)}</div>
-            ))}
-          </div>
-        </div>
-
       </div>
     </div>
   );

@@ -29,7 +29,7 @@ export default function Home() {
               className="inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-widest text-zinc-300 hover:text-white border border-white/20 hover:border-white/50 px-2.5 py-1 rounded transition-colors"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
-              Reality Check
+              Home
             </Link>
             <div className="text-sm font-mono tracking-widest uppercase text-white/50">
               [ EXPERIMENTS ]
