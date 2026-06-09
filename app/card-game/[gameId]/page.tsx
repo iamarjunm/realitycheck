@@ -95,7 +95,6 @@ export default function GameRoom() {
   const [game, setGame] = useState<GameData | null>(null);
   const [myBet, setMyBet] = useState(0);
   const [question, setQuestion] = useState('');
-  const [answerText, setAnswerText] = useState('');
   const [guessCards, setGuessCards] = useState<string[]>(Array(8).fill(''));
   const [selectedCards, setSelectedCards] = useState<string[]>([]);
 
@@ -275,7 +274,19 @@ export default function GameRoom() {
       roundCount: (game.roundCount || 1) + 1,
       logs: arrayUnion(`Opponent answers: ${answer}. New round starting! +2 tokens.`)
     });
-    setAnswerText('');
+  };
+
+  const promptAndSubmitAnswer = () => {
+    const promptLabel = game.pendingQuestion
+      ? `Answer this question:\n${game.pendingQuestion}`
+      : 'Enter your answer';
+    const answer = window.prompt(promptLabel);
+    if (answer === null) return;
+
+    const cleanedAnswer = answer.trim();
+    if (!cleanedAnswer) return;
+
+    answerQuestion(cleanedAnswer);
   };
 
   const makeGuess = async () => {
@@ -290,6 +301,7 @@ export default function GameRoom() {
         logs: arrayUnion(`Player ${isPlayer1 ? 1 : 2} guessed correctly and wins the game!!!`)
       });
     } else {
+      alert('Wrong guess. The round continues.');
       await updateDoc(doc(db, "games", gameId), {
         currentTurn: 'betting', // next round
         player1Bet: null,
@@ -491,7 +503,6 @@ export default function GameRoom() {
           <div className="bg-zinc-900/50 rounded-2xl p-6 border border-zinc-800">
             <div className="flex justify-between mb-4 items-center">
               <h3 className="font-bold text-zinc-400 uppercase text-sm tracking-wider">Opponent's Cards</h3>
-              <span className="bg-zinc-800 px-3 py-1 rounded-full text-xs font-mono">Tokens: {opponentTokens}</span>
             </div>
             <div className="flex flex-wrap gap-2 justify-center">
               {opponentCards.map((c, i) => renderCard(c, game.state !== 'finished'))}
@@ -559,21 +570,12 @@ export default function GameRoom() {
               {game.currentTurn === 'answering' && game.activePlayerId !== auth.currentUser?.uid && (
                 <div className="text-center py-4">
                   <div className="text-2xl font-serif italic mb-8 break-words text-zinc-300">"{game.pendingQuestion}"</div>
-                  <div className="mx-auto flex max-w-xl flex-col gap-4">
-                    <textarea
-                      value={answerText}
-                      onChange={e => setAnswerText(e.target.value)}
-                      placeholder="Type your answer here..."
-                      className="min-h-28 w-full rounded-2xl border border-zinc-700 bg-zinc-950/80 px-4 py-3 text-white placeholder:text-zinc-500 outline-none focus:border-zinc-500"
-                    />
-                    <button
-                      onClick={() => answerQuestion(answerText.trim() || 'No response')}
-                      disabled={!answerText.trim()}
-                      className="rounded-xl bg-white px-10 py-4 text-lg font-bold tracking-wider text-black transition hover:bg-zinc-200 disabled:opacity-50"
-                    >
-                      Send Answer
-                    </button>
-                  </div>
+                  <button
+                    onClick={promptAndSubmitAnswer}
+                    className="rounded-xl bg-white px-10 py-4 text-lg font-bold tracking-wider text-black transition hover:bg-zinc-200"
+                  >
+                    Answer in Popup
+                  </button>
                 </div>
               )}
 
@@ -584,7 +586,6 @@ export default function GameRoom() {
           <div className="bg-zinc-900/50 rounded-2xl p-6 border border-zinc-800">
             <div className="flex justify-between mb-4 items-center">
               <h3 className="font-bold text-white uppercase text-sm tracking-wider">Your Cards</h3>
-              <span className="bg-white text-black px-3 py-1 rounded-full text-xs font-bold">Tokens: {myTokens}</span>
             </div>
             <div className="flex flex-wrap gap-2 justify-center">
               {myCards.map((c, i) => renderCard(c, false))}
