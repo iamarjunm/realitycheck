@@ -71,16 +71,50 @@ const P0_START = { x: 0, y: 2 };
 const P1_START = { x: 4, y: 2 };
 
 // --- HELPER COMPONENTS ---
-const ActionIcon = ({ a, size = 16 }: { a: Action; size?: number }) => {
-  switch (a) {
+// FIXED: Combined Crosshair and Directional Arrows to make attacks clear
+const ActionIcon = ({ a, size = 16, flipHorizontal = false }: { a: Action; size?: number; flipHorizontal?: boolean }) => {
+  let iconAction = a;
+  
+  if (flipHorizontal) {
+    if (a === 'L') iconAction = 'R';
+    else if (a === 'R') iconAction = 'L';
+    else if (a === 'SL') iconAction = 'SR';
+    else if (a === 'SR') iconAction = 'SL';
+  }
+
+  switch (iconAction) {
     case 'U': return <ArrowUp size={size} />;
     case 'D': return <ArrowDown size={size} />;
     case 'L': return <ArrowLeft size={size} />;
     case 'R': return <ArrowRight size={size} />;
-    case 'SU': return <Crosshair size={size} className="rotate-0" />;
-    case 'SD': return <Crosshair size={size} className="rotate-180" />;
-    case 'SL': return <Crosshair size={size} className="-rotate-90" />;
-    case 'SR': return <Crosshair size={size} className="rotate-90" />;
+    case 'SU': 
+      return (
+        <div className="relative flex items-center justify-center w-full h-full">
+          <Crosshair size={size} className="opacity-25 absolute" />
+          <ArrowUp size={size - 2} className="relative z-10" />
+        </div>
+      );
+    case 'SD': 
+      return (
+        <div className="relative flex items-center justify-center w-full h-full">
+          <Crosshair size={size} className="opacity-25 absolute" />
+          <ArrowDown size={size - 2} className="relative z-10" />
+        </div>
+      );
+    case 'SL': 
+      return (
+        <div className="relative flex items-center justify-center w-full h-full">
+          <Crosshair size={size} className="opacity-25 absolute" />
+          <ArrowLeft size={size - 2} className="relative z-10" />
+        </div>
+      );
+    case 'SR': 
+      return (
+        <div className="relative flex items-center justify-center w-full h-full">
+          <Crosshair size={size} className="opacity-25 absolute" />
+          <ArrowRight size={size - 2} className="relative z-10" />
+        </div>
+      );
     case 'SH': return <Shield size={size} />;
     case 'W': return <div className="w-1.5 h-1.5 rounded-full bg-current" />;
     default: return null;
@@ -116,7 +150,6 @@ export default function ChronosAssassin() {
   const [myActions, setMyActions] = useState<Action[]>(['W', 'W', 'W', 'W', 'W']);
   const [activeSlot, setActiveSlot] = useState<number>(0);
   
-  // Execution state
   const [currentTick, setCurrentTick] = useState<number>(-1);
   const meIdxRef = useRef(meIdx);
 
@@ -124,7 +157,6 @@ export default function ChronosAssassin() {
     meIdxRef.current = meIdx;
   }, [meIdx]);
 
-  // Load game
   useEffect(() => {
     if (!gameId) return;
     const unsub = onSnapshot(doc(db, 'chronos_assassin_games', gameId), (snap) => {
@@ -136,7 +168,6 @@ export default function ChronosAssassin() {
     return () => unsub();
   }, [gameId]);
 
-  // Sync myActions when programming phase begins
   useEffect(() => {
     if (game && meIdx !== -1 && game.state === 'programming') {
       const p = game.players[meIdx];
@@ -146,7 +177,6 @@ export default function ChronosAssassin() {
     }
   }, [game?.state, game?.turn, meIdx, game]);
 
-  // Execute Simulation safely, tied directly to a unique executionId
   useEffect(() => {
     if (game?.state === 'executing' && game.executionResults && game.executionId) {
       setCurrentTick(0);
@@ -170,8 +200,6 @@ export default function ChronosAssassin() {
               
               const data = s.data() as GameDoc;
               if (!data.players || !data.players[mIdx]) return;
-              
-              // Defensive check: don't write if already true
               if (data.players[mIdx].readyForNext) return;
               
               const p = [...data.players];
@@ -184,16 +212,14 @@ export default function ChronosAssassin() {
       
       return () => clearInterval(interval);
     }
-  }, [game?.executionId, gameId]); // Strictly depend on executionId
+  }, [game?.executionId, gameId]);
 
-  // Reset for programming phase
   useEffect(() => {
     if (game?.state === 'programming') {
       setCurrentTick(-1);
     }
   }, [game?.state]);
 
-  // Host compute state advancement
   useEffect(() => {
     const creatorIsMe = game && (game.creatorId === auth.currentUser?.uid || game.creatorId === user?.uid);
     if (!creatorIsMe) return;
@@ -256,7 +282,6 @@ export default function ChronosAssassin() {
           executionResults: null,
           executionId: null
         }).then(() => {
-          // Fixed reference error - removed the dead setIsAnimating variable
           if (meIdx === 0) { setCurrentTick(-1); }
         });
       }
@@ -325,7 +350,6 @@ export default function ChronosAssassin() {
     if (meIdx === -1) return;
     
     const ref = doc(db, 'chronos_assassin_games', gameId);
-    
     try {
       await runTransaction(db, async (transaction) => {
         const snap = await transaction.get(ref);
@@ -348,12 +372,20 @@ export default function ChronosAssassin() {
   const me = meIdx !== -1 ? game.players[meIdx] : null;
   const opp = meIdx === 0 ? game.players[1] : game.players[0];
 
+  const leftPlayer = meIdx === 1 ? game.players[1] : game.players[0];
+  const rightPlayer = meIdx === 1 ? game.players[0] : game.players[1];
+
+  const isFlipped = meIdx === 1;
+
+  const palette: Action[] = isFlipped 
+    ? ['U', 'D', 'R', 'L', 'SU', 'SD', 'SR', 'SL', 'SH', 'W'] 
+    : ['U', 'D', 'L', 'R', 'SU', 'SD', 'SL', 'SR', 'SH', 'W'];
+
   return (
     <div className="min-h-[100dvh] bg-black text-cyan-100 font-mono flex flex-col overflow-hidden relative">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-cyan-900/10 via-black to-black pointer-events-none" />
       <div className="absolute inset-0 bg-[linear-gradient(rgba(6,182,212,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(6,182,212,0.03)_1px,transparent_1px)] bg-[size:30px_30px] pointer-events-none" />
 
-      {/* HEADER */}
       <header className="p-4 border-b border-cyan-900/50 flex justify-between items-center bg-black/50 backdrop-blur-sm z-10">
         <div className="flex items-center gap-3">
           <Clock className="text-cyan-400" />
@@ -363,26 +395,23 @@ export default function ChronosAssassin() {
           </div>
         </div>
         
-        {/* SCORES */}
         {game.players.length === 2 && (
           <div className="flex items-center gap-6">
-            <div className={`text-right ${meIdx === 0 ? 'text-cyan-400' : 'text-rose-400'}`}>
-               <div className="text-xs opacity-70">{game.players[0].nickname}</div>
-               <div className="font-black text-xl">{game.players[0].score}</div>
+            <div className="text-right text-cyan-400">
+               <div className="text-xs opacity-70">{leftPlayer?.nickname} {meIdx !== -1 && meIdx === game.players.indexOf(leftPlayer) ? '(You)' : ''}</div>
+               <div className="font-black text-xl">{leftPlayer?.score}</div>
             </div>
             <div className="text-cyan-800 font-black">VS</div>
-            <div className={`text-left ${meIdx === 1 ? 'text-cyan-400' : 'text-rose-400'}`}>
-               <div className="text-xs opacity-70">{game.players[1].nickname}</div>
-               <div className="font-black text-xl">{game.players[1].score}</div>
+            <div className="text-left text-rose-400">
+               <div className="text-xs opacity-70">{rightPlayer?.nickname} {meIdx !== -1 && meIdx === game.players.indexOf(rightPlayer) ? '(You)' : ''}</div>
+               <div className="font-black text-xl">{rightPlayer?.score}</div>
             </div>
           </div>
         )}
       </header>
 
-      {/* MAIN PLAY AREA */}
       <main className="flex-grow flex flex-col items-center justify-center p-4 relative z-10 w-full max-w-4xl mx-auto">
         
-        {/* WAITING OVERLAY */}
         {game.state === 'waiting' && meIdx === -1 && (
           <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
             <div className="bg-cyan-950/20 border border-cyan-500/30 p-8 rounded-2xl w-full max-w-sm">
@@ -432,19 +461,48 @@ export default function ChronosAssassin() {
           </div>
         )}
 
-        {/* BOARD */}
-        <div className="relative aspect-square w-full max-w-[400px] border-2 border-cyan-900/50 bg-black/80 shadow-[0_0_50px_rgba(6,182,212,0.1)] mb-8">
-          {/* Grid lines */}
+        <div className="relative aspect-square w-full max-w-[400px] border-2 border-cyan-900/50 bg-black/80 shadow-[0_0_50px_rgba(6,182,212,0.1)] mb-6">
           <div className="absolute inset-0 grid grid-cols-5 grid-rows-5 pointer-events-none">
             {Array.from({length: 25}).map((_, i) => (
               <div key={i} className="border border-cyan-900/20" />
             ))}
           </div>
-
           <BoardEntities game={game} currentTick={currentTick} meIdx={meIdx} />
         </div>
 
-        {/* PROGRAMMING PANEL */}
+        {game.state === 'executing' && game.executionResults && currentTick >= 0 && (
+          <div className="w-full max-w-lg bg-cyan-950/10 border border-cyan-500/20 rounded-xl p-4 backdrop-blur-sm mb-6">
+            <div className="text-center text-[10px] tracking-widest text-cyan-400 font-black mb-3 uppercase">
+              Timeline Playback Processing
+            </div>
+            <div className="flex gap-2 justify-between">
+              {game.executionResults.map((tickData, i) => {
+                const isActive = currentTick === i;
+                const myAction = meIdx === 1 ? tickData.p1Action : tickData.p0Action;
+                const oppAction = meIdx === 1 ? tickData.p0Action : tickData.p1Action;
+
+                return (
+                  <div 
+                    key={i} 
+                    className={`flex-1 border rounded-lg p-2 flex flex-col items-center justify-center gap-1 transition-all ${
+                      isActive 
+                        ? 'border-cyan-400 bg-cyan-500/20 shadow-[0_0_15px_rgba(6,182,212,0.4)] scale-105' 
+                        : 'border-cyan-900/30 bg-black/40 opacity-40'
+                    }`}
+                  >
+                    <span className={`text-[9px] font-black ${isActive ? 'text-cyan-400' : 'text-zinc-500'}`}>TICK {i+1}</span>
+                    <div className="flex gap-1 items-center text-xs">
+                      <span className="text-cyan-400"><ActionIcon a={myAction} size={14} flipHorizontal={isFlipped} /></span>
+                      <span className="text-zinc-700 text-[10px]">|</span>
+                      <span className="text-rose-400"><ActionIcon a={oppAction} size={14} flipHorizontal={isFlipped} /></span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         {game.state === 'programming' && me && (
           <div className="w-full max-w-lg bg-cyan-950/20 border border-cyan-500/30 rounded-xl p-4 sm:p-6 backdrop-blur-md">
             
@@ -464,19 +522,17 @@ export default function ChronosAssassin() {
                   )}
                 </div>
 
-                {/* Ghosts of Opponent */}
                 {me.pastActions.length > 0 && opp && opp.pastActions.length === 5 && (
                   <div className="flex justify-between gap-2 mb-6 p-2 bg-rose-950/20 border border-rose-900/30 rounded-lg">
                     <div className="w-full flex justify-center text-[10px] text-rose-500/50 -rotate-90 sm:rotate-0 tracking-widest">GHOST</div>
                     {opp.pastActions.map((a, i) => (
                       <div key={i} className="flex-1 aspect-square flex items-center justify-center opacity-30 border-b-2 border-rose-500/50">
-                         <ActionIcon a={a} />
+                         <ActionIcon a={a} flipHorizontal={isFlipped} />
                       </div>
                     ))}
                   </div>
                 )}
 
-                {/* SLOTS */}
                 <div className="flex gap-2 sm:gap-4 mb-6">
                   {myActions.map((a, i) => {
                     const isChangedFromPast = me.pastActions.length > 0 && a !== me.pastActions[i];
@@ -489,21 +545,20 @@ export default function ChronosAssassin() {
                           isChangedFromPast ? 'border-rose-500 text-rose-400' : 'border-cyan-900/60 bg-black'
                         } hover:border-cyan-400`}
                       >
-                         <ActionIcon a={a} size={24} />
+                         <ActionIcon a={a} size={24} flipHorizontal={isFlipped} />
                       </button>
                     )
                   })}
                 </div>
 
-                {/* ACTION PALETTE */}
                 <div className="grid grid-cols-5 gap-2 sm:gap-3 mb-6">
-                  {(['U', 'D', 'L', 'R', 'SU', 'SD', 'SL', 'SR', 'SH', 'W'] as Action[]).map(a => (
+                  {palette.map(a => (
                     <button
                       key={a}
                       onClick={() => handleActionSelect(a)}
                       className={`aspect-square rounded flex items-center justify-center border transition-all hover:scale-105 active:scale-95 ${ACTION_COLORS[a]}`}
                     >
-                      <ActionIcon a={a} />
+                      <ActionIcon a={a} flipHorizontal={isFlipped} />
                     </button>
                   ))}
                 </div>
@@ -519,7 +574,6 @@ export default function ChronosAssassin() {
           </div>
         )}
 
-        {/* FINISHED overlay */}
         {game.state === 'finished' && (
           <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md">
             <div className="text-center">
@@ -543,11 +597,9 @@ export default function ChronosAssassin() {
   );
 }
 
-// --- BOARD RENDER HELPER ---
 function BoardEntities({ game, currentTick, meIdx }: { game: GameDoc, currentTick: number, meIdx: number }) {
   if (!game || game.players.length < 2) return null;
 
-  // Determine current positions
   let p0pos = P0_START;
   let p1pos = P1_START;
   let lasers: {pIndex: number, direction: string, path: Pos[]}[] = [];
@@ -562,7 +614,6 @@ function BoardEntities({ game, currentTick, meIdx }: { game: GameDoc, currentTic
     p0pos = tick.p0Pos;
     p1pos = tick.p1Pos;
     
-    // Animate actions
     if (tick.p0Action === 'SH') p0Shield = true;
     if (tick.p1Action === 'SH') p1Shield = true;
     lasers = tick.lasers;
@@ -570,16 +621,17 @@ function BoardEntities({ game, currentTick, meIdx }: { game: GameDoc, currentTic
     p1Hit = tick.p1Hit;
   }
 
+  const getVisualX = (x: number) => (meIdx === 1 ? BOARD_SIZE - 1 - x : x);
+
   const getPosStyle = (p: Pos) => ({
     top: `${(p.y / BOARD_SIZE) * 100}%`,
-    left: `${(p.x / BOARD_SIZE) * 100}%`,
+    left: `${(getVisualX(p.x) / BOARD_SIZE) * 100}%`,
     width: `${100 / BOARD_SIZE}%`,
     height: `${100 / BOARD_SIZE}%`
   });
 
   return (
     <>
-      {/* Lasers */}
       <AnimatePresence>
         {lasers.map((l, i) => (
            <motion.div
@@ -589,21 +641,21 @@ function BoardEntities({ game, currentTick, meIdx }: { game: GameDoc, currentTic
              exit={{ opacity: 0 }}
              className="absolute inset-0 pointer-events-none"
            >
-             {/* Render laser squares */}
-             {l.path.map((pos, j) => (
-                <div 
-                  key={j} 
-                  className="absolute bg-red-500 shadow-[0_0_15px_#ef4444] animate-pulse" 
-                  style={{
-                    ...getPosStyle(pos), 
-                    margin: 'auto', 
-                    width: `${100/BOARD_SIZE/3}%`, 
-                    height: `${100/BOARD_SIZE/3}%`, 
-                    left: `calc(${(pos.x/BOARD_SIZE)*100}% + ${(100/BOARD_SIZE)/3}%)`, 
-                    top: `calc(${(pos.y/BOARD_SIZE)*100}% + ${(100/BOARD_SIZE)/3}%)`
-                  }} 
-                />
-             ))}
+             {l.path.map((pos, j) => {
+                const vX = getVisualX(pos.x);
+                return (
+                  <div 
+                    key={j} 
+                    className="absolute bg-red-500 shadow-[0_0_15px_#ef4444] animate-pulse" 
+                    style={{
+                      top: `calc(${(pos.y / BOARD_SIZE) * 100}% + ${(100 / BOARD_SIZE) / 3}%)`,
+                      left: `calc(${(vX / BOARD_SIZE) * 100}% + ${(100 / BOARD_SIZE) / 3}%)`,
+                      width: `${100 / BOARD_SIZE / 3}%`,
+                      height: `${100 / BOARD_SIZE / 3}%`
+                    }} 
+                  />
+                );
+             })}
            </motion.div>
         ))}
       </AnimatePresence>
@@ -611,7 +663,7 @@ function BoardEntities({ game, currentTick, meIdx }: { game: GameDoc, currentTic
       <motion.div 
         animate={getPosStyle(p0pos)}
         transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-        className="absolute flex items-center justify-center p-2"
+        className="absolute flex items-center justify-center p-2 z-10"
       >
         <div className={`w-full h-full rounded-md flex items-center justify-center ${meIdx === 0 ? 'bg-cyan-500 shadow-[0_0_20px_#06b6d4]' : 'bg-rose-500/50 border-2 border-rose-500'} ${p0Hit ? 'bg-zinc-800 border-zinc-500' : ''}`}>
            {p0Shield && <div className="absolute -inset-2 rounded-full border-4 border-purple-500/50 bg-purple-500/20" />}
@@ -623,7 +675,7 @@ function BoardEntities({ game, currentTick, meIdx }: { game: GameDoc, currentTic
       <motion.div 
         animate={getPosStyle(p1pos)}
         transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-        className="absolute flex items-center justify-center p-2"
+        className="absolute flex items-center justify-center p-2 z-10"
       >
         <div className={`w-full h-full rounded-md flex items-center justify-center ${meIdx === 1 ? 'bg-cyan-500 shadow-[0_0_20px_#06b6d4]' : 'bg-rose-500/50 border-2 border-rose-500'} ${p1Hit ? 'bg-zinc-800 border-zinc-500' : ''}`}>
            {p1Shield && <div className="absolute -inset-2 rounded-full border-4 border-purple-500/50 bg-purple-500/20" />}
@@ -632,17 +684,12 @@ function BoardEntities({ game, currentTick, meIdx }: { game: GameDoc, currentTic
         </div>
       </motion.div>
 
-      {/* Ghost layer during programming */}
       {game.state === 'programming' && game.players[0]?.pastActions?.length > 0 && (
-         <>
-           <div className="absolute top-2 left-2 text-[10px] text-cyan-500/30 uppercase tracking-widest pointer-events-none">Time Loop Active</div>
-         </>
+         <div className="absolute top-2 left-2 text-[10px] text-cyan-500/30 uppercase tracking-widest pointer-events-none">Time Loop Active</div>
       )}
     </>
   );
 }
-
-// --- SIMULATION LOGIC ---
 
 function simulateTicks(p0Actions: Action[], p1Actions: Action[]): TickResult[] {
   let p0pos = { ...P0_START };
@@ -653,7 +700,6 @@ function simulateTicks(p0Actions: Action[], p1Actions: Action[]): TickResult[] {
     const a0 = p0Actions[tNum] || 'W';
     const a1 = p1Actions[tNum] || 'W';
 
-    // 1. Move calculation
     let t0 = { ...p0pos };
     let t1 = { ...p1pos };
 
@@ -667,7 +713,6 @@ function simulateTicks(p0Actions: Action[], p1Actions: Action[]): TickResult[] {
     if (a1 === 'L' && t1.x > 0) t1.x--;
     if (a1 === 'R' && t1.x < 4) t1.x++;
 
-    // Collision Check
     const bothSameTarget = (t0.x === t1.x && t0.y === t1.y);
     const swapped = (t0.x === p1pos.x && t0.y === p1pos.y && t1.x === p0pos.x && t1.y === p0pos.y);
     
@@ -676,7 +721,6 @@ function simulateTicks(p0Actions: Action[], p1Actions: Action[]): TickResult[] {
       p1pos = t1;
     }
 
-    // 2. Action resolve (Shield & Shooting)
     let p0Shield = (a0 === 'SH');
     let p1Shield = (a1 === 'SH');
     
