@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { db, auth } from '@/lib/firebase';
 import { doc, onSnapshot, updateDoc, arrayUnion } from 'firebase/firestore';
@@ -92,15 +92,28 @@ export default function ChronosAssassin() {
   const params = useParams();
   const gameId = params.gameId as string;
   const [game, setGame] = useState<GameDoc | null>(null);
-  const [localSessionId] = useState(() => {
-    if (typeof window !== 'undefined') {
-      let sid = localStorage.getItem('chronosSid');
-      if (!sid) { sid = Math.random().toString(36).slice(2); localStorage.setItem('chronosSid', sid); }
-      return sid;
-    }
-    return '';
-  });
-  const [meIdx, setMeIdx] = useState<number>(-1);
+  
+  const [localSessionId, setLocalSessionId] = useState('');
+  useEffect(() => {
+    let sid = localStorage.getItem('chronosSid');
+    if (!sid) { sid = Math.random().toString(36).slice(2); localStorage.setItem('chronosSid', sid); }
+    setTimeout(() => setLocalSessionId(sid), 0);
+  }, []);
+
+  const [user, setUser] = useState(auth.currentUser);
+
+  useEffect(() => {
+    const { onAuthStateChanged } = require('firebase/auth');
+    const unsub = onAuthStateChanged(auth, (u: any) => setUser(u));
+    return () => unsub();
+  }, []);
+
+  const meIdx = useMemo(() => {
+    if (!game) return -1;
+    const currentUserUid = auth.currentUser?.uid || user?.uid;
+    return game.players.findIndex(p => (localSessionId && p.sessionId === localSessionId) || (currentUserUid && p.uid === currentUserUid));
+  }, [game, localSessionId, user]);
+
   const [myActions, setMyActions] = useState<Action[]>(['W', 'W', 'W', 'W', 'W']);
   const [activeSlot, setActiveSlot] = useState<number>(0);
   const [showRules, setShowRules] = useState<boolean>(false);
@@ -109,7 +122,10 @@ export default function ChronosAssassin() {
   const [currentTick, setCurrentTick] = useState<number>(-1);
   const [isAnimating, setIsAnimating] = useState(false);
   const meIdxRef = useRef(meIdx);
-  meIdxRef.current = meIdx;
+
+  useEffect(() => {
+    meIdxRef.current = meIdx;
+  }, [meIdx]);
 
   // Load game
   useEffect(() => {
@@ -118,26 +134,29 @@ export default function ChronosAssassin() {
       if (snap.exists()) {
         const data = snap.data() as GameDoc;
         setGame(data);
-        if (auth.currentUser) {
-          const idx = data.players.findIndex(p => p.sessionId === localSessionId || (!p.sessionId && p.uid === auth.currentUser!.uid));
-          setMeIdx(idx);
-          
-          if (idx !== -1 && data.state === 'programming') {
-            if (!data.players[idx].ready) {
-              setMyActions(data.players[idx].actions.length === 5 ? data.players[idx].actions : ['W', 'W', 'W', 'W', 'W']);
-            }
-          }
-        }
       }
     });
     return () => unsub();
-  }, [gameId, localSessionId]);
+  }, [gameId]);
+
+  // Sync myActions when programming phase begins
+  useEffect(() => {
+    if (game && meIdx !== -1 && game.state === 'programming') {
+      const p = game.players[meIdx];
+      if (!p.ready) {
+        setTimeout(() => setMyActions(p.actions.length === 5 ? p.actions : ['W', 'W', 'W', 'W', 'W']), 0);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [game?.state, game?.turn, meIdx]);
 
   // Execute Simulation when executing
   useEffect(() => {
     if (game?.state === 'executing' && game.executionResults && !isAnimating && currentTick === -1) {
-      setIsAnimating(true);
-      setCurrentTick(0);
+      setTimeout(() => {
+        setIsAnimating(true);
+        setCurrentTick(0);
+      }, 0);
       
       const len = game.executionResults.length;
       let tick = 0;
@@ -165,14 +184,17 @@ export default function ChronosAssassin() {
   // Reset for programming phase
   useEffect(() => {
     if (game?.state === 'programming') {
-      setCurrentTick(-1);
-      setIsAnimating(false);
+      setTimeout(() => {
+        setCurrentTick(-1);
+        setIsAnimating(false);
+      }, 0);
     }
   }, [game?.state]);
 
   // Host compute state advancement
   useEffect(() => {
-    if (game && game.creatorId === auth.currentUser?.uid) {
+    const creatorIsMe = game && (game.creatorId === auth.currentUser?.uid || game.creatorId === user?.uid);
+    if (creatorIsMe) {
       if (game.state === 'waiting' && game.players.length === 2) {
         updateDoc(doc(db, 'chronos_assassin_games', gameId), { state: 'programming' });
       }
@@ -241,7 +263,7 @@ export default function ChronosAssassin() {
         }
       }
     }
-  }, [game, meIdx]);
+  }, [game, meIdx, user, gameId]);
 
   const joinGame = async (nickname: string) => {
     if (!game || game.players.length >= 2) return;
