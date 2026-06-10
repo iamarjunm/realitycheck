@@ -3,7 +3,7 @@
 import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { db, auth } from '@/lib/firebase';
-import { doc, onSnapshot, updateDoc, arrayUnion } from 'firebase/firestore';
+import { doc, onSnapshot, updateDoc, arrayUnion, runTransaction } from 'firebase/firestore';
 import { useParams } from 'next/navigation';
 import { playSound } from '@/lib/sounds';
 import { 
@@ -46,12 +46,12 @@ interface GameDoc {
   players: Player[];
   turn: number;
   matchWinner: string | null;
-  executionResults?: TickResult[];
+  executionResults?: TickResult[] | null;
+  executionId?: string | null;
 }
 
 // --- CONSTANTS ---
 const BOARD_SIZE = 5;
-const PLAYERS_MAX = 2;
 const WIN_SCORE = 3;
 
 const ACTION_COLORS: Record<Action, string> = {
@@ -67,7 +67,6 @@ const ACTION_COLORS: Record<Action, string> = {
   'W': 'bg-zinc-500/20 text-zinc-400 border-zinc-500/50',
 };
 
-const AVATAR_COLORS = ['text-cyan-400', 'text-rose-400'];
 const P0_START = { x: 0, y: 2 };
 const P1_START = { x: 4, y: 2 };
 
@@ -109,18 +108,16 @@ export default function ChronosAssassin() {
   }, []);
 
   const meIdx = useMemo(() => {
-    if (!game) return -1;
+    if (!game || !Array.isArray(game.players)) return -1;
     const currentUserUid = auth.currentUser?.uid || user?.uid;
     return game.players.findIndex(p => (localSessionId && p.sessionId === localSessionId) || (currentUserUid && p.uid === currentUserUid));
   }, [game, localSessionId, user]);
 
   const [myActions, setMyActions] = useState<Action[]>(['W', 'W', 'W', 'W', 'W']);
   const [activeSlot, setActiveSlot] = useState<number>(0);
-  const [showRules, setShowRules] = useState<boolean>(false);
   
   // Execution state
   const [currentTick, setCurrentTick] = useState<number>(-1);
-  const [isAnimating, setIsAnimating] = useState(false);
   const meIdxRef = useRef(meIdx);
 
   useEffect(() => {
@@ -147,120 +144,121 @@ export default function ChronosAssassin() {
         setTimeout(() => setMyActions(p.actions.length === 5 ? p.actions : ['W', 'W', 'W', 'W', 'W']), 0);
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [game?.state, game?.turn, meIdx]);
+  }, [game?.state, game?.turn, meIdx, game]);
 
-  // Execute Simulation when executing
+  // Execute Simulation safely, tied directly to a unique executionId
   useEffect(() => {
-    if (game?.state === 'executing' && game.executionResults && !isAnimating && currentTick === -1) {
-      setTimeout(() => {
-        setIsAnimating(true);
-        setCurrentTick(0);
-      }, 0);
+    if (game?.state === 'executing' && game.executionResults && game.executionId) {
+      setCurrentTick(0);
       
       const len = game.executionResults.length;
       let tick = 0;
+      
       const interval = setInterval(() => {
         tick++;
         if (tick < len) {
           setCurrentTick(tick);
         } else {
           clearInterval(interval);
-          setIsAnimating(false);
+          
           const mIdx = meIdxRef.current;
           if (mIdx !== -1) {
-            updateDoc(doc(db, 'chronos_assassin_games', gameId), {
-              [`players.${mIdx}.readyForNext`]: true
-            });
+            const ref = doc(db, 'chronos_assassin_games', gameId);
+            runTransaction(db, async (t) => {
+              const s = await t.get(ref);
+              if (!s.exists()) return;
+              
+              const data = s.data() as GameDoc;
+              if (!data.players || !data.players[mIdx]) return;
+              
+              // Defensive check: don't write if already true
+              if (data.players[mIdx].readyForNext) return;
+              
+              const p = [...data.players];
+              p[mIdx] = { ...p[mIdx], readyForNext: true };
+              t.update(ref, { players: p });
+            }).catch(console.error);
           }
         }
-      }, 1500); // 1.5s per tick for better clarity
+      }, 1500); 
       
       return () => clearInterval(interval);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [game?.state, game?.executionResults]);
+  }, [game?.executionId, gameId]); // Strictly depend on executionId
 
   // Reset for programming phase
   useEffect(() => {
     if (game?.state === 'programming') {
-      setTimeout(() => {
-        setCurrentTick(-1);
-        setIsAnimating(false);
-      }, 0);
+      setCurrentTick(-1);
     }
   }, [game?.state]);
 
   // Host compute state advancement
   useEffect(() => {
     const creatorIsMe = game && (game.creatorId === auth.currentUser?.uid || game.creatorId === user?.uid);
-    if (creatorIsMe) {
-      if (game.state === 'waiting' && game.players.length === 2) {
-        updateDoc(doc(db, 'chronos_assassin_games', gameId), { state: 'programming' });
+    if (!creatorIsMe) return;
+
+    if (game.state === 'waiting' && game.players.length === 2) {
+      updateDoc(doc(db, 'chronos_assassin_games', gameId), { state: 'programming' });
+    }
+    
+    if (game.state === 'programming' && game.players.length === 2) {
+      if (game.players[0].ready && game.players[1].ready) {
+        const results = simulateTicks(game.players[0].actions, game.players[1].actions);
+        
+        const p0 = { ...game.players[0], readyForNext: false };
+        const p1 = { ...game.players[1], readyForNext: false };
+
+        updateDoc(doc(db, 'chronos_assassin_games', gameId), {
+          state: 'executing',
+          executionResults: results,
+          executionId: Math.random().toString(36).slice(2),
+          players: [p0, p1]
+        });
       }
-      
-      if (game.state === 'programming' && game.players.length === 2) {
-        if (game.players[0].ready && game.players[1].ready) {
-          // Compute execution
-          const results = simulateTicks(game.players[0].actions, game.players[1].actions);
-          const isKill = results[results.length - 1].p0Hit || results[results.length - 1].p1Hit;
-          
-          updateDoc(doc(db, 'chronos_assassin_games', gameId), {
-            state: 'executing',
-            executionResults: results,
-            [`players.0.readyForNext`]: false,
-            [`players.1.readyForNext`]: false
-          });
+    }
+
+    if (game.state === 'executing' && game.players.length === 2) {
+      if (game.players[0].readyForNext && game.players[1].readyForNext) {
+        const results = game.executionResults!;
+        const finalTick = results[results.length - 1];
+        let p0Score = game.players[0].score;
+        let p1Score = game.players[1].score;
+        
+        let p0Past = game.players[0].actions;
+        let p1Past = game.players[1].actions;
+        let nextTurn = game.turn + 1;
+
+        if (finalTick.p0Hit || finalTick.p1Hit) {
+          if (finalTick.p0Hit && !finalTick.p1Hit) p1Score++;
+          if (finalTick.p1Hit && !finalTick.p0Hit) p0Score++;
+          p0Past = [];
+          p1Past = [];
+          nextTurn = 1; 
         }
-      }
 
-      if (game.state === 'executing' && game.players.length === 2) {
-        if (game.players[0].readyForNext && game.players[1].readyForNext) {
-          const results = game.executionResults!;
-          const finalTick = results[results.length - 1];
-          let p0Score = game.players[0].score;
-          let p1Score = game.players[1].score;
-          
-          let p0Past = game.players[0].actions;
-          let p1Past = game.players[1].actions;
-          let nextTurn = game.turn + 1;
+        let state = 'programming';
+        let matchWinner = null;
+        if (p0Score >= WIN_SCORE) { matchWinner = game.players[0].uid; state = 'finished'; }
+        if (p1Score >= WIN_SCORE) { matchWinner = game.players[1].uid; state = 'finished'; }
 
-          if (finalTick.p0Hit || finalTick.p1Hit) {
-            // Someone died!
-            if (finalTick.p0Hit && !finalTick.p1Hit) p1Score++;
-            if (finalTick.p1Hit && !finalTick.p0Hit) p0Score++;
-            // Note: if both hit, neither score (draw)
-            
-            p0Past = [];
-            p1Past = [];
-            nextTurn = 1; // reset time loop
-          }
+        const defaultActions = p0Past.length > 0 ? p0Past : ['W', 'W', 'W', 'W', 'W'];
+        const defaultActions1 = p1Past.length > 0 ? p1Past : ['W', 'W', 'W', 'W', 'W'];
 
-          let state = 'programming';
-          let matchWinner = null;
-          if (p0Score >= WIN_SCORE) { matchWinner = game.players[0].uid; state = 'finished'; }
-          if (p1Score >= WIN_SCORE) { matchWinner = game.players[1].uid; state = 'finished'; }
+        const p0 = { ...game.players[0], score: p0Score, pastActions: p0Past, actions: defaultActions, ready: false, readyForNext: false };
+        const p1 = { ...game.players[1], score: p1Score, pastActions: p1Past, actions: defaultActions1, ready: false, readyForNext: false };
 
-          const defaultActions = p0Past.length > 0 ? p0Past : ['W', 'W', 'W', 'W', 'W'];
-          const defaultActions1 = p1Past.length > 0 ? p1Past : ['W', 'W', 'W', 'W', 'W'];
-
-          updateDoc(doc(db, 'chronos_assassin_games', gameId), {
-            state,
-            turn: nextTurn,
-            matchWinner,
-            [`players.0.score`]: p0Score,
-            [`players.1.score`]: p1Score,
-            [`players.0.pastActions`]: p0Past,
-            [`players.1.pastActions`]: p1Past,
-            [`players.0.actions`]: defaultActions,
-            [`players.1.actions`]: defaultActions1,
-            [`players.0.ready`]: false,
-            [`players.1.ready`]: false,
-            executionResults: null
-          }).then(() => {
-            if (meIdx === 0) { setCurrentTick(-1); setIsAnimating(false); }
-          });
-        }
+        updateDoc(doc(db, 'chronos_assassin_games', gameId), {
+          state,
+          turn: nextTurn,
+          matchWinner,
+          players: [p0, p1],
+          executionResults: null,
+          executionId: null
+        }).then(() => {
+          // Fixed reference error - removed the dead setIsAnimating variable
+          if (meIdx === 0) { setCurrentTick(-1); }
+        });
       }
     }
   }, [game, meIdx, user, gameId]);
@@ -297,9 +295,7 @@ export default function ChronosAssassin() {
     if (game?.state !== 'programming' || meIdx === -1) return;
     const me = game.players[meIdx];
     
-    // Check paradox constraint
     if (me.pastActions.length === 5) {
-      // we can only deviate by 1 from pastActions
       const nextActions = [...myActions];
       nextActions[activeSlot] = a;
       
@@ -309,7 +305,6 @@ export default function ChronosAssassin() {
       }
       
       if (differences > 1) {
-        // Can't do it. Revert to pastActions, except this slot
         const resolved = [...me.pastActions];
         resolved[activeSlot] = a;
         setMyActions(resolved);
@@ -328,10 +323,24 @@ export default function ChronosAssassin() {
   const lockIn = async () => {
     playSound('reaction');
     if (meIdx === -1) return;
-    await updateDoc(doc(db, 'chronos_assassin_games', gameId), {
-      [`players.${meIdx}.actions`]: myActions,
-      [`players.${meIdx}.ready`]: true
-    });
+    
+    const ref = doc(db, 'chronos_assassin_games', gameId);
+    
+    try {
+      await runTransaction(db, async (transaction) => {
+        const snap = await transaction.get(ref);
+        if (!snap.exists()) return;
+        
+        const data = snap.data();
+        if (!data.players || !data.players[meIdx]) return;
+
+        const players = [...data.players];
+        players[meIdx] = { ...players[meIdx], actions: myActions, ready: true };
+        transaction.update(ref, { players });
+      });
+    } catch (error) {
+      console.error("Transaction failed: ", error);
+    }
   };
 
   if (!game) return <div className="min-h-screen bg-black flex items-center justify-center font-mono text-cyan-500">INITIATING TIMELINE...</div>;
@@ -534,7 +543,6 @@ export default function ChronosAssassin() {
   );
 }
 
-
 // --- BOARD RENDER HELPER ---
 function BoardEntities({ game, currentTick, meIdx }: { game: GameDoc, currentTick: number, meIdx: number }) {
   if (!game || game.players.length < 2) return null;
@@ -666,8 +674,6 @@ function simulateTicks(p0Actions: Action[], p1Actions: Action[]): TickResult[] {
     if (!bothSameTarget && !swapped) {
       p0pos = t0;
       p1pos = t1;
-    } else {
-      // Bounce - stay in original positions
     }
 
     // 2. Action resolve (Shield & Shooting)
@@ -712,7 +718,7 @@ function simulateTicks(p0Actions: Action[], p1Actions: Action[]): TickResult[] {
     });
 
     if (p0Hit || p1Hit) {
-      break; // Stop timeline on death!
+      break; 
     }
   }
 
