@@ -30,6 +30,7 @@ interface TickResult {
 
 interface Player {
   uid: string;
+  sessionId?: string;
   nickname: string;
   color: string;
   score: number;
@@ -91,13 +92,24 @@ export default function ChronosAssassin() {
   const params = useParams();
   const gameId = params.gameId as string;
   const [game, setGame] = useState<GameDoc | null>(null);
+  const [localSessionId] = useState(() => {
+    if (typeof window !== 'undefined') {
+      let sid = localStorage.getItem('chronosSid');
+      if (!sid) { sid = Math.random().toString(36).slice(2); localStorage.setItem('chronosSid', sid); }
+      return sid;
+    }
+    return '';
+  });
   const [meIdx, setMeIdx] = useState<number>(-1);
   const [myActions, setMyActions] = useState<Action[]>(['W', 'W', 'W', 'W', 'W']);
   const [activeSlot, setActiveSlot] = useState<number>(0);
+  const [showRules, setShowRules] = useState<boolean>(false);
   
   // Execution state
   const [currentTick, setCurrentTick] = useState<number>(-1);
   const [isAnimating, setIsAnimating] = useState(false);
+  const meIdxRef = useRef(meIdx);
+  meIdxRef.current = meIdx;
 
   // Load game
   useEffect(() => {
@@ -107,7 +119,7 @@ export default function ChronosAssassin() {
         const data = snap.data() as GameDoc;
         setGame(data);
         if (auth.currentUser) {
-          const idx = data.players.findIndex(p => p.uid === auth.currentUser!.uid);
+          const idx = data.players.findIndex(p => p.sessionId === localSessionId || (!p.sessionId && p.uid === auth.currentUser!.uid));
           setMeIdx(idx);
           
           if (idx !== -1 && data.state === 'programming') {
@@ -119,37 +131,44 @@ export default function ChronosAssassin() {
       }
     });
     return () => unsub();
-  }, [gameId]);
+  }, [gameId, localSessionId]);
 
   // Execute Simulation when executing
   useEffect(() => {
-    if (game?.state === 'executing' && game.executionResults && !isAnimating) {
-      if (currentTick === -1) {
-        setIsAnimating(true);
-        setCurrentTick(0);
-      }
+    if (game?.state === 'executing' && game.executionResults && !isAnimating && currentTick === -1) {
+      setIsAnimating(true);
+      setCurrentTick(0);
+      
+      const len = game.executionResults.length;
+      let tick = 0;
+      const interval = setInterval(() => {
+        tick++;
+        if (tick < len) {
+          setCurrentTick(tick);
+        } else {
+          clearInterval(interval);
+          setIsAnimating(false);
+          const mIdx = meIdxRef.current;
+          if (mIdx !== -1) {
+            updateDoc(doc(db, 'chronos_assassin_games', gameId), {
+              [`players.${mIdx}.readyForNext`]: true
+            });
+          }
+        }
+      }, 1500); // 1.5s per tick for better clarity
+      
+      return () => clearInterval(interval);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [game?.state, game?.executionResults]);
 
+  // Reset for programming phase
   useEffect(() => {
-    if (isAnimating && game?.executionResults) {
-      const results = game.executionResults;
-      if (currentTick < results.length) {
-        const timer = setTimeout(() => {
-          setCurrentTick(prev => prev + 1);
-        }, 1200); // 1.2s per tick
-        return () => clearTimeout(timer);
-      } else {
-        // Animation done
-        setIsAnimating(false);
-        if (meIdx !== -1 && !game.players[meIdx].readyForNext) {
-          updateDoc(doc(db, 'chronos_assassin_games', gameId), {
-            [`players.${meIdx}.readyForNext`]: true
-          });
-        }
-      }
+    if (game?.state === 'programming') {
+      setCurrentTick(-1);
+      setIsAnimating(false);
     }
-  }, [isAnimating, currentTick, game]);
+  }, [game?.state]);
 
   // Host compute state advancement
   useEffect(() => {
@@ -224,15 +243,6 @@ export default function ChronosAssassin() {
     }
   }, [game, meIdx]);
 
-  // If executing and not animating yet but we should be (for non-hosts)
-  useEffect(() => {
-    if (game?.state === 'executing' && !isAnimating && currentTick !== -1) {
-      if (meIdx !== -1 && game.players[meIdx]?.readyForNext) {
-        setCurrentTick(-1);
-      }
-    }
-  }, [game?.state, isAnimating]);
-
   const joinGame = async (nickname: string) => {
     if (!game || game.players.length >= 2) return;
     if (!auth.currentUser) {
@@ -242,6 +252,7 @@ export default function ChronosAssassin() {
     const isCreator = game.creatorId === auth.currentUser!.uid;
     const p: Player = {
       uid: auth.currentUser!.uid,
+      sessionId: localSessionId,
       nickname,
       color: isCreator ? 'cyan' : 'rose',
       score: 0,
