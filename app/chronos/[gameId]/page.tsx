@@ -154,6 +154,10 @@ export default function ChronosAssassin() {
   // Host compute state advancement
   useEffect(() => {
     if (game && game.creatorId === auth.currentUser?.uid) {
+      if (game.state === 'waiting' && game.players.length === 2) {
+        updateDoc(doc(db, 'chronos_assassin_games', gameId), { state: 'programming' });
+      }
+      
       if (game.state === 'programming' && game.players.length === 2) {
         if (game.players[0].ready && game.players[1].ready) {
           // Compute execution
@@ -246,9 +250,13 @@ export default function ChronosAssassin() {
       actions: ['W', 'W', 'W', 'W', 'W'],
       pastActions: []
     };
-    await updateDoc(doc(db, 'chronos_assassin_games', gameId), {
+    const updateData: any = {
       players: arrayUnion(p)
-    });
+    };
+    if (game.players.length === 1) {
+      updateData.state = 'programming';
+    }
+    await updateDoc(doc(db, 'chronos_assassin_games', gameId), updateData);
   };
 
   const handleActionSelect = (a: Action) => {
