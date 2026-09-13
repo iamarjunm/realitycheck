@@ -2,8 +2,7 @@
 
 import Link from 'next/link';
 import { motion } from 'motion/react';
-import { LayoutGrid, FlaskConical, Spade, ChevronRight, Crosshair, Flame } from 'lucide-react';
-
+import { LayoutGrid, FlaskConical, Spade, ChevronRight, Crosshair, Flame, Bomb } from 'lucide-react';
 const PORTALS = [
   {
     href: '/quizzes',
@@ -44,6 +43,19 @@ const PORTALS = [
     text: 'text-amber-400',
     badge: 'Multiplayer',
   },
+  {
+    href: '/rage-games',
+    title: 'Rage Games',
+    subtitle: 'Test your patience',
+    description: 'Meticulously designed experiences engineered to ruin your day. Try not to break your keyboard.',
+    icon: Bomb,
+    accent: 'red',
+    gradient: 'from-red-500/20 via-red-900/10 to-transparent',
+    border: 'border-red-500/30 hover:border-red-400/60',
+    glow: 'group-hover:shadow-[0_0_40px_rgba(239,68,68,0.15)]',
+    text: 'text-red-400',
+    badge: 'Arcade',
+  },
 ] as const;
 
 export default function HomePage() {
@@ -73,8 +85,7 @@ export default function HomePage() {
           </p>
         </motion.header>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {PORTALS.map((portal, i) => {
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">          {PORTALS.map((portal, i) => {
             const Icon = portal.icon;
             return (
               <motion.div
