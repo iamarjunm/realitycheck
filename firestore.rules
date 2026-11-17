@@ -10,5 +10,11 @@ service cloud.firestore {
     match /sniper_holdem_games/{gameId} {
       allow read, write: if true;
     }
+    match /secret_code_games/{gameId} {
+      allow read, write: if true;
+    }
+    match /memory_poker_games/{gameId} {
+      allow read, write: if true;
+    }
   }
 }

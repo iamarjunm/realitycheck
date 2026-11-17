@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { motion } from 'motion/react';
-import { LayoutGrid, FlaskConical, Spade, ChevronRight, Crosshair, Flame, Bomb } from 'lucide-react';
+import { LayoutGrid, FlaskConical, Spade, ChevronRight, Crosshair, Flame, Bomb, KeyRound, Brain } from 'lucide-react';
 const PORTALS = [
   {
     href: '/quizzes',
@@ -34,7 +34,7 @@ const PORTALS = [
     href: '/card-games',
     title: 'Card Games',
     subtitle: 'High-stakes tables',
-    description: 'Death Parade, Sniper Hold\'em, and Doubt & Bet. Create a lobby, invite friends, play live.',
+    description: 'Death Parade, Sniper Hold\'em, Doubt & Bet, Secret Order, and Memory Poker. Solo bots or live multiplayer.',
     icon: Spade,
     accent: 'amber',
     gradient: 'from-amber-500/15 via-emerald-900/10 to-transparent',
@@ -142,6 +142,10 @@ export default function HomePage() {
           <span className="inline-flex items-center gap-1.5"><Flame size={12} className="text-purple-500/60" /> Doubt &amp; Bet</span>
           <span className="text-zinc-800">·</span>
           <span className="inline-flex items-center gap-1.5"><Spade size={12} className="text-emerald-500/60" /> Death Parade</span>
+          <span className="text-zinc-800">·</span>
+          <span className="inline-flex items-center gap-1.5"><KeyRound size={12} className="text-amber-500/60" /> Secret Order</span>
+          <span className="text-zinc-800">·</span>
+          <span className="inline-flex items-center gap-1.5"><Brain size={12} className="text-teal-500/60" /> Memory Poker</span>
         </motion.div>
       </div>
     </div>
