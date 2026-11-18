@@ -170,19 +170,20 @@ export function SecretCodeArena({
     const c2 = slots[1] !== null ? game.cards[slots[1]] : null;
     const c3 = slots[2] !== null ? game.cards[slots[2]] : null;
     const c4 = slots[3] !== null ? game.cards[slots[3]] : null;
-    const prod14 = c1 && c4 ? c1.number * c4.number : null;
-    const prod23 = c2 && c3 ? c2.number * c3.number : null;
+    const sum12 = c1 && c2 ? c1.number + c2.number : null;
+    const sum34 = c3 && c4 ? c3.number + c4.number : null;
     return {
       count: picked.length,
       sum,
+      avg: picked.length === 4 ? (sum / 4).toFixed(sum % 4 === 0 ? 0 : 1) : null,
       minMaxSum: min + max,
       diff: max - min,
       evens,
       primes,
       colors,
       shapes,
-      prod14,
-      prod23,
+      sum12,
+      sum34,
     };
   }, [slots, game.cards]);
 
@@ -306,16 +307,8 @@ export function SecretCodeArena({
     const slotColorRule = game.rules.find(
       (r) => r.type === 'SLOT_COLOR' && Number(r.params.slot) === activeSlot
     );
-    if (slotColorRule) {
-      setFilterColor(slotColorRule.params.color as CardColor);
-    }
-    if (slotShapeRule) {
-      setFilterShape(slotShapeRule.params.shape as CardShape);
-    }
-    if (!slotColorRule && !slotShapeRule) {
-      setFilterColor(null);
-      setFilterShape(null);
-    }
+    setFilterColor(slotColorRule ? (slotColorRule.params.color as CardColor) : null);
+    setFilterShape(slotShapeRule ? (slotShapeRule.params.shape as CardShape) : null);
   };
 
   const allSlotsFilled = slots.every((s) => s !== null);
@@ -984,20 +977,25 @@ export function SecretCodeArena({
                     <span className="text-zinc-400">
                       Sum:<strong className="text-amber-300 ml-0.5">{liveTelemetry.sum}</strong>
                     </span>
+                    {liveTelemetry.avg !== null && (
+                      <span className="text-zinc-400">
+                        Avg:<strong className="text-white ml-0.5">{liveTelemetry.avg}</strong>
+                      </span>
+                    )}
                     <span className="text-zinc-400">
                       Min+Max:<strong className="text-white ml-0.5">{liveTelemetry.minMaxSum}</strong>
                     </span>
                     <span className="text-zinc-400">
                       Diff:<strong className="text-white ml-0.5">{liveTelemetry.diff}</strong>
                     </span>
-                    {liveTelemetry.prod14 !== null && (
+                    {liveTelemetry.sum12 !== null && (
                       <span className="text-zinc-400">
-                        1×4:<strong className="text-sky-300 ml-0.5">{liveTelemetry.prod14}</strong>
+                        1+2:<strong className="text-sky-300 ml-0.5">{liveTelemetry.sum12}</strong>
                       </span>
                     )}
-                    {liveTelemetry.prod23 !== null && (
+                    {liveTelemetry.sum34 !== null && (
                       <span className="text-zinc-400">
-                        2×3:<strong className="text-purple-300 ml-0.5">{liveTelemetry.prod23}</strong>
+                        3+4:<strong className="text-purple-300 ml-0.5">{liveTelemetry.sum34}</strong>
                       </span>
                     )}
                     <span className="text-zinc-400">
