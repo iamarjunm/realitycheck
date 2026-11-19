@@ -927,8 +927,9 @@ export function generateUniqueSecretCodePuzzle(): GeneratedPuzzle {
     if (!seedMath || !seedAnchor) continue;
 
     const selected: CipherRule[] = [seedMath, seedAnchor];
-    let remaining = collectMatchingTuples(cards, selected, stats, 18000);
-    if (!remaining || remaining.length === 0) continue;
+    const initialRemaining = collectMatchingTuples(cards, selected, stats, 18000);
+    if (!initialRemaining || initialRemaining.length === 0) continue;
+    let remaining: [number, number, number, number][] = initialRemaining;
 
     const usedTypes = new Set<RuleType>(selected.map((r) => r.type));
     const shuffled = [...allCandidates].sort(() => Math.random() - 0.5);
