@@ -16,5 +16,8 @@ service cloud.firestore {
     match /memory_poker_games/{gameId} {
       allow read, write: if true;
     }
+    match /chronos_assassin_games/{gameId} {
+      allow read, write: if true;
+    }
   }
 }

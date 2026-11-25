@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { motion } from 'motion/react';
-import { LayoutGrid, FlaskConical, Spade, ChevronRight, Crosshair, Flame, Bomb, KeyRound, Brain } from 'lucide-react';
+import { LayoutGrid, FlaskConical, Spade, ChevronRight, Crosshair, Flame, Bomb, KeyRound, Brain, Clock, Skull } from 'lucide-react';
 const PORTALS = [
   {
     href: '/quizzes',
@@ -44,6 +44,19 @@ const PORTALS = [
     badge: 'Multiplayer',
   },
   {
+    href: '/tactical-games',
+    title: 'Tactical Arenas',
+    subtitle: 'Outsmart or flatline',
+    description: 'Chronos Assassin time-loop duels & Glitch Roulette mod-chip buckshot. High-IQ solo AI and 1v1 lobbies.',
+    icon: Clock,
+    accent: 'sky',
+    gradient: 'from-sky-500/20 via-rose-900/10 to-transparent',
+    border: 'border-sky-500/30 hover:border-sky-400/60',
+    glow: 'group-hover:shadow-[0_0_40px_rgba(56,189,248,0.15)]',
+    text: 'text-sky-400',
+    badge: 'Mindgames',
+  },
+  {
     href: '/rage-games',
     title: 'Rage Games',
     subtitle: 'Test your patience',
@@ -68,11 +81,11 @@ export default function HomePage() {
         <div className="absolute inset-0 bg-grid-white opacity-40" />
       </div>
 
-      <div className="relative z-10 max-w-6xl mx-auto px-6 py-16 sm:py-24">
+      <div className="relative z-10 max-w-7xl mx-auto px-6 py-14 sm:py-20">
         <motion.header
           initial={{ opacity: 0, y: -16 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-16 sm:mb-20"
+          className="text-center mb-12 sm:mb-16"
         >
           <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-[10px] font-mono uppercase tracking-[0.35em] text-zinc-400 mb-6">
             Welcome to
@@ -80,12 +93,12 @@ export default function HomePage() {
           <h1 className="text-5xl sm:text-7xl font-black uppercase tracking-tighter text-white mb-4">
             Reality <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-fuchsia-400 to-amber-400">Check</span>
           </h1>
-          <p className="text-zinc-500 font-mono text-sm max-w-lg mx-auto leading-relaxed">
-            Three doors. Quizzes to roast yourself, experiments to break your brain, and card tables to lose chips on.
+          <p className="text-zinc-500 font-mono text-sm max-w-xl mx-auto leading-relaxed">
+            Five doors. Quizzes to roast yourself, experiments to break your brain, card tables, tactical mindgames, and rage gauntlets.
           </p>
         </motion.header>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">          {PORTALS.map((portal, i) => {
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">          {PORTALS.map((portal, i) => {
             const Icon = portal.icon;
             return (
               <motion.div
@@ -135,17 +148,29 @@ export default function HomePage() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.4 }}
-          className="mt-12 flex flex-wrap justify-center gap-4 text-[10px] font-mono uppercase tracking-widest text-zinc-600"
+          className="mt-10 flex flex-wrap justify-center gap-3 text-[10px] font-mono uppercase tracking-widest text-zinc-500"
         >
-          <span className="inline-flex items-center gap-1.5"><Crosshair size={12} className="text-red-500/60" /> Sniper Hold&apos;em</span>
-          <span className="text-zinc-800">·</span>
-          <span className="inline-flex items-center gap-1.5"><Flame size={12} className="text-purple-500/60" /> Doubt &amp; Bet</span>
-          <span className="text-zinc-800">·</span>
-          <span className="inline-flex items-center gap-1.5"><Spade size={12} className="text-emerald-500/60" /> Death Parade</span>
-          <span className="text-zinc-800">·</span>
-          <span className="inline-flex items-center gap-1.5"><KeyRound size={12} className="text-amber-500/60" /> Secret Order</span>
-          <span className="text-zinc-800">·</span>
-          <span className="inline-flex items-center gap-1.5"><Brain size={12} className="text-teal-500/60" /> Memory Poker</span>
+          <Link href="/chronos" className="inline-flex items-center gap-1.5 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-3 py-1.5 text-cyan-300 hover:border-cyan-400 transition-colors">
+            <Clock size={12} /> Chronos Assassin
+          </Link>
+          <Link href="/glitch-roulette" className="inline-flex items-center gap-1.5 rounded-full border border-rose-500/30 bg-rose-500/10 px-3 py-1.5 text-rose-300 hover:border-rose-400 transition-colors">
+            <Skull size={12} /> Glitch Roulette
+          </Link>
+          <Link href="/secret-code" className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/25 bg-amber-500/10 px-3 py-1.5 text-amber-300 hover:border-amber-400 transition-colors">
+            <KeyRound size={12} /> Secret Order
+          </Link>
+          <Link href="/memory-poker" className="inline-flex items-center gap-1.5 rounded-full border border-teal-500/25 bg-teal-500/10 px-3 py-1.5 text-teal-300 hover:border-teal-400 transition-colors">
+            <Brain size={12} /> Memory Poker
+          </Link>
+          <Link href="/sniper-holdem" className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-zinc-400 hover:text-white transition-colors">
+            <Crosshair size={12} className="text-red-400" /> Sniper Hold&apos;em
+          </Link>
+          <Link href="/doubt-and-bet" className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-zinc-400 hover:text-white transition-colors">
+            <Flame size={12} className="text-purple-400" /> Doubt &amp; Bet
+          </Link>
+          <Link href="/card-game" className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-zinc-400 hover:text-white transition-colors">
+            <Spade size={12} className="text-emerald-400" /> Death Parade
+          </Link>
         </motion.div>
       </div>
     </div>

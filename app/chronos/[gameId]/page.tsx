@@ -1,770 +1,502 @@
 'use client';
 
-import React, { useEffect, useState, useRef, useMemo } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import { db, auth } from '@/lib/firebase';
-import { doc, onSnapshot, updateDoc, arrayUnion, runTransaction } from 'firebase/firestore';
-import { useParams } from 'next/navigation';
+import React, { useEffect, useState, useRef, useMemo, useCallback, Suspense } from 'react';
+import { db, auth, handleFirestoreError, OperationType } from '@/lib/firebase';
+import { doc, onSnapshot, updateDoc, runTransaction } from 'firebase/firestore';
+import { signInAnonymously, onAuthStateChanged } from 'firebase/auth';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import confetti from 'canvas-confetti';
+import {
+  Action,
+  ArenaMapId,
+  ChronosGameState,
+  ChronosPlayer,
+  Pos,
+  TickResult,
+  pickRoundMap,
+  simulateTicks,
+} from '@/lib/chronos';
 import { playSound } from '@/lib/sounds';
-import { 
-  ArrowUp, ArrowDown, ArrowLeft, ArrowRight,
-  Shield, AlertTriangle, Crosshair, X, Watch, Ghost, UserRound, Flame, Info, Clock, Copy
-} from 'lucide-react';
+import { ChronosArena } from '@/components/chronos/ChronosArena';
 
-// --- TYPES ---
-type Action = 'U' | 'D' | 'L' | 'R' | 'SU' | 'SD' | 'SL' | 'SR' | 'SH' | 'W';
-
-interface Pos { x: number; y: number; }
-
-interface TickResult {
-  tickNum: number;
-  p0Pos: Pos;
-  p1Pos: Pos;
-  p0Action: Action;
-  p1Action: Action;
-  p0Hit: boolean;
-  p1Hit: boolean;
-  lasers: { pIndex: number; direction: Action; path: Pos[] }[];
-  isEnd: boolean;
-}
-
-interface Player {
-  uid: string;
-  sessionId?: string;
-  nickname: string;
-  color: string;
-  score: number;
-  ready: boolean;
-  readyForNext: boolean;
-  actions: Action[];
-  pastActions: Action[];
-}
-
-interface GameDoc {
+interface FirestoreChronosDoc {
   creatorId: string;
-  state: 'waiting' | 'programming' | 'executing' | 'finished';
-  players: Player[];
+  state: 'waiting' | 'programming' | 'executing' | 'round_over' | 'finished';
+  players: ChronosPlayer[];
   turn: number;
+  round?: number;
+  winScore?: number;
+  mapId?: ArenaMapId;
+  obstacles?: Pos[];
+  roundWinnerIdx?: number | null;
   matchWinner: string | null;
   executionResults?: TickResult[] | null;
   executionId?: string | null;
 }
 
-// --- CONSTANTS ---
-const BOARD_SIZE = 5;
-const WIN_SCORE = 3;
-
-const ACTION_COLORS: Record<Action, string> = {
-  'U': 'bg-cyan-500/20 text-cyan-400 border-cyan-500/50',
-  'D': 'bg-cyan-500/20 text-cyan-400 border-cyan-500/50',
-  'L': 'bg-cyan-500/20 text-cyan-400 border-cyan-500/50',
-  'R': 'bg-cyan-500/20 text-cyan-400 border-cyan-500/50',
-  'SU': 'bg-red-500/20 text-red-400 border-red-500/50',
-  'SD': 'bg-red-500/20 text-red-400 border-red-500/50',
-  'SL': 'bg-red-500/20 text-red-400 border-red-500/50',
-  'SR': 'bg-red-500/20 text-red-400 border-red-500/50',
-  'SH': 'bg-purple-500/20 text-purple-400 border-purple-500/50',
-  'W': 'bg-zinc-500/20 text-zinc-400 border-zinc-500/50',
-};
-
-const P0_START = { x: 0, y: 2 };
-const P1_START = { x: 4, y: 2 };
-
-// --- HELPER COMPONENTS ---
-// FIXED: Combined Crosshair and Directional Arrows to make attacks clear
-const ActionIcon = ({ a, size = 16, flipHorizontal = false }: { a: Action; size?: number; flipHorizontal?: boolean }) => {
-  let iconAction = a;
-  
-  if (flipHorizontal) {
-    if (a === 'L') iconAction = 'R';
-    else if (a === 'R') iconAction = 'L';
-    else if (a === 'SL') iconAction = 'SR';
-    else if (a === 'SR') iconAction = 'SL';
-  }
-
-  switch (iconAction) {
-    case 'U': return <ArrowUp size={size} />;
-    case 'D': return <ArrowDown size={size} />;
-    case 'L': return <ArrowLeft size={size} />;
-    case 'R': return <ArrowRight size={size} />;
-    case 'SU': 
-      return (
-        <div className="relative flex items-center justify-center w-full h-full">
-          <Crosshair size={size} className="opacity-25 absolute" />
-          <ArrowUp size={size - 2} className="relative z-10" />
-        </div>
-      );
-    case 'SD': 
-      return (
-        <div className="relative flex items-center justify-center w-full h-full">
-          <Crosshair size={size} className="opacity-25 absolute" />
-          <ArrowDown size={size - 2} className="relative z-10" />
-        </div>
-      );
-    case 'SL': 
-      return (
-        <div className="relative flex items-center justify-center w-full h-full">
-          <Crosshair size={size} className="opacity-25 absolute" />
-          <ArrowLeft size={size - 2} className="relative z-10" />
-        </div>
-      );
-    case 'SR': 
-      return (
-        <div className="relative flex items-center justify-center w-full h-full">
-          <Crosshair size={size} className="opacity-25 absolute" />
-          <ArrowRight size={size - 2} className="relative z-10" />
-        </div>
-      );
-    case 'SH': return <Shield size={size} />;
-    case 'W': return <div className="w-1.5 h-1.5 rounded-full bg-current" />;
-    default: return null;
-  }
-};
-
-export default function ChronosAssassin() {
+function MultiChronosContent() {
   const params = useParams();
-  const gameId = params.gameId as string;
-  const [game, setGame] = useState<GameDoc | null>(null);
-  
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const gameId = (params.gameId as string).toUpperCase();
+  const initialName = (searchParams.get('name') || '').slice(0, 16);
+
+  const [gameDoc, setGameDoc] = useState<FirestoreChronosDoc | null>(null);
+  const [notFound, setNotFound] = useState(false);
+  const [soundEnabled, setSoundEnabled] = useState(true);
+  const [busy, setBusy] = useState(false);
   const [localSessionId, setLocalSessionId] = useState('');
+  const [uid, setUid] = useState<string | null>(auth.currentUser?.uid || null);
+  const [currentTick, setCurrentTick] = useState(-1);
+
+  const autoJoinedRef = useRef(false);
+  const lastExecIdRef = useRef<string | null>(null);
+
+  const sfx = useCallback(
+    (type: Parameters<typeof playSound>[0]) => {
+      if (soundEnabled) playSound(type);
+    },
+    [soundEnabled]
+  );
+
+  // Per-tab session ID so 2 tabs on the same browser can play each other cleanly
   useEffect(() => {
-    let sid = localStorage.getItem('chronosSid');
-    if (!sid) { sid = Math.random().toString(36).slice(2); localStorage.setItem('chronosSid', sid); }
-    setTimeout(() => setLocalSessionId(sid), 0);
+    let sid = sessionStorage.getItem('chronosTabSid');
+    if (!sid) {
+      sid = Math.random().toString(36).slice(2);
+      sessionStorage.setItem('chronosTabSid', sid);
+    }
+    setLocalSessionId(sid);
   }, []);
 
-  const [user, setUser] = useState(auth.currentUser);
-
   useEffect(() => {
-    const { onAuthStateChanged } = require('firebase/auth');
-    const unsub = onAuthStateChanged(auth, (u: any) => setUser(u));
+    const unsub = onAuthStateChanged(auth, async (u) => {
+      if (u) setUid(u.uid);
+      else {
+        try {
+          const cred = await signInAnonymously(auth);
+          setUid(cred.user.uid);
+        } catch (err) {
+          console.error('Auth failed:', err);
+        }
+      }
+    });
     return () => unsub();
   }, []);
 
+  useEffect(() => {
+    if (!gameId) return;
+    const path = `chronos_assassin_games/${gameId}`;
+    const unsub = onSnapshot(
+      doc(db, 'chronos_assassin_games', gameId),
+      (snap) => {
+        if (!snap.exists()) {
+          setNotFound(true);
+          return;
+        }
+        setGameDoc(snap.data() as FirestoreChronosDoc);
+      },
+      (error) => {
+        handleFirestoreError(error, OperationType.GET, path);
+      }
+    );
+    return () => unsub();
+  }, [gameId]);
+
   const meIdx = useMemo(() => {
-    if (!game || !Array.isArray(game.players)) return -1;
-    const currentUserUid = auth.currentUser?.uid || user?.uid;
-    return game.players.findIndex(p => (localSessionId && p.sessionId === localSessionId) || (currentUserUid && p.uid === currentUserUid));
-  }, [game, localSessionId, user]);
+    if (!gameDoc || !Array.isArray(gameDoc.players)) return -1;
+    if (localSessionId) {
+      const byTab = gameDoc.players.findIndex((p) => p.sessionId === localSessionId);
+      if (byTab !== -1) return byTab;
+    }
+    if (uid) {
+      return gameDoc.players.findIndex((p) => p.uid === uid);
+    }
+    return -1;
+  }, [gameDoc, localSessionId, uid]);
 
-  const [myActions, setMyActions] = useState<Action[]>(['W', 'W', 'W', 'W', 'W']);
-  const [activeSlot, setActiveSlot] = useState<number>(0);
-  
-  const [currentTick, setCurrentTick] = useState<number>(-1);
   const meIdxRef = useRef(meIdx);
-
   useEffect(() => {
     meIdxRef.current = meIdx;
   }, [meIdx]);
 
-  useEffect(() => {
-    if (!gameId) return;
-    const unsub = onSnapshot(doc(db, 'chronos_assassin_games', gameId), (snap) => {
-      if (snap.exists()) {
-        const data = snap.data() as GameDoc;
-        setGame(data);
-      }
-    });
-    return () => unsub();
-  }, [gameId]);
+  const joinGame = useCallback(
+    async (nickname: string) => {
+      if (!uid || !localSessionId || busy) return;
+      setBusy(true);
+      const path = `chronos_assassin_games/${gameId}`;
+      try {
+        await runTransaction(db, async (tx) => {
+          const ref = doc(db, 'chronos_assassin_games', gameId);
+          const snap = await tx.get(ref);
+          if (!snap.exists()) return;
+          const data = snap.data() as FirestoreChronosDoc;
+          if (data.players.length >= 2) return;
+          if (data.players.some((p) => p.sessionId === localSessionId)) return;
 
-  useEffect(() => {
-    if (game && meIdx !== -1 && game.state === 'programming') {
-      const p = game.players[meIdx];
-      if (!p.ready) {
-        setTimeout(() => setMyActions(p.actions.length === 5 ? p.actions : ['W', 'W', 'W', 'W', 'W']), 0);
+          const p: ChronosPlayer = {
+            uid,
+            sessionId: localSessionId,
+            nickname: nickname.slice(0, 16),
+            color: data.players.length === 0 ? 'cyan' : 'rose',
+            score: 0,
+            ready: false,
+            readyForNext: false,
+            actions: ['W', 'W', 'W', 'W', 'W'],
+            pastActions: [],
+          };
+          const updated = [...data.players, p];
+          tx.update(ref, {
+            players: updated,
+            state: updated.length === 2 ? 'programming' : 'waiting',
+          });
+        });
+      } catch (err) {
+        handleFirestoreError(err, OperationType.UPDATE, path);
+      } finally {
+        setBusy(false);
       }
+    },
+    [busy, gameId, localSessionId, uid]
+  );
+
+  // Auto-join if redirected from lobby with ?name=
+  useEffect(() => {
+    if (
+      !autoJoinedRef.current &&
+      uid &&
+      localSessionId &&
+      gameDoc &&
+      gameDoc.state === 'waiting' &&
+      initialName &&
+      meIdx === -1 &&
+      gameDoc.players.length < 2
+    ) {
+      autoJoinedRef.current = true;
+      joinGame(initialName);
     }
-  }, [game?.state, game?.turn, meIdx, game]);
+  }, [gameDoc, initialName, joinGame, localSessionId, meIdx, uid]);
 
+  // Playback tick animation
   useEffect(() => {
-    if (game?.state === 'executing' && game.executionResults && game.executionId) {
+    if (
+      gameDoc?.state === 'executing' &&
+      gameDoc.executionResults &&
+      gameDoc.executionId &&
+      lastExecIdRef.current !== gameDoc.executionId
+    ) {
+      lastExecIdRef.current = gameDoc.executionId;
+      const results = gameDoc.executionResults;
       setCurrentTick(0);
-      
-      const len = game.executionResults.length;
+
+      const playTickSfx = (tIdx: number) => {
+        const tick = results[tIdx];
+        if (!tick) return;
+        if (tick.p0Hit || tick.p1Hit) sfx('hit');
+        else if (tick.lasers.length > 0) sfx('laser');
+        else if (tick.p0Shield || tick.p1Shield) sfx('shield');
+        else sfx('move');
+      };
+      playTickSfx(0);
+
       let tick = 0;
-      
       const interval = setInterval(() => {
         tick++;
-        if (tick < len) {
+        if (tick < results.length) {
           setCurrentTick(tick);
+          playTickSfx(tick);
         } else {
           clearInterval(interval);
-          
           const mIdx = meIdxRef.current;
           if (mIdx !== -1) {
             const ref = doc(db, 'chronos_assassin_games', gameId);
             runTransaction(db, async (t) => {
               const s = await t.get(ref);
               if (!s.exists()) return;
-              
-              const data = s.data() as GameDoc;
-              if (!data.players || !data.players[mIdx]) return;
-              if (data.players[mIdx].readyForNext) return;
-              
+              const data = s.data() as FirestoreChronosDoc;
+              if (data.state !== 'executing') return;
+              if (!data.players?.[mIdx] || data.players[mIdx].readyForNext) return;
               const p = [...data.players];
               p[mIdx] = { ...p[mIdx], readyForNext: true };
               t.update(ref, { players: p });
             }).catch(console.error);
           }
         }
-      }, 1500); 
-      
+      }, 750);
+
       return () => clearInterval(interval);
     }
-  }, [game?.executionId, gameId]);
+  }, [gameDoc?.executionId, gameDoc?.executionResults, gameDoc?.state, gameId, sfx]);
 
+  // Confetti & sound on match finish / round over
   useEffect(() => {
-    if (game?.state === 'programming') {
+    if (!gameDoc) return;
+    if (gameDoc.state === 'programming') {
       setCurrentTick(-1);
+    } else if (gameDoc.state === 'round_over') {
+      sfx(gameDoc.roundWinnerIdx === meIdx ? 'win' : gameDoc.roundWinnerIdx === -1 ? 'paradox' : 'fold');
+    } else if (gameDoc.state === 'finished' && meIdx !== -1) {
+      if (gameDoc.matchWinner === gameDoc.players[meIdx]?.uid) {
+        sfx('win');
+        confetti({ particleCount: 95, spread: 75, origin: { y: 0.6 } });
+      } else {
+        sfx('fold');
+      }
     }
-  }, [game?.state]);
+  }, [gameDoc?.state, gameDoc?.roundWinnerIdx, gameDoc?.matchWinner, meIdx, sfx]);
 
+  // Host state machine (transactional to avoid duplicate writes)
   useEffect(() => {
-    const creatorIsMe = game && (game.creatorId === auth.currentUser?.uid || game.creatorId === user?.uid);
-    if (!creatorIsMe) return;
+    if (!gameDoc || !uid || gameDoc.creatorId !== uid) return;
+    const ref = doc(db, 'chronos_assassin_games', gameId);
 
-    if (game.state === 'waiting' && game.players.length === 2) {
-      updateDoc(doc(db, 'chronos_assassin_games', gameId), { state: 'programming' });
-    }
-    
-    if (game.state === 'programming' && game.players.length === 2) {
-      if (game.players[0].ready && game.players[1].ready) {
-        const results = simulateTicks(game.players[0].actions, game.players[1].actions);
-        
-        const p0 = { ...game.players[0], readyForNext: false };
-        const p1 = { ...game.players[1], readyForNext: false };
+    if (gameDoc.state === 'waiting' && gameDoc.players.length === 2) {
+      updateDoc(ref, { state: 'programming' }).catch(console.error);
+    } else if (
+      gameDoc.state === 'programming' &&
+      gameDoc.players.length === 2 &&
+      gameDoc.players[0].ready &&
+      gameDoc.players[1].ready
+    ) {
+      runTransaction(db, async (tx) => {
+        const snap = await tx.get(ref);
+        if (!snap.exists()) return;
+        const data = snap.data() as FirestoreChronosDoc;
+        if (data.state !== 'programming') return;
+        if (!data.players[0]?.ready || !data.players[1]?.ready) return;
 
-        updateDoc(doc(db, 'chronos_assassin_games', gameId), {
+        const results = simulateTicks(
+          data.players[0].actions,
+          data.players[1].actions,
+          data.obstacles || []
+        );
+        tx.update(ref, {
           state: 'executing',
           executionResults: results,
           executionId: Math.random().toString(36).slice(2),
-          players: [p0, p1]
+          players: data.players.map((p) => ({ ...p, readyForNext: false })),
         });
-      }
-    }
-
-    if (game.state === 'executing' && game.players.length === 2) {
-      if (game.players[0].readyForNext && game.players[1].readyForNext) {
-        const results = game.executionResults!;
+      }).catch(console.error);
+    } else if (
+      gameDoc.state === 'executing' &&
+      gameDoc.players.length === 2 &&
+      gameDoc.players[0].readyForNext &&
+      gameDoc.players[1].readyForNext
+    ) {
+      runTransaction(db, async (tx) => {
+        const snap = await tx.get(ref);
+        if (!snap.exists()) return;
+        const data = snap.data() as FirestoreChronosDoc;
+        if (data.state !== 'executing') return;
+        if (!data.players[0]?.readyForNext || !data.players[1]?.readyForNext) return;
+        const results = data.executionResults || [];
         const finalTick = results[results.length - 1];
-        let p0Score = game.players[0].score;
-        let p1Score = game.players[1].score;
-        
-        let p0Past = game.players[0].actions;
-        let p1Past = game.players[1].actions;
-        let nextTurn = game.turn + 1;
+        if (!finalTick) return;
+
+        let p0Score = data.players[0].score;
+        let p1Score = data.players[1].score;
+        const winTarget = data.winScore || 3;
 
         if (finalTick.p0Hit || finalTick.p1Hit) {
-          if (finalTick.p0Hit && !finalTick.p1Hit) p1Score++;
-          if (finalTick.p1Hit && !finalTick.p0Hit) p0Score++;
-          p0Past = [];
-          p1Past = [];
-          nextTurn = 1; 
+          let roundWinnerIdx = -1;
+          if (finalTick.p1Hit && !finalTick.p0Hit) {
+            p0Score++;
+            roundWinnerIdx = 0;
+          } else if (finalTick.p0Hit && !finalTick.p1Hit) {
+            p1Score++;
+            roundWinnerIdx = 1;
+          }
+
+          let nextState: FirestoreChronosDoc['state'] = 'round_over';
+          let matchWinner: string | null = null;
+          if (p0Score >= winTarget) {
+            matchWinner = data.players[0].uid;
+            nextState = 'finished';
+          } else if (p1Score >= winTarget) {
+            matchWinner = data.players[1].uid;
+            nextState = 'finished';
+          }
+
+          tx.update(ref, {
+            state: nextState,
+            roundWinnerIdx,
+            matchWinner,
+            players: [
+              { ...data.players[0], score: p0Score, ready: false, readyForNext: false, pastActions: [] },
+              { ...data.players[1], score: p1Score, ready: false, readyForNext: false, pastActions: [] },
+            ],
+          });
+        } else {
+          // Time-loop rewind
+          tx.update(ref, {
+            state: 'programming',
+            turn: data.turn + 1,
+            executionResults: null,
+            executionId: null,
+            players: [
+              {
+                ...data.players[0],
+                ready: false,
+                readyForNext: false,
+                pastActions: [...data.players[0].actions],
+              },
+              {
+                ...data.players[1],
+                ready: false,
+                readyForNext: false,
+                pastActions: [...data.players[1].actions],
+              },
+            ],
+          });
         }
-
-        let state = 'programming';
-        let matchWinner = null;
-        if (p0Score >= WIN_SCORE) { matchWinner = game.players[0].uid; state = 'finished'; }
-        if (p1Score >= WIN_SCORE) { matchWinner = game.players[1].uid; state = 'finished'; }
-
-        const defaultActions = p0Past.length > 0 ? p0Past : ['W', 'W', 'W', 'W', 'W'];
-        const defaultActions1 = p1Past.length > 0 ? p1Past : ['W', 'W', 'W', 'W', 'W'];
-
-        const p0 = { ...game.players[0], score: p0Score, pastActions: p0Past, actions: defaultActions, ready: false, readyForNext: false };
-        const p1 = { ...game.players[1], score: p1Score, pastActions: p1Past, actions: defaultActions1, ready: false, readyForNext: false };
-
-        updateDoc(doc(db, 'chronos_assassin_games', gameId), {
-          state,
-          turn: nextTurn,
-          matchWinner,
-          players: [p0, p1],
-          executionResults: null,
-          executionId: null
-        }).then(() => {
-          if (meIdx === 0) { setCurrentTick(-1); }
-        });
-      }
+      }).catch(console.error);
     }
-  }, [game, meIdx, user, gameId]);
+  }, [gameDoc, gameId, uid]);
 
-  const joinGame = async (nickname: string) => {
-    if (!game || game.players.length >= 2) return;
-    if (!auth.currentUser) {
-      const { signInAnonymously } = await import('firebase/auth');
-      await signInAnonymously(auth);
-    }
-    const isCreator = game.creatorId === auth.currentUser!.uid;
-    const p: Player = {
-      uid: auth.currentUser!.uid,
-      sessionId: localSessionId,
-      nickname,
-      color: isCreator ? 'cyan' : 'rose',
-      score: 0,
-      ready: false,
-      readyForNext: false,
-      actions: ['W', 'W', 'W', 'W', 'W'],
-      pastActions: []
-    };
-    const updateData: any = {
-      players: arrayUnion(p)
-    };
-    if (game.players.length === 1) {
-      updateData.state = 'programming';
-    }
-    await updateDoc(doc(db, 'chronos_assassin_games', gameId), updateData);
-  };
-
-  const handleActionSelect = (a: Action) => {
-    playSound('chip');
-    if (game?.state !== 'programming' || meIdx === -1) return;
-    const me = game.players[meIdx];
-    
-    if (me.pastActions.length === 5) {
-      const nextActions = [...myActions];
-      nextActions[activeSlot] = a;
-      
-      let differences = 0;
-      for (let i = 0; i < 5; i++) {
-        if (nextActions[i] !== me.pastActions[i]) differences++;
-      }
-      
-      if (differences > 1) {
-        const resolved = [...me.pastActions];
-        resolved[activeSlot] = a;
-        setMyActions(resolved);
-      } else {
-        setMyActions(nextActions);
-      }
-    } else {
-      const nextActions = [...myActions];
-      nextActions[activeSlot] = a;
-      setMyActions(nextActions);
-    }
-    
-    if (activeSlot < 4) setActiveSlot(activeSlot + 1);
-  };
-
-  const lockIn = async () => {
-    playSound('reaction');
-    if (meIdx === -1) return;
-    
+  const handleLockIn = async (actions: Action[]) => {
+    if (meIdx === -1 || busy) return;
+    setBusy(true);
     const ref = doc(db, 'chronos_assassin_games', gameId);
     try {
-      await runTransaction(db, async (transaction) => {
-        const snap = await transaction.get(ref);
+      await runTransaction(db, async (tx) => {
+        const snap = await tx.get(ref);
         if (!snap.exists()) return;
-        
-        const data = snap.data();
-        if (!data.players || !data.players[meIdx]) return;
-
-        const players = [...data.players];
-        players[meIdx] = { ...players[meIdx], actions: myActions, ready: true };
-        transaction.update(ref, { players });
+        const data = snap.data() as FirestoreChronosDoc;
+        if (data.state !== 'programming' || !data.players[meIdx]) return;
+        const updated = [...data.players];
+        updated[meIdx] = { ...updated[meIdx], actions, ready: true };
+        tx.update(ref, { players: updated });
       });
-    } catch (error) {
-      console.error("Transaction failed: ", error);
+    } catch (err) {
+      handleFirestoreError(err, OperationType.UPDATE, `chronos_assassin_games/${gameId}`);
+    } finally {
+      setBusy(false);
     }
   };
 
-  if (!game) return <div className="min-h-screen bg-black flex items-center justify-center font-mono text-cyan-500">INITIATING TIMELINE...</div>;
+  const handleNextRound = async () => {
+    if (!gameDoc || !uid || gameDoc.creatorId !== uid || busy) return;
+    setBusy(true);
+    const { mapId, obstacles } = pickRoundMap('random');
+    try {
+      await updateDoc(doc(db, 'chronos_assassin_games', gameId), {
+        state: 'programming',
+        turn: 1,
+        round: (gameDoc.round || 1) + 1,
+        mapId,
+        obstacles,
+        roundWinnerIdx: null,
+        executionResults: null,
+        executionId: null,
+        players: gameDoc.players.map((p) => ({
+          ...p,
+          ready: false,
+          readyForNext: false,
+          actions: ['W', 'W', 'W', 'W', 'W'],
+          pastActions: [],
+        })),
+      });
+    } finally {
+      setBusy(false);
+    }
+  };
 
-  const me = meIdx !== -1 ? game.players[meIdx] : null;
-  const opp = meIdx === 0 ? game.players[1] : game.players[0];
+  const handlePlayAgain = async () => {
+    if (!gameDoc || !uid || gameDoc.creatorId !== uid || busy) return;
+    setBusy(true);
+    const { mapId, obstacles } = pickRoundMap('random');
+    try {
+      await updateDoc(doc(db, 'chronos_assassin_games', gameId), {
+        state: 'programming',
+        turn: 1,
+        round: 1,
+        mapId,
+        obstacles,
+        roundWinnerIdx: null,
+        matchWinner: null,
+        executionResults: null,
+        executionId: null,
+        players: gameDoc.players.map((p) => ({
+          ...p,
+          score: 0,
+          ready: false,
+          readyForNext: false,
+          actions: ['W', 'W', 'W', 'W', 'W'],
+          pastActions: [],
+        })),
+      });
+    } finally {
+      setBusy(false);
+    }
+  };
 
-  const leftPlayer = meIdx === 1 ? game.players[1] : game.players[0];
-  const rightPlayer = meIdx === 1 ? game.players[0] : game.players[1];
+  if (notFound) {
+    return (
+      <div className="min-h-screen bg-[#04060c] flex flex-col items-center justify-center p-6 text-center space-y-4">
+        <h1 className="text-2xl font-black uppercase text-white">Timeline Not Found</h1>
+        <button
+          type="button"
+          onClick={() => router.push('/chronos')}
+          className="px-5 py-2.5 rounded-xl bg-cyan-400 text-black font-black uppercase text-xs"
+        >
+          Back to Lobby
+        </button>
+      </div>
+    );
+  }
 
-  const isFlipped = meIdx === 1;
+  if (!gameDoc) {
+    return (
+      <div className="min-h-screen bg-[#04060c] flex items-center justify-center font-mono text-xs uppercase tracking-widest text-cyan-400">
+        Syncing Timeline...
+      </div>
+    );
+  }
 
-  const palette: Action[] = isFlipped 
-    ? ['U', 'D', 'R', 'L', 'SU', 'SD', 'SR', 'SL', 'SH', 'W'] 
-    : ['U', 'D', 'L', 'R', 'SU', 'SD', 'SL', 'SR', 'SH', 'W'];
+  const arenaState: ChronosGameState = {
+    gameId,
+    mode: 'multi',
+    creatorId: gameDoc.creatorId,
+    state: gameDoc.state,
+    players: gameDoc.players,
+    turn: gameDoc.turn || 1,
+    round: gameDoc.round || 1,
+    winScore: gameDoc.winScore || 3,
+    mapId: gameDoc.mapId || 'void',
+    obstacles: gameDoc.obstacles || [],
+    roundWinnerIdx: gameDoc.roundWinnerIdx ?? null,
+    matchWinner: gameDoc.matchWinner,
+    executionResults: gameDoc.executionResults,
+    executionId: gameDoc.executionId,
+  };
 
   return (
-    <div className="min-h-[100dvh] bg-black text-cyan-100 font-mono flex flex-col overflow-hidden relative">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-cyan-900/10 via-black to-black pointer-events-none" />
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(6,182,212,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(6,182,212,0.03)_1px,transparent_1px)] bg-[size:30px_30px] pointer-events-none" />
-
-      <header className="p-4 border-b border-cyan-900/50 flex justify-between items-center bg-black/50 backdrop-blur-sm z-10">
-        <div className="flex items-center gap-3">
-          <Clock className="text-cyan-400" />
-          <div>
-            <h1 className="text-lg font-black uppercase tracking-widest text-cyan-400">Chronos Assassin</h1>
-            <div className="text-xs text-cyan-500/50">Loop: {game.turn} | Match point: {WIN_SCORE}</div>
-          </div>
-        </div>
-        
-        {game.players.length === 2 && (
-          <div className="flex items-center gap-6">
-            <div className="text-right text-cyan-400">
-               <div className="text-xs opacity-70">{leftPlayer?.nickname} {meIdx !== -1 && meIdx === game.players.indexOf(leftPlayer) ? '(You)' : ''}</div>
-               <div className="font-black text-xl">{leftPlayer?.score}</div>
-            </div>
-            <div className="text-cyan-800 font-black">VS</div>
-            <div className="text-left text-rose-400">
-               <div className="text-xs opacity-70">{rightPlayer?.nickname} {meIdx !== -1 && meIdx === game.players.indexOf(rightPlayer) ? '(You)' : ''}</div>
-               <div className="font-black text-xl">{rightPlayer?.score}</div>
-            </div>
-          </div>
-        )}
-      </header>
-
-      <main className="flex-grow flex flex-col items-center justify-center p-4 relative z-10 w-full max-w-4xl mx-auto">
-        
-        {game.state === 'waiting' && meIdx === -1 && (
-          <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
-            <div className="bg-cyan-950/20 border border-cyan-500/30 p-8 rounded-2xl w-full max-w-sm">
-              <h2 className="text-xl font-black uppercase text-center text-cyan-400 mb-6">Enter Timeline</h2>
-              <input 
-                type="text" 
-                id="join-nick" 
-                placeholder="NICKNAME" 
-                className="w-full bg-black border border-cyan-500/30 rounded-xl px-4 py-3 text-center mb-4 uppercase focus:outline-none focus:border-cyan-400"
-                maxLength={10}
-              />
-              <button 
-                onClick={() => {
-                  const val = (document.getElementById('join-nick') as HTMLInputElement).value;
-                  if (val) joinGame(val);
-                }}
-                className="w-full bg-cyan-600 hover:bg-cyan-500 text-black font-black uppercase py-3 rounded-xl transition-transform active:scale-95"
-              >
-                Sync
-              </button>
-            </div>
-          </div>
-        )}
-
-        {game.state === 'waiting' && meIdx !== -1 && (
-          <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm pointer-events-auto">
-            <div className="text-center text-cyan-500 bg-cyan-950/40 border border-cyan-500/30 p-8 rounded-2xl w-full max-w-sm">
-              <Clock className="w-12 h-12 mx-auto mb-4 opacity-50 animate-pulse" />
-              <div className="text-sm tracking-widest uppercase mb-6 animate-pulse">Waiting for paradox equivalent...</div>
-              
-              <div className="bg-black/50 rounded-xl p-4 border border-cyan-500/20">
-                <div className="text-[10px] uppercase tracking-widest text-cyan-600 mb-2 font-bold">Timeline ID</div>
-                <div className="flex items-center gap-2">
-                  <span className="font-mono text-xl tracking-widest text-cyan-300 break-all">{gameId}</span>
-                  <button 
-                    onClick={() => {
-                      navigator.clipboard.writeText(gameId);
-                      playSound('chip');
-                    }}
-                    className="p-2 bg-cyan-900/50 hover:bg-cyan-800 text-cyan-400 rounded-lg transition-colors border border-cyan-500/30"
-                  >
-                    <Copy size={16} />
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        <div className="relative aspect-square w-full max-w-[400px] border-2 border-cyan-900/50 bg-black/80 shadow-[0_0_50px_rgba(6,182,212,0.1)] mb-6">
-          <div className="absolute inset-0 grid grid-cols-5 grid-rows-5 pointer-events-none">
-            {Array.from({length: 25}).map((_, i) => (
-              <div key={i} className="border border-cyan-900/20" />
-            ))}
-          </div>
-          <BoardEntities game={game} currentTick={currentTick} meIdx={meIdx} />
-        </div>
-
-        {game.state === 'executing' && game.executionResults && currentTick >= 0 && (
-          <div className="w-full max-w-lg bg-cyan-950/10 border border-cyan-500/20 rounded-xl p-4 backdrop-blur-sm mb-6">
-            <div className="text-center text-[10px] tracking-widest text-cyan-400 font-black mb-3 uppercase">
-              Timeline Playback Processing
-            </div>
-            <div className="flex gap-2 justify-between">
-              {game.executionResults.map((tickData, i) => {
-                const isActive = currentTick === i;
-                const myAction = meIdx === 1 ? tickData.p1Action : tickData.p0Action;
-                const oppAction = meIdx === 1 ? tickData.p0Action : tickData.p1Action;
-
-                return (
-                  <div 
-                    key={i} 
-                    className={`flex-1 border rounded-lg p-2 flex flex-col items-center justify-center gap-1 transition-all ${
-                      isActive 
-                        ? 'border-cyan-400 bg-cyan-500/20 shadow-[0_0_15px_rgba(6,182,212,0.4)] scale-105' 
-                        : 'border-cyan-900/30 bg-black/40 opacity-40'
-                    }`}
-                  >
-                    <span className={`text-[9px] font-black ${isActive ? 'text-cyan-400' : 'text-zinc-500'}`}>TICK {i+1}</span>
-                    <div className="flex gap-1 items-center text-xs">
-                      <span className="text-cyan-400"><ActionIcon a={myAction} size={14} flipHorizontal={isFlipped} /></span>
-                      <span className="text-zinc-700 text-[10px]">|</span>
-                      <span className="text-rose-400"><ActionIcon a={oppAction} size={14} flipHorizontal={isFlipped} /></span>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        )}
-
-        {game.state === 'programming' && me && (
-          <div className="w-full max-w-lg bg-cyan-950/20 border border-cyan-500/30 rounded-xl p-4 sm:p-6 backdrop-blur-md">
-            
-            {me.ready ? (
-              <div className="text-center py-8 opacity-50">
-                <Watch className="w-8 h-8 mx-auto mb-2 animate-spin-slow text-cyan-400" />
-                Wait for timeline convergence...
-              </div>
-            ) : (
-              <>
-                <div className="flex justify-between items-center mb-4">
-                  <div className="text-sm tracking-widest text-cyan-400">PROGRAM SEQUENCE</div>
-                  {me.pastActions.length > 0 && (
-                    <div className="text-xs text-rose-400 flex items-center gap-1 opacity-80">
-                      <Ghost size={14} /> 1 PARADOX TOKEN
-                    </div>
-                  )}
-                </div>
-
-                {me.pastActions.length > 0 && opp && opp.pastActions.length === 5 && (
-                  <div className="flex justify-between gap-2 mb-6 p-2 bg-rose-950/20 border border-rose-900/30 rounded-lg">
-                    <div className="w-full flex justify-center text-[10px] text-rose-500/50 -rotate-90 sm:rotate-0 tracking-widest">GHOST</div>
-                    {opp.pastActions.map((a, i) => (
-                      <div key={i} className="flex-1 aspect-square flex items-center justify-center opacity-30 border-b-2 border-rose-500/50">
-                         <ActionIcon a={a} flipHorizontal={isFlipped} />
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                <div className="flex gap-2 sm:gap-4 mb-6">
-                  {myActions.map((a, i) => {
-                    const isChangedFromPast = me.pastActions.length > 0 && a !== me.pastActions[i];
-                    return (
-                      <button 
-                        key={i} 
-                        onClick={() => setActiveSlot(i)}
-                        className={`flex-1 aspect-square rounded-lg border-2 flex items-center justify-center transition-all ${
-                          activeSlot === i ? 'border-cyan-400 bg-cyan-900/40 shadow-[0_0_15px_rgba(6,182,212,0.3)]' : 
-                          isChangedFromPast ? 'border-rose-500 text-rose-400' : 'border-cyan-900/60 bg-black'
-                        } hover:border-cyan-400`}
-                      >
-                         <ActionIcon a={a} size={24} flipHorizontal={isFlipped} />
-                      </button>
-                    )
-                  })}
-                </div>
-
-                <div className="grid grid-cols-5 gap-2 sm:gap-3 mb-6">
-                  {palette.map(a => (
-                    <button
-                      key={a}
-                      onClick={() => handleActionSelect(a)}
-                      className={`aspect-square rounded flex items-center justify-center border transition-all hover:scale-105 active:scale-95 ${ACTION_COLORS[a]}`}
-                    >
-                      <ActionIcon a={a} flipHorizontal={isFlipped} />
-                    </button>
-                  ))}
-                </div>
-
-                <button 
-                  onClick={lockIn}
-                  className="w-full py-4 bg-cyan-500 hover:bg-cyan-400 text-black font-black tracking-widest uppercase rounded-xl transition-all shadow-[0_0_20px_rgba(6,182,212,0.2)]"
-                >
-                  LOCK TIMELINE
-                </button>
-              </>
-            )}
-          </div>
-        )}
-
-        {game.state === 'finished' && (
-          <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md">
-            <div className="text-center">
-              <div className="text-6xl mb-4 font-black text-cyan-400 tracking-widest uppercase text-shadow-sm shadow-cyan-500">
-                {game.matchWinner === me?.uid ? 'VICTORY' : 'DEFEAT'}
-              </div>
-              <p className="text-cyan-500/50 font-mono tracking-widest mb-8">TIMELINE COLLAPSED</p>
-              
-              <button 
-                onClick={() => window.location.href = '/'}
-                className="px-8 py-3 bg-cyan-950 border border-cyan-500 text-cyan-400 font-mono uppercase tracking-widest rounded-xl hover:bg-cyan-900"
-              >
-                Return to Hub
-              </button>
-            </div>
-          </div>
-        )}
-
-      </main>
-    </div>
+    <ChronosArena
+      game={arenaState}
+      meIdx={meIdx}
+      currentTick={currentTick}
+      soundEnabled={soundEnabled}
+      onToggleSound={() => setSoundEnabled((s) => !s)}
+      onExit={() => router.push('/chronos')}
+      onJoinRoom={joinGame}
+      onLockIn={handleLockIn}
+      onNextRound={handleNextRound}
+      onPlayAgain={handlePlayAgain}
+      busy={busy}
+    />
   );
 }
 
-function BoardEntities({ game, currentTick, meIdx }: { game: GameDoc, currentTick: number, meIdx: number }) {
-  if (!game || game.players.length < 2) return null;
-
-  let p0pos = P0_START;
-  let p1pos = P1_START;
-  let lasers: {pIndex: number, direction: string, path: Pos[]}[] = [];
-  let p0Shield = false, p1Shield = false;
-  let p0Hit = false, p1Hit = false;
-
-  const showExecution = game.state === 'executing' && game.executionResults && currentTick >= 0;
-
-  if (showExecution && game.executionResults) {
-    const tNum = Math.min(currentTick, game.executionResults.length - 1);
-    const tick = game.executionResults[tNum];
-    p0pos = tick.p0Pos;
-    p1pos = tick.p1Pos;
-    
-    if (tick.p0Action === 'SH') p0Shield = true;
-    if (tick.p1Action === 'SH') p1Shield = true;
-    lasers = tick.lasers;
-    p0Hit = tick.p0Hit;
-    p1Hit = tick.p1Hit;
-  }
-
-  const getVisualX = (x: number) => (meIdx === 1 ? BOARD_SIZE - 1 - x : x);
-
-  const getPosStyle = (p: Pos) => ({
-    top: `${(p.y / BOARD_SIZE) * 100}%`,
-    left: `${(getVisualX(p.x) / BOARD_SIZE) * 100}%`,
-    width: `${100 / BOARD_SIZE}%`,
-    height: `${100 / BOARD_SIZE}%`
-  });
-
+export default function ChronosRoomPage() {
   return (
-    <>
-      <AnimatePresence>
-        {lasers.map((l, i) => (
-           <motion.div
-             key={`laser-${i}-${currentTick}`}
-             initial={{ opacity: 0, scale: 0.8 }}
-             animate={{ opacity: 1, scale: 1 }}
-             exit={{ opacity: 0 }}
-             className="absolute inset-0 pointer-events-none"
-           >
-             {l.path.map((pos, j) => {
-                const vX = getVisualX(pos.x);
-                return (
-                  <div 
-                    key={j} 
-                    className="absolute bg-red-500 shadow-[0_0_15px_#ef4444] animate-pulse" 
-                    style={{
-                      top: `calc(${(pos.y / BOARD_SIZE) * 100}% + ${(100 / BOARD_SIZE) / 3}%)`,
-                      left: `calc(${(vX / BOARD_SIZE) * 100}% + ${(100 / BOARD_SIZE) / 3}%)`,
-                      width: `${100 / BOARD_SIZE / 3}%`,
-                      height: `${100 / BOARD_SIZE / 3}%`
-                    }} 
-                  />
-                );
-             })}
-           </motion.div>
-        ))}
-      </AnimatePresence>
-
-      <motion.div 
-        animate={getPosStyle(p0pos)}
-        transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-        className="absolute flex items-center justify-center p-2 z-10"
-      >
-        <div className={`w-full h-full rounded-md flex items-center justify-center ${meIdx === 0 ? 'bg-cyan-500 shadow-[0_0_20px_#06b6d4]' : 'bg-rose-500/50 border-2 border-rose-500'} ${p0Hit ? 'bg-zinc-800 border-zinc-500' : ''}`}>
-           {p0Shield && <div className="absolute -inset-2 rounded-full border-4 border-purple-500/50 bg-purple-500/20" />}
-           {p0Hit && <X className="absolute text-red-500 w-full h-full p-1" />}
-           {!p0Hit && <UserRound size={20} className="text-black" />}
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-[#04060c] flex items-center justify-center font-mono text-xs uppercase tracking-widest text-cyan-400">
+          Loading Timeline...
         </div>
-      </motion.div>
-
-      <motion.div 
-        animate={getPosStyle(p1pos)}
-        transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-        className="absolute flex items-center justify-center p-2 z-10"
-      >
-        <div className={`w-full h-full rounded-md flex items-center justify-center ${meIdx === 1 ? 'bg-cyan-500 shadow-[0_0_20px_#06b6d4]' : 'bg-rose-500/50 border-2 border-rose-500'} ${p1Hit ? 'bg-zinc-800 border-zinc-500' : ''}`}>
-           {p1Shield && <div className="absolute -inset-2 rounded-full border-4 border-purple-500/50 bg-purple-500/20" />}
-           {p1Hit && <X className="absolute text-red-500 w-full h-full p-1" />}
-           {!p1Hit && <UserRound size={20} className="text-black" />}
-        </div>
-      </motion.div>
-
-      {game.state === 'programming' && game.players[0]?.pastActions?.length > 0 && (
-         <div className="absolute top-2 left-2 text-[10px] text-cyan-500/30 uppercase tracking-widest pointer-events-none">Time Loop Active</div>
-      )}
-    </>
+      }
+    >
+      <MultiChronosContent />
+    </Suspense>
   );
-}
-
-function simulateTicks(p0Actions: Action[], p1Actions: Action[]): TickResult[] {
-  let p0pos = { ...P0_START };
-  let p1pos = { ...P1_START };
-  const results: TickResult[] = [];
-
-  for (let tNum = 0; tNum < 5; tNum++) {
-    const a0 = p0Actions[tNum] || 'W';
-    const a1 = p1Actions[tNum] || 'W';
-
-    let t0 = { ...p0pos };
-    let t1 = { ...p1pos };
-
-    if (a0 === 'U' && t0.y > 0) t0.y--;
-    if (a0 === 'D' && t0.y < 4) t0.y++;
-    if (a0 === 'L' && t0.x > 0) t0.x--;
-    if (a0 === 'R' && t0.x < 4) t0.x++;
-
-    if (a1 === 'U' && t1.y > 0) t1.y--;
-    if (a1 === 'D' && t1.y < 4) t1.y++;
-    if (a1 === 'L' && t1.x > 0) t1.x--;
-    if (a1 === 'R' && t1.x < 4) t1.x++;
-
-    const bothSameTarget = (t0.x === t1.x && t0.y === t1.y);
-    const swapped = (t0.x === p1pos.x && t0.y === p1pos.y && t1.x === p0pos.x && t1.y === p0pos.y);
-    
-    if (!bothSameTarget && !swapped) {
-      p0pos = t0;
-      p1pos = t1;
-    }
-
-    let p0Shield = (a0 === 'SH');
-    let p1Shield = (a1 === 'SH');
-    
-    let p0Hit = false;
-    let p1Hit = false;
-    let lasers: any[] = [];
-
-    const calculateLaserPath = (pos: Pos, a: Action) => {
-      let path: Pos[] = [];
-      if (a === 'SU') for (let y = pos.y-1; y>=0; y--) path.push({x: pos.x, y});
-      if (a === 'SD') for (let y = pos.y+1; y<=4; y++) path.push({x: pos.x, y});
-      if (a === 'SL') for (let x = pos.x-1; x>=0; x--) path.push({x, y: pos.y});
-      if (a === 'SR') for (let x = pos.x+1; x<=4; x++) path.push({x, y: pos.y});
-      return path;
-    };
-
-    if (a0.startsWith('S') && a0 !== 'SH') {
-      const path = calculateLaserPath(p0pos, a0);
-      lasers.push({ pIndex: 0, direction: a0, path });
-      if (!p1Shield && path.some(p => p.x === p1pos.x && p.y === p1pos.y)) p1Hit = true;
-    }
-
-    if (a1.startsWith('S') && a1 !== 'SH') {
-      const path = calculateLaserPath(p1pos, a1);
-      lasers.push({ pIndex: 1, direction: a1, path });
-      if (!p0Shield && path.some(p => p.x === p0pos.x && p.y === p0pos.y)) p0Hit = true;
-    }
-
-    results.push({
-      tickNum: tNum,
-      p0Pos: { ...p0pos },
-      p1Pos: { ...p1pos },
-      p0Action: a0,
-      p1Action: a1,
-      p0Hit,
-      p1Hit,
-      lasers,
-      isEnd: (p0Hit || p1Hit || tNum === 4)
-    });
-
-    if (p0Hit || p1Hit) {
-      break; 
-    }
-  }
-
-  return results;
 }
