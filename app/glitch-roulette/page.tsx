@@ -1,7 +1,7 @@
 'use client';
 
-import { GlitchRouletteArena } from '@/components/glitch-roulette/GlitchRouletteArena';
+import { GlitchRouletteLobby } from '@/components/glitch-roulette/GlitchRouletteLobby';
 
 export default function GlitchRoulettePage() {
-  return <GlitchRouletteArena />;
+  return <GlitchRouletteLobby />;
 }

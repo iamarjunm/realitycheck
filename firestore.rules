@@ -19,5 +19,17 @@ service cloud.firestore {
     match /chronos_assassin_games/{gameId} {
       allow read, write: if true;
     }
+    match /glitch_roulette_games/{gameId} {
+      allow read, write: if true;
+    }
+    match /shadow_strike_games/{gameId} {
+      allow read, write: if true;
+    }
+    match /blind_vault_games/{gameId} {
+      allow read, write: if true;
+    }
+    match /void_step_games/{gameId} {
+      allow read, write: if true;
+    }
   }
 }

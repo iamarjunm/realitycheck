@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { motion } from 'motion/react';
-import { LayoutGrid, FlaskConical, Spade, ChevronRight, Crosshair, Flame, Bomb, KeyRound, Brain, Clock, Skull } from 'lucide-react';
+import { LayoutGrid, FlaskConical, Spade, ChevronRight, Crosshair, Flame, Bomb, KeyRound, Brain, Clock, Skull, Vault, Grid2x2X, Radar } from 'lucide-react';
 const PORTALS = [
   {
     href: '/quizzes',
@@ -46,15 +46,15 @@ const PORTALS = [
   {
     href: '/tactical-games',
     title: 'Tactical Arenas',
-    subtitle: 'Outsmart or flatline',
-    description: 'Chronos Assassin time-loop duels & Glitch Roulette mod-chip buckshot. High-IQ solo AI and 1v1 lobbies.',
+    subtitle: '5 Live 1v1 Duels',
+    description: 'Chronos Assassin, Glitch Roulette 1v1, Blind Vault, Void Step & Shadow Strike. Live PvP rooms + AI.',
     icon: Clock,
     accent: 'sky',
     gradient: 'from-sky-500/20 via-rose-900/10 to-transparent',
     border: 'border-sky-500/30 hover:border-sky-400/60',
     glow: 'group-hover:shadow-[0_0_40px_rgba(56,189,248,0.15)]',
     text: 'text-sky-400',
-    badge: 'Mindgames',
+    badge: '1v1 PvP',
   },
   {
     href: '/rage-games',
@@ -154,7 +154,16 @@ export default function HomePage() {
             <Clock size={12} /> Chronos Assassin
           </Link>
           <Link href="/glitch-roulette" className="inline-flex items-center gap-1.5 rounded-full border border-rose-500/30 bg-rose-500/10 px-3 py-1.5 text-rose-300 hover:border-rose-400 transition-colors">
-            <Skull size={12} /> Glitch Roulette
+            <Skull size={12} /> Glitch Roulette 1v1
+          </Link>
+          <Link href="/blind-vault" className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 px-3 py-1.5 text-amber-300 hover:border-amber-400 transition-colors">
+            <Vault size={12} /> Blind Vault
+          </Link>
+          <Link href="/void-step" className="inline-flex items-center gap-1.5 rounded-full border border-fuchsia-500/30 bg-fuchsia-500/10 px-3 py-1.5 text-fuchsia-300 hover:border-fuchsia-400 transition-colors">
+            <Grid2x2X size={12} /> Void Step
+          </Link>
+          <Link href="/shadow-strike" className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1.5 text-emerald-300 hover:border-emerald-400 transition-colors">
+            <Radar size={12} /> Shadow Strike
           </Link>
           <Link href="/secret-code" className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/25 bg-amber-500/10 px-3 py-1.5 text-amber-300 hover:border-amber-400 transition-colors">
             <KeyRound size={12} /> Secret Order
