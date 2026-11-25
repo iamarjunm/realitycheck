@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { motion } from 'motion/react';
-import { ArrowLeft, Brain, ChevronRight, Crosshair, Flame, KeyRound, Skull, Spade, Users } from 'lucide-react';
+import { ArrowLeft, Brain, ChevronRight, Crosshair, Flame, KeyRound, Spade, Users } from 'lucide-react';
 import { playSound } from '@/lib/sounds';
 
 const GAMES = [
@@ -76,20 +76,6 @@ const GAMES = [
     players: '1–6 Players',
     mode: 'Solo Bot + Multi',
   },
-  {
-    href: '/glitch-roulette',
-    title: 'Glitch Roulette',
-    tagline: 'Mod-chip buckshot',
-    description: 'Loaded cyber-revolver vs 3 AI bosses. X-Ray shells, flip polarity, overclock 2× damage, or shoot yourself for extra turns.',
-    icon: Skull,
-    gradient: 'from-rose-500/15 via-rose-950/20 to-transparent',
-    border: 'border-rose-500/25 hover:border-rose-400/60',
-    glow: 'hover:shadow-[0_0_28px_rgba(244,63,94,0.18)]',
-    accent: 'text-rose-400',
-    badgeBg: 'bg-rose-500/10 border-rose-500/25 text-rose-300',
-    players: '1 Player',
-    mode: '3-Stage Boss',
-  },
 ] as const;
 
 export default function CardGamesHub() {
@@ -110,7 +96,7 @@ export default function CardGamesHub() {
           <ArrowLeft size={13} /> Reality Check
         </Link>
         <div className="inline-flex items-center gap-2 rounded-full border border-amber-500/20 bg-amber-500/10 px-3 py-1 text-[10px] font-mono uppercase tracking-[0.25em] text-amber-300">
-          6 High-Stakes Tables
+          5 High-Stakes Tables
         </div>
       </header>
 
