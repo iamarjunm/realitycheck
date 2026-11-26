@@ -236,47 +236,39 @@ export default function EquilibriumLobbyPage() {
   }
 
   return (
-    <div className="min-h-dvh lg:h-dvh lg:overflow-hidden bg-[#04060d] text-slate-100 flex flex-col relative">
-      <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div className="absolute -top-24 left-1/4 w-[480px] h-[380px] rounded-full bg-cyan-500/12 blur-[140px]" />
-        <div className="absolute -bottom-24 right-1/4 w-[480px] h-[380px] rounded-full bg-violet-500/12 blur-[140px]" />
-        <div className="absolute inset-0 bg-grid-white opacity-25" />
-      </div>
-
-      <header className="relative z-10 shrink-0 px-5 py-3.5 border-b border-white/10 bg-slate-950/80 backdrop-blur-xl flex items-center justify-between">
+    <div className="min-h-dvh lg:h-dvh lg:overflow-hidden bg-[#09090b] text-zinc-100 flex flex-col relative selection:bg-amber-500/20">
+      <header className="relative z-10 shrink-0 px-5 py-3.5 border-b border-zinc-800/80 bg-[#09090b]/90 backdrop-blur-md flex items-center justify-between">
         <Link
           href="/tactical-games"
-          className="inline-flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-slate-400 hover:text-cyan-300 transition-colors"
+          className="inline-flex items-center gap-2 text-xs font-medium tracking-wide text-zinc-400 hover:text-zinc-100 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           Tactical Arenas
         </Link>
-        <span className="text-[11px] font-mono font-bold uppercase tracking-widest text-cyan-400">
+        <span className="text-[11px] font-mono uppercase tracking-[0.18em] text-amber-400/90">
           IQ · Game Theory · 1v1
         </span>
       </header>
 
-      <main className="relative z-10 flex-1 flex items-center justify-center p-4 max-w-4xl w-full mx-auto">
-        <div className="w-full space-y-5">
-          <div className="text-center space-y-2">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-400/30 text-cyan-300 text-xs font-mono font-bold uppercase tracking-widest">
+      <main className="relative z-10 flex-1 flex items-center justify-center p-4 sm:p-6 max-w-4xl w-full mx-auto overflow-y-auto">
+        <div className="w-full space-y-6">
+          <div className="text-center space-y-2.5">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#111113] border border-zinc-800 text-amber-400 text-[11px] font-mono uppercase tracking-[0.2em]">
               <Sigma className="w-3.5 h-3.5" />
               Equilibrium
             </div>
-            <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-white">
+            <h1 className="text-3xl sm:text-5xl font-semibold tracking-tight text-zinc-50">
               Outthink.{' '}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-sky-300 to-violet-400">
-                Outcalculate.
-              </span>
+              <span className="text-amber-400">Outcalculate.</span>
             </h1>
-            <p className="text-sm text-slate-400 max-w-xl mx-auto">
-              Pick 0–100 under rotating Nash equations. Snipe 0 with 100, land Prime strikes, trigger Shift +15 & Mirror Lock protocols, and shatter your rival&apos;s HP.
+            <p className="text-xs sm:text-sm text-zinc-400 max-w-xl mx-auto leading-relaxed">
+              Pick 0–100 under rotating Nash equations. Snipe 0 with 100, land Prime strikes, trigger Shift +15 &amp; Mirror Lock protocols, and shatter your rival&apos;s HP.
             </p>
           </div>
 
           <div className="max-w-lg mx-auto grid grid-cols-1 sm:grid-cols-12 gap-3 items-end">
             <div className="sm:col-span-8">
-              <label className="block text-[10px] font-mono font-bold uppercase tracking-widest text-slate-400 mb-1.5">
+              <label className="block text-[11px] font-mono uppercase tracking-widest text-zinc-400 mb-1.5">
                 Player Callsign
               </label>
               <input
@@ -285,11 +277,11 @@ export default function EquilibriumLobbyPage() {
                 onChange={(e) => setNickname(e.target.value)}
                 maxLength={18}
                 placeholder="e.g. NashZero"
-                className="w-full px-4 py-2.5 rounded-xl bg-slate-900/90 border border-white/15 focus:border-cyan-400 focus:outline-none text-sm font-bold text-white"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-950 border border-zinc-800 focus:border-zinc-400 focus:outline-none text-sm font-medium text-zinc-100 placeholder:text-zinc-600 transition-colors"
               />
             </div>
             <div className="sm:col-span-4">
-              <label className="block text-[10px] font-mono font-bold uppercase tracking-widest text-slate-400 mb-1.5">
+              <label className="block text-[11px] font-mono uppercase tracking-widest text-zinc-400 mb-1.5">
                 Integrity HP
               </label>
               <div className="grid grid-cols-2 gap-1.5">
@@ -300,10 +292,10 @@ export default function EquilibriumLobbyPage() {
                       playSound('tick');
                       setMaxHp(hp);
                     }}
-                    className={`py-2.5 rounded-xl font-mono text-xs font-black border cursor-pointer transition-all ${
+                    className={`py-2.5 rounded-xl font-mono text-xs font-semibold border cursor-pointer transition-colors ${
                       maxHp === hp
-                        ? 'bg-cyan-500/20 border-cyan-400 text-cyan-200'
-                        : 'bg-slate-900/80 border-white/10 text-slate-400 hover:text-white'
+                        ? 'bg-zinc-50 border-zinc-50 text-zinc-950'
+                        : 'bg-zinc-950 border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-zinc-100'
                     }`}
                   >
                     {hp} HP
@@ -314,24 +306,24 @@ export default function EquilibriumLobbyPage() {
           </div>
 
           {error && (
-            <div className="max-w-md mx-auto p-3 rounded-xl bg-rose-500/15 border border-rose-500/40 text-rose-200 text-xs text-center font-semibold">
+            <div className="max-w-md mx-auto p-3 rounded-xl bg-rose-500/10 border border-rose-500/35 text-rose-300 text-xs text-center font-medium">
               {error}
             </div>
           )}
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* 1v1 PvP */}
-            <div className="bg-slate-950/85 border border-cyan-500/30 rounded-2xl p-5 flex flex-col justify-between gap-4 shadow-2xl">
+            <div className="bg-[#111113] border border-zinc-800 rounded-2xl p-5 flex flex-col justify-between gap-5">
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <span className="inline-flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-cyan-400">
-                    <Users className="w-4 h-4" /> 1v1 Live Multiplayer
+                  <span className="inline-flex items-center gap-2 text-sm font-semibold text-zinc-100">
+                    <Users className="w-4 h-4 text-emerald-400" /> 1v1 Multiplayer
                   </span>
-                  <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-cyan-500/15 text-cyan-300 border border-cyan-500/30">
+                  <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-md bg-zinc-900 text-zinc-300 border border-zinc-800">
                     Real-Time PvP
                   </span>
                 </div>
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-zinc-400 leading-relaxed">
                   Host a private 6-character room or join a rival&apos;s mindgame equation table.
                 </p>
               </div>
@@ -340,7 +332,7 @@ export default function EquilibriumLobbyPage() {
                 <button
                   onClick={handleCreateRoom}
                   disabled={busy}
-                  className="w-full py-3 rounded-xl bg-gradient-to-r from-cyan-400 to-violet-400 hover:brightness-110 text-slate-950 font-black uppercase tracking-wider text-sm flex items-center justify-center gap-2 shadow-[0_0_24px_rgba(34,211,238,0.3)] transition-all cursor-pointer disabled:opacity-50"
+                  className="w-full py-2.5 px-4 rounded-xl bg-zinc-50 hover:bg-white text-zinc-950 font-semibold text-sm flex items-center justify-center gap-2 transition-colors cursor-pointer disabled:opacity-50"
                 >
                   <Sparkles className="w-4 h-4" />
                   Create 1v1 Room
@@ -353,12 +345,12 @@ export default function EquilibriumLobbyPage() {
                     onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
                     maxLength={6}
                     placeholder="ROOM CODE"
-                    className="flex-1 px-3.5 py-2.5 rounded-xl bg-black border border-white/15 focus:border-cyan-400 focus:outline-none font-mono text-sm font-bold tracking-widest text-cyan-300 uppercase"
+                    className="flex-1 px-3.5 py-2.5 rounded-xl bg-zinc-950 border border-zinc-800 focus:border-zinc-400 focus:outline-none font-mono text-sm font-semibold tracking-widest text-amber-300 placeholder:text-zinc-600 uppercase transition-colors"
                   />
                   <button
                     type="submit"
                     disabled={busy}
-                    className="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-white font-bold text-xs uppercase tracking-wider flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-50"
+                    className="px-4 py-2.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-100 font-semibold text-xs uppercase tracking-wider flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-50"
                   >
                     <LogIn className="w-3.5 h-3.5" />
                     Join
@@ -368,29 +360,29 @@ export default function EquilibriumLobbyPage() {
             </div>
 
             {/* Solo vs EULER-AI */}
-            <div className="bg-slate-950/85 border border-violet-500/30 rounded-2xl p-5 flex flex-col justify-between gap-4 shadow-2xl">
+            <div className="bg-[#111113] border border-zinc-800 rounded-2xl p-5 flex flex-col justify-between gap-5">
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <span className="inline-flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-violet-400">
-                    <Bot className="w-4 h-4" /> Solo vs EULER-AI
+                  <span className="inline-flex items-center gap-2 text-sm font-semibold text-zinc-100">
+                    <Bot className="w-4 h-4 text-amber-400" /> Solo vs EULER-AI
                   </span>
-                  <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-violet-500/15 text-violet-300 border border-violet-500/30">
+                  <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-md bg-zinc-900 text-zinc-300 border border-zinc-800">
                     Adaptive Nash AI
                   </span>
                 </div>
-                <p className="text-xs text-slate-400 mb-3">
+                <p className="text-xs text-zinc-400 leading-relaxed mb-3.5">
                   Battle an adaptive game-theory engine that reads your number history and sets traps.
                 </p>
-                <div className="grid grid-cols-3 gap-1.5 text-[10px] text-slate-300">
-                  <div className="p-2 rounded-lg bg-black/60 border border-white/10 flex flex-col items-center gap-1 text-center">
-                    <Sigma className="w-3.5 h-3.5 text-cyan-400" />
+                <div className="grid grid-cols-3 gap-2 text-[10px] text-zinc-300">
+                  <div className="p-2 rounded-xl bg-zinc-950 border border-zinc-800/80 flex flex-col items-center gap-1 text-center">
+                    <Sigma className="w-3.5 h-3.5 text-emerald-400" />
                     <span>5 Laws</span>
                   </div>
-                  <div className="p-2 rounded-lg bg-black/60 border border-white/10 flex flex-col items-center gap-1 text-center">
-                    <Calculator className="w-3.5 h-3.5 text-violet-400" />
+                  <div className="p-2 rounded-xl bg-zinc-950 border border-zinc-800/80 flex flex-col items-center gap-1 text-center">
+                    <Calculator className="w-3.5 h-3.5 text-zinc-300" />
                     <span>Live Sim</span>
                   </div>
-                  <div className="p-2 rounded-lg bg-black/60 border border-white/10 flex flex-col items-center gap-1 text-center">
+                  <div className="p-2 rounded-xl bg-zinc-950 border border-zinc-800/80 flex flex-col items-center gap-1 text-center">
                     <Zap className="w-3.5 h-3.5 text-amber-400" />
                     <span>3 Protocols</span>
                   </div>
@@ -399,7 +391,7 @@ export default function EquilibriumLobbyPage() {
 
               <button
                 onClick={startSolo}
-                className="w-full py-3 rounded-xl bg-white/5 hover:bg-violet-500 hover:text-slate-950 border border-violet-400/40 text-violet-300 font-black uppercase tracking-wider text-sm transition-all cursor-pointer"
+                className="w-full py-2.5 px-4 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-zinc-100 font-semibold text-sm transition-colors cursor-pointer"
               >
                 Challenge EULER-AI
               </button>

@@ -15,8 +15,6 @@ import {
   Radar,
   Users,
   ChevronRight,
-  Sparkles,
-  Layers,
 } from 'lucide-react';
 import GlobalNav from '@/components/GlobalNav';
 import { playSound } from '@/lib/sounds';
@@ -38,33 +36,25 @@ const TACTICAL_GAMES = [
     category: 'surreal' as const,
     tagline: 'Rotating 3-ring astral vault duel',
     description:
-      'Split 12 Energy across 3 rotating Mind Chambers, plant hidden Phantom Traps, Mind-Read counter-call rival ambushes, and slam 6 Surreal Relics like Mirage Split, Paranoia Glitch & Time Freeze.',
+      'Split 12 Energy across 3 rotating Mind Chambers, plant hidden Phantom Traps, Mind-Read counter-call rival ambushes, and trigger 6 Surreal Relics.',
     icon: Orbit,
-    gradient: 'from-rose-600/25 via-violet-950/40 to-transparent',
-    border: 'border-rose-400/45 hover:border-fuchsia-300/90',
-    glow: 'hover:shadow-[0_0_38px_rgba(244,63,94,0.28)]',
-    accent: 'text-rose-300',
-    badgeBg: 'bg-rose-500/15 border-rose-400/45 text-rose-200',
+    iconTint: 'text-rose-400',
     players: '1v1 + Solo AI',
-    mode: 'NEW · Surreal',
+    mode: 'Surreal',
     isNew: true,
-    highlights: ['3-Ring Astral Vault', 'Phantom Traps', '6 Surreal Relics'],
+    highlights: ['3-Ring Vault', 'Phantom Traps', '6 Relics'],
   },
   {
     href: '/reality-draft',
     title: 'Reality Draft',
     category: 'surreal' as const,
-    tagline: 'Cosmic 3D anomaly card dueler',
+    tagline: 'Holographic anomaly card dueler',
     description:
-      'Draft 12 reality-warping 3D holographic Anomaly Cards (Glass Titan, Zero Void, Bluff Phantom, Chaos Dice, Vampire Sigil) across rotating World Distortions with Double Stakes bluffs & Ward Shields.',
+      'Draft 12 reality-warping Anomaly Cards across rotating World Distortions with Double Stakes bluffs and Ward Shields.',
     icon: Gem,
-    gradient: 'from-fuchsia-600/25 via-purple-950/35 to-amber-950/20',
-    border: 'border-fuchsia-400/45 hover:border-amber-300/90',
-    glow: 'hover:shadow-[0_0_38px_rgba(217,70,239,0.28)]',
-    accent: 'text-amber-300',
-    badgeBg: 'bg-fuchsia-500/15 border-amber-400/45 text-amber-200',
+    iconTint: 'text-amber-400',
     players: '1v1 + Solo AI',
-    mode: 'NEW · Surreal',
+    mode: 'Surreal',
     isNew: true,
     highlights: ['12 Anomaly Cards', 'World Distortions', 'Double Stakes'],
   },
@@ -74,16 +64,12 @@ const TACTICAL_GAMES = [
     category: 'math' as const,
     tagline: 'Keynesian Nash number duel',
     description:
-      'Dynamic Nash equations and 0–100 psychological showdowns. Spring the 100-crushes-0 trap, land Prime strikes, test Live Nash Sandbox theories, and beat 3 IQ Protocols.',
+      'Dynamic Nash equations and 0–100 psychological showdowns. Spring the 100-crushes-0 trap, land Prime strikes, and beat 3 IQ Protocols.',
     icon: Sigma,
-    gradient: 'from-cyan-500/20 via-indigo-950/30 to-transparent',
-    border: 'border-cyan-400/35 hover:border-cyan-300/80',
-    glow: 'hover:shadow-[0_0_34px_rgba(34,211,238,0.22)]',
-    accent: 'text-cyan-300',
-    badgeBg: 'bg-cyan-500/15 border-cyan-400/40 text-cyan-200',
+    iconTint: 'text-indigo-400',
     players: '1v1 + Solo AI',
-    mode: 'NEW · IQ/Math',
-    isNew: true,
+    mode: 'IQ / Math',
+    isNew: false,
     highlights: ['Dynamic Nash Eq.', '0–100 Showdown', '3 IQ Protocols'],
   },
   {
@@ -92,16 +78,12 @@ const TACTICAL_GAMES = [
     category: 'math' as const,
     tagline: '4×4 spatial math warfare',
     description:
-      'Battle for control of 4×4 Power Cores. Trigger Exact-10 Hijack combos to steal opponent nodes, deploy 2× Amplifiers, flip sectors with Polarity Invert, and face Minimax AI.',
+      'Battle for control of 4×4 Power Cores. Trigger Exact-10 Hijack combos to steal opponent nodes, deploy 2× Amplifiers, and face Minimax AI.',
     icon: Cpu,
-    gradient: 'from-violet-500/20 via-fuchsia-950/30 to-transparent',
-    border: 'border-violet-400/35 hover:border-violet-300/80',
-    glow: 'hover:shadow-[0_0_34px_rgba(167,139,250,0.22)]',
-    accent: 'text-violet-300',
-    badgeBg: 'bg-violet-500/15 border-violet-400/40 text-violet-200',
+    iconTint: 'text-indigo-400',
     players: '1v1 + Minimax AI',
-    mode: 'NEW · Math Grid',
-    isNew: true,
+    mode: 'Math Grid',
+    isNew: false,
     highlights: ['Exact-10 Hijack', '2× Amplifiers', 'Polarity Invert'],
   },
   {
@@ -110,13 +92,9 @@ const TACTICAL_GAMES = [
     category: 'grid' as const,
     tagline: 'Time-loop 5×5 tactical duel',
     description:
-      "Program 5 simultaneous ticks on a 5×5 cover arena. Survive, rewind time, and outsmart your rival's Ghost across 4 Cover Maps with 1 surgical paradox edit.",
+      "Program 5 simultaneous ticks on a 5×5 cover arena. Survive, rewind time, and outsmart your rival's Ghost across 4 Cover Maps with 1 paradox edit.",
     icon: Clock,
-    gradient: 'from-sky-500/20 via-sky-950/25 to-transparent',
-    border: 'border-sky-500/30 hover:border-sky-400/75',
-    glow: 'hover:shadow-[0_0_30px_rgba(56,189,248,0.2)]',
-    accent: 'text-sky-400',
-    badgeBg: 'bg-sky-500/10 border-sky-500/30 text-sky-300',
+    iconTint: 'text-zinc-300',
     players: '1v1 + Solo AI',
     mode: 'Time Loop',
     isNew: false,
@@ -128,13 +106,9 @@ const TACTICAL_GAMES = [
     category: 'mindgame' as const,
     tagline: 'Mod-chip buckshot PvP',
     description:
-      'Loaded cyber-revolver 1v1 PvP or 3-Boss gauntlet. Deploy 6 Reality Mod Chips, peek shells with Private X-Ray, flip polarity, or blank-shoot yourself for extra turns.',
+      'Loaded revolver 1v1 PvP or 3-Boss gauntlet. Deploy 6 Reality Mod Chips, peek shells with Private X-Ray, flip polarity, or blank-shoot for extra turns.',
     icon: Skull,
-    gradient: 'from-rose-500/20 via-rose-950/25 to-transparent',
-    border: 'border-rose-500/30 hover:border-rose-400/75',
-    glow: 'hover:shadow-[0_0_30px_rgba(244,63,94,0.2)]',
-    accent: 'text-rose-400',
-    badgeBg: 'bg-rose-500/10 border-rose-500/30 text-rose-300',
+    iconTint: 'text-rose-400',
     players: '1v1 + 3 Bosses',
     mode: 'Buckshot PvP',
     isNew: false,
@@ -146,13 +120,9 @@ const TACTICAL_GAMES = [
     category: 'mindgame' as const,
     tagline: 'All-pay sabotage auction',
     description:
-      'Bid hidden credits across 7 vaults (+2 to +7 & a -3 TRAP). Losers still pay their bid! Trigger 2× Surge or Invert Sabotage to hijack the pot at the last second.',
+      'Bid hidden credits across 7 vaults (+2 to +7 & a -3 Trap). Losers still pay their bid. Trigger 2× Surge or Invert Sabotage to hijack the pot.',
     icon: Vault,
-    gradient: 'from-amber-500/20 via-orange-950/25 to-transparent',
-    border: 'border-amber-500/30 hover:border-amber-400/75',
-    glow: 'hover:shadow-[0_0_30px_rgba(245,158,11,0.2)]',
-    accent: 'text-amber-400',
-    badgeBg: 'bg-amber-500/10 border-amber-500/30 text-amber-300',
+    iconTint: 'text-amber-400',
     players: '1v1 + Solo AI',
     mode: 'All-Pay Bluff',
     isNew: false,
@@ -164,13 +134,9 @@ const TACTICAL_GAMES = [
     category: 'grid' as const,
     tagline: 'Collapsing territory duel',
     description:
-      'Step across a 7×7 neon grid, then shatter any tile into the abyss. Leap over voids with 2 Blink Jumps and isolate your rival with zero legal moves in a Best of 3.',
+      'Step across a 7×7 grid and shatter any tile into the void. Leap over gaps with 2 Blink Jumps and isolate your rival with zero legal moves.',
     icon: Grid2x2X,
-    gradient: 'from-fuchsia-500/20 via-purple-950/25 to-transparent',
-    border: 'border-fuchsia-500/30 hover:border-fuchsia-400/75',
-    glow: 'hover:shadow-[0_0_30px_rgba(217,70,239,0.2)]',
-    accent: 'text-fuchsia-400',
-    badgeBg: 'bg-fuchsia-500/10 border-fuchsia-500/30 text-fuchsia-300',
+    iconTint: 'text-zinc-300',
     players: '1v1 + Solo AI',
     mode: 'Best of 3',
     isNew: false,
@@ -182,13 +148,9 @@ const TACTICAL_GAMES = [
     category: 'grid' as const,
     tagline: 'Stealth radar warfare',
     description:
-      'Cloak 6 stealth nodes on a 6×6 grid. Land Chain-Hit streaks for bonus turns, sweep 3×3 sectors with Sonar, and erase an entire line with a 6-cell Orbital Beam.',
+      'Cloak 6 stealth nodes on a 6×6 grid. Land Chain-Hit streaks for bonus turns, sweep 3×3 sectors with Sonar, and fire a 6-cell Orbital Beam.',
     icon: Radar,
-    gradient: 'from-emerald-500/20 via-teal-950/25 to-transparent',
-    border: 'border-emerald-500/30 hover:border-emerald-400/75',
-    glow: 'hover:shadow-[0_0_30px_rgba(16,185,129,0.2)]',
-    accent: 'text-emerald-400',
-    badgeBg: 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300',
+    iconTint: 'text-emerald-400',
     players: '1v1 + Solo AI',
     mode: 'Stealth Radar',
     isNew: false,
@@ -205,55 +167,48 @@ export default function TacticalGamesHub() {
       : TACTICAL_GAMES.filter((g) => g.category === activeCategory);
 
   return (
-    <div className="min-h-dvh bg-[#04050a] text-white relative flex flex-col overflow-x-hidden">
-      {/* Ambient Background */}
-      <div className="pointer-events-none fixed inset-0 z-0">
-        <div className="absolute top-0 left-1/4 w-[700px] h-[420px] bg-cyan-500/[0.07] rounded-full blur-[135px]" />
-        <div className="absolute bottom-0 right-1/4 w-[650px] h-[420px] bg-violet-500/[0.07] rounded-full blur-[135px]" />
-        <div className="absolute inset-0 bg-grid-white opacity-30" />
-      </div>
-
+    <div className="min-h-dvh bg-[#09090b] text-zinc-50 flex flex-col">
       <GlobalNav activePortal="tactical" />
 
-      <main className="relative z-10 max-w-7xl w-full mx-auto px-5 sm:px-6 pt-8 pb-14 flex-1 flex flex-col">
-        {/* Header + Filter Controls */}
-        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-5 mb-8">
+      <main className="max-w-6xl w-full mx-auto px-5 sm:px-6 pt-10 pb-16 flex-1 flex flex-col">
+        {/* Header + Segmented Filter */}
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 pb-8 mb-8 border-b border-zinc-800/80">
           <div>
-            <div className="inline-flex items-center gap-2 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-3 py-1 text-[10px] font-mono uppercase tracking-[0.25em] text-cyan-300 mb-3">
-              <Layers className="w-3 h-3" />
-              9 Live 1v1 Tactical Arenas
+            <div className="inline-flex items-center gap-2 font-mono text-xs text-zinc-500 mb-2.5">
+              <span className="h-1.5 w-1.5 rounded-full bg-indigo-400" />
+              <span>9 Live 1v1 Arenas</span>
             </div>
-            <h1 className="text-4xl sm:text-5xl font-black uppercase tracking-tighter leading-none">
-              Tactical{' '}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-violet-400 to-amber-300">
-                Arenas
-              </span>
+            <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-50">
+              Tactical Arenas
             </h1>
-            <p className="text-zinc-400 text-xs sm:text-sm mt-2 max-w-2xl leading-relaxed">
-              Every arena supports instant <span className="text-white font-semibold">1v1 Live Multiplayer</span> via 6-char room codes plus Solo AI sparring protocols.
+            <p className="text-sm text-zinc-400 mt-2 max-w-xl leading-relaxed">
+              Every arena supports instant 1v1 multiplayer via 6-character room codes alongside solo AI sparring protocols.
             </p>
           </div>
 
-          {/* Interactive Category Filter Tabs */}
-          <div className="inline-flex flex-wrap items-center gap-1 p-1.5 rounded-2xl border border-white/10 bg-[#070912]/90 backdrop-blur-xl self-start lg:self-auto">
+          {/* Segmented Control */}
+          <div className="inline-flex flex-wrap items-center gap-1 bg-zinc-900/90 border border-zinc-800 p-1 rounded-xl self-start lg:self-auto">
             {FILTERS.map((tab) => {
               const isActive = activeCategory === tab.id;
               return (
                 <button
                   key={tab.id}
+                  type="button"
                   onClick={() => {
                     playSound('chip');
                     setActiveCategory(tab.id);
                   }}
-                  className={`relative px-3.5 py-2 rounded-xl text-[11px] font-mono font-bold uppercase tracking-wider transition-colors ${
-                    isActive ? 'text-black' : 'text-zinc-400 hover:text-white'
+                  className={`relative px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                    isActive
+                      ? 'text-zinc-950 font-semibold'
+                      : 'text-zinc-400 hover:text-zinc-100'
                   }`}
                 >
                   {isActive && (
                     <motion.div
                       layoutId="tacticalFilterPill"
-                      className="absolute inset-0 rounded-xl bg-gradient-to-r from-cyan-300 to-violet-300 shadow-[0_0_20px_rgba(34,211,238,0.35)]"
-                      transition={{ type: 'spring', stiffness: 450, damping: 32 }}
+                      className="absolute inset-0 rounded-lg bg-zinc-50"
+                      transition={{ type: 'spring', stiffness: 450, damping: 34 }}
                     />
                   )}
                   <span className="relative z-10">{tab.label}</span>
@@ -263,7 +218,7 @@ export default function TacticalGamesHub() {
           </div>
         </div>
 
-        {/* Arena Grid */}
+        {/* 3-Column Arena Grid */}
         <motion.div
           layout
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
@@ -275,54 +230,48 @@ export default function TacticalGamesHub() {
                 <motion.div
                   key={game.href}
                   layout
-                  initial={{ opacity: 0, scale: 0.96, y: 12 }}
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  transition={{ duration: 0.22 }}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.98 }}
+                  transition={{ duration: 0.2 }}
                 >
                   <Link
                     href={game.href}
                     onClick={() => playSound('card_pick')}
-                    className={`group relative flex flex-col justify-between h-full rounded-2xl border bg-[#070912]/88 backdrop-blur-xl p-5 overflow-hidden transition-all duration-250 hover:-translate-y-1 ${game.border} ${game.glow}`}
+                    className="group flex flex-col justify-between h-full rounded-xl bg-[#111113] border border-zinc-800/90 hover:border-zinc-700 hover:bg-[#151518] p-5 transition-all"
                   >
-                    <div
-                      className={`absolute inset-0 bg-gradient-to-br ${game.gradient} opacity-70 group-hover:opacity-100 transition-opacity pointer-events-none`}
-                    />
-
-                    <div className="relative z-10">
-                      <div className="flex items-center justify-between gap-2 mb-4">
-                        <div className={`p-2.5 rounded-xl border border-white/15 bg-black/60 ${game.accent}`}>
-                          <Icon size={19} />
+                    <div>
+                      <div className="flex items-start justify-between gap-2 mb-4">
+                        <div className="w-9 h-9 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center shrink-0">
+                          <Icon className={`w-4 h-4 ${game.iconTint}`} />
                         </div>
-                        <div className="flex flex-wrap items-center justify-end gap-1.5">
-                          <span
-                            className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full border text-[9px] font-mono font-bold uppercase tracking-wider ${game.badgeBg}`}
-                          >
-                            {game.isNew && <Sparkles size={9} />}
+                        <div className="flex items-center gap-1.5 flex-wrap justify-end">
+                          {game.isNew && (
+                            <span className="px-2 py-0.5 rounded-md bg-amber-400/10 border border-amber-400/20 text-amber-400 font-mono text-[11px] font-medium">
+                              New
+                            </span>
+                          )}
+                          <span className="px-2 py-0.5 rounded-md bg-zinc-900 border border-zinc-800 font-mono text-[11px] text-zinc-400">
                             {game.mode}
-                          </span>
-                          <span className="flex items-center gap-1 text-[9px] font-mono text-zinc-300 bg-black/60 border border-white/10 px-2 py-0.5 rounded-full">
-                            <Users size={10} />
-                            {game.players}
                           </span>
                         </div>
                       </div>
 
-                      <h2 className="text-xl font-black uppercase tracking-tight text-white mb-0.5">
+                      <h2 className="text-base font-semibold tracking-tight text-zinc-50 mb-0.5">
                         {game.title}
                       </h2>
-                      <p className={`text-[10px] font-mono uppercase tracking-[0.2em] mb-2.5 ${game.accent}`}>
+                      <p className="text-xs text-zinc-500 mb-3">
                         {game.tagline}
                       </p>
-                      <p className="text-xs text-zinc-400 leading-relaxed mb-4">
+                      <p className="text-sm text-zinc-400 leading-relaxed mb-4">
                         {game.description}
                       </p>
 
-                      <div className="flex flex-wrap gap-1.5 mb-4">
+                      <div className="flex flex-wrap gap-1.5 mb-5">
                         {game.highlights.map((tag) => (
                           <span
                             key={tag}
-                            className="px-2 py-0.5 rounded-md border border-white/10 bg-black/55 text-[10px] font-mono text-zinc-300"
+                            className="px-2 py-0.5 rounded-md bg-zinc-900 border border-zinc-800/90 font-mono text-[11px] text-zinc-400"
                           >
                             {tag}
                           </span>
@@ -330,11 +279,15 @@ export default function TacticalGamesHub() {
                       </div>
                     </div>
 
-                    <div
-                      className={`relative z-10 pt-3 border-t border-white/10 flex items-center justify-between text-[11px] font-black uppercase tracking-widest ${game.accent}`}
-                    >
-                      <span>Launch 1v1 Arena</span>
-                      <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                    <div className="pt-3.5 border-t border-zinc-800/80 flex items-center justify-between text-xs">
+                      <span className="inline-flex items-center gap-1.5 font-mono text-zinc-500">
+                        <Users className="w-3.5 h-3.5" />
+                        {game.players}
+                      </span>
+                      <span className="inline-flex items-center gap-1 font-medium text-zinc-300 group-hover:text-zinc-50 transition-colors">
+                        <span>Play</span>
+                        <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
+                      </span>
                     </div>
                   </Link>
                 </motion.div>
@@ -344,10 +297,10 @@ export default function TacticalGamesHub() {
         </motion.div>
       </main>
 
-      <footer className="relative z-10 max-w-7xl w-full mx-auto px-5 sm:px-6 pb-6">
-        <div className="pt-4 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-2 text-[10px] font-mono uppercase tracking-widest text-zinc-600">
-          <span>Real-Time 1v1 Lobbies &amp; Tactical AI Protocols</span>
-          <span>Room Sync · Instant Rematch · Zero Sign-Up</span>
+      <footer className="max-w-6xl w-full mx-auto px-5 sm:px-6 pb-8">
+        <div className="pt-5 border-t border-zinc-800/80 flex flex-col sm:flex-row items-center justify-between gap-2 font-mono text-xs text-zinc-500">
+          <span>Real-time 1v1 lobbies &amp; tactical AI</span>
+          <span>6-char room sync · Instant rematch · Zero sign-up</span>
         </div>
       </footer>
     </div>

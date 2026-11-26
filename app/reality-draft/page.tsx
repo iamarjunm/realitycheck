@@ -28,7 +28,6 @@ const SHOWCASE_CARDS: AnomalyCardId[] = ['zero_void', 'bluff_phantom', 'apex_sin
 
 export default function RealityDraftLobbyPage() {
   const router = useRouter();
-  const [mode, setMode] = useState<'multi' | 'solo'>('multi');
   const [nickname, setNickname] = useState('');
   const [joinCode, setJoinCode] = useState('');
   const [busy, setBusy] = useState(false);
@@ -248,207 +247,219 @@ export default function RealityDraftLobbyPage() {
   }
 
   return (
-    <div className="min-h-dvh lg:h-dvh lg:overflow-hidden bg-[#05030c] text-white flex flex-col items-center justify-center p-4 relative selection:bg-fuchsia-500/30">
-      {/* Surreal Cosmic Nebula Backdrop */}
-      <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-[860px] h-[460px] bg-fuchsia-600/18 rounded-full blur-[150px]" />
-        <div className="absolute bottom-0 left-1/4 w-[520px] h-[340px] bg-cyan-500/14 rounded-full blur-[130px]" />
-        <div className="absolute bottom-0 right-1/4 w-[480px] h-[320px] bg-amber-500/10 rounded-full blur-[130px]" />
-        <div className="absolute inset-0 bg-grid-white opacity-30" />
-      </div>
-
-      <Link
-        href="/card-games"
-        className="absolute top-4 left-4 z-20 inline-flex items-center gap-2 rounded-full border border-white/10 bg-black/55 px-3.5 py-1.5 text-[11px] font-mono uppercase tracking-widest text-zinc-400 hover:border-fuchsia-400/40 hover:text-white transition"
-      >
-        <ArrowLeft size={13} /> Card Tables
-      </Link>
-
-      <div className="relative z-10 w-full max-w-5xl grid lg:grid-cols-12 gap-6 items-center">
-        {/* Left: Surreal Tarot Pitch + Floating Holo Cards */}
-        <motion.div
-          initial={{ opacity: 0, x: -16 }}
-          animate={{ opacity: 1, x: 0 }}
-          className="lg:col-span-7 space-y-5 text-center lg:text-left"
+    <div className="min-h-dvh lg:h-dvh lg:overflow-hidden bg-[#09090b] text-zinc-100 flex flex-col relative selection:bg-amber-500/20">
+      {/* Top Bar */}
+      <header className="relative z-10 shrink-0 px-5 py-3.5 border-b border-zinc-800/80 bg-[#09090b]/90 backdrop-blur-md flex items-center justify-between">
+        <Link
+          href="/card-games"
+          className="inline-flex items-center gap-2 text-xs font-medium tracking-wide text-zinc-400 hover:text-zinc-100 transition-colors"
         >
-          <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 rounded-full border border-fuchsia-400/35 bg-fuchsia-950/50 px-3 py-1 text-[10px] font-mono uppercase tracking-[0.3em] text-fuchsia-300">
-              <Sparkles size={12} /> 1v1 Anomaly Tarot Dueler
-            </div>
-            <h1 className="text-4xl sm:text-5xl font-black uppercase tracking-tighter leading-[0.95] text-transparent bg-clip-text bg-gradient-to-br from-fuchsia-200 via-cyan-300 to-amber-300">
-              Reality Draft
-            </h1>
-            <p className="text-xs sm:text-sm text-zinc-300 max-w-lg mx-auto lg:mx-0 leading-relaxed">
-              12 surreal Anomaly Cards, 5 rotating World Distortions, and lethal Double Stakes mindgames. Drop your rival from{' '}
-              <span className="text-cyan-300 font-bold">{STARTING_HP} HP</span> to 0 or claim{' '}
-              <span className="text-amber-300 font-bold">{CROWNS_TO_WIN} Crowns</span> to collapse reality.
-            </p>
-          </div>
+          <ArrowLeft size={14} />
+          Card Tables
+        </Link>
+        <span className="text-[11px] font-mono uppercase tracking-[0.18em] text-amber-400/90">
+          1v1 Anomaly Tarot Dueler
+        </span>
+      </header>
 
-          {/* Floating Preview Tarot Trio */}
-          <div className="flex items-center justify-center lg:justify-start gap-2.5 sm:gap-3.5 pt-1">
-            {SHOWCASE_CARDS.map((id, i) => {
-              const card = ANOMALY_CARDS[id];
-              const rot = i === 0 ? -5 : i === 2 ? 5 : 0;
-              return (
-                <motion.div
-                  key={id}
-                  initial={{ opacity: 0, y: 18, rotateZ: rot }}
-                  animate={{ opacity: 1, y: i === 1 ? -8 : 0, rotateZ: rot }}
-                  whileHover={{ y: -14, rotateZ: 0, scale: 1.06 }}
-                  transition={{ type: 'spring', stiffness: 280, damping: 22 }}
-                  className={`relative w-[124px] sm:w-[144px] h-[168px] sm:h-[186px] rounded-2xl border p-2.5 flex flex-col justify-between bg-gradient-to-b from-[#16102b] via-[#0b0818] to-[#05030b] overflow-hidden cursor-default ${card.borderClass} ${card.glowClass}`}
-                >
-                  <div className={`absolute inset-0 opacity-35 ${card.foilClass}`} />
-                  <div className="relative z-10 flex items-center justify-between">
-                    <span className="text-[9px] font-mono text-zinc-400">{card.roman}</span>
-                    <span
-                      className="flex h-7 w-7 items-center justify-center rounded-full border font-black text-sm text-white"
-                      style={{ borderColor: card.accentHex, backgroundColor: `${card.accentHex}26` }}
-                    >
-                      {card.basePower}
-                    </span>
-                  </div>
-                  <div className="relative z-10 text-center">
-                    <p className="text-[11px] font-black uppercase tracking-tight text-white">
-                      {card.name}
+      {/* Main Lobby */}
+      <main className="relative z-10 flex-1 flex items-center justify-center p-4 sm:p-6 max-w-4xl w-full mx-auto overflow-y-auto">
+        <div className="w-full space-y-5">
+          {/* Hero + Floating Matte Tarot Trio */}
+          <div className="grid lg:grid-cols-12 gap-5 items-center">
+            <motion.div
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="lg:col-span-6 space-y-2.5 text-center lg:text-left"
+            >
+              <div className="inline-flex items-center gap-2 rounded-full border border-zinc-800 bg-[#111113] px-3 py-1 text-[11px] font-mono uppercase tracking-[0.2em] text-amber-400">
+                <Sparkles size={12} /> Reality Draft
+              </div>
+              <h1 className="text-3xl sm:text-5xl font-semibold tracking-tight leading-[1.04] text-zinc-50">
+                Draft the{' '}
+                <span className="text-amber-400">Arcana.</span>
+              </h1>
+              <p className="text-xs sm:text-sm text-zinc-400 max-w-md mx-auto lg:mx-0 leading-relaxed">
+                12 Anomaly Cards, 5 rotating World Distortions, and lethal Double Stakes mindgames. Drop your rival from{' '}
+                <span className="text-zinc-100 font-medium">{STARTING_HP} HP</span> to 0 or claim{' '}
+                <span className="text-amber-400 font-medium">{CROWNS_TO_WIN} Crowns</span>.
+              </p>
+
+              <div className="grid grid-cols-3 gap-2 pt-1 max-w-md mx-auto lg:mx-0">
+                <div className="rounded-xl border border-zinc-800 bg-[#111113] px-2.5 py-2 text-left">
+                  <Flame className="w-3.5 h-3.5 text-rose-400 mb-1" />
+                  <p className="text-[11px] font-semibold text-zinc-100">Distortions</p>
+                  <p className="text-[10px] text-zinc-500">Rules shift each turn</p>
+                </div>
+                <div className="rounded-xl border border-zinc-800 bg-[#111113] px-2.5 py-2 text-left">
+                  <Crown className="w-3.5 h-3.5 text-amber-400 mb-1" />
+                  <p className="text-[11px] font-semibold text-zinc-100">Double ×2</p>
+                  <p className="text-[10px] text-zinc-500">Bluff for 2× stakes</p>
+                </div>
+                <div className="rounded-xl border border-zinc-800 bg-[#111113] px-2.5 py-2 text-left">
+                  <Shield className="w-3.5 h-3.5 text-emerald-400 mb-1" />
+                  <p className="text-[11px] font-semibold text-zinc-100">Aura Reads</p>
+                  <p className="text-[10px] text-zinc-500">Low / Mid / High</p>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Floating Preview Matte Tarot Trio */}
+            <div className="lg:col-span-6 flex items-center justify-center lg:justify-end gap-2.5 sm:gap-3 pt-1">
+              {SHOWCASE_CARDS.map((id, i) => {
+                const card = ANOMALY_CARDS[id];
+                const rot = i === 0 ? -4 : i === 2 ? 4 : 0;
+                const tarotAccent =
+                  i === 0
+                    ? { border: 'border-rose-500/45', badge: 'text-rose-300', ring: '#f43f5e' }
+                    : i === 1
+                      ? { border: 'border-amber-400/55', badge: 'text-amber-300', ring: '#fbbf24' }
+                      : { border: 'border-emerald-500/45', badge: 'text-emerald-300', ring: '#34d399' };
+                return (
+                  <motion.div
+                    key={id}
+                    initial={{ opacity: 0, y: 14, rotateZ: rot }}
+                    animate={{ opacity: 1, y: i === 1 ? -6 : 0, rotateZ: rot }}
+                    whileHover={{ y: -12, rotateZ: 0, scale: 1.04 }}
+                    transition={{ type: 'spring', stiffness: 280, damping: 22 }}
+                    className={`relative w-[116px] sm:w-[132px] h-[160px] sm:h-[176px] rounded-2xl border p-2.5 flex flex-col justify-between bg-gradient-to-b from-[#17171a] via-[#111113] to-[#0b0b0d] overflow-hidden cursor-default ${tarotAccent.border}`}
+                  >
+                    <div className="pointer-events-none absolute inset-1.5 rounded-xl border border-white/[0.04]" />
+                    <div className="relative z-10 flex items-center justify-between">
+                      <span className="text-[9px] font-mono text-zinc-400">{card.roman}</span>
+                      <span
+                        className="flex h-6 w-6 items-center justify-center rounded-full border font-mono font-bold text-xs text-zinc-50 bg-zinc-950"
+                        style={{ borderColor: tarotAccent.ring }}
+                      >
+                        {card.basePower}
+                      </span>
+                    </div>
+                    <div className="relative z-10 text-center">
+                      <p className="text-[10.5px] font-semibold uppercase tracking-wide text-zinc-100">
+                        {card.name}
+                      </p>
+                      <p className={`mt-0.5 text-[8px] font-mono uppercase tracking-wider ${tarotAccent.badge}`}>
+                        {card.shortTag}
+                      </p>
+                    </div>
+                    <p className="relative z-10 rounded-lg bg-zinc-950/90 border border-zinc-800/90 p-1.5 text-[8px] leading-snug text-zinc-400 line-clamp-3">
+                      {card.ability}
                     </p>
-                    <p
-                      className="mt-0.5 text-[8px] font-mono uppercase tracking-wider"
-                      style={{ color: card.accentHex }}
-                    >
-                      {card.shortTag}
-                    </p>
-                  </div>
-                  <p className="relative z-10 rounded-lg bg-black/65 border border-white/10 p-1.5 text-[8.5px] leading-tight text-zinc-300 line-clamp-3">
-                    {card.ability}
-                  </p>
-                </motion.div>
-              );
-            })}
-          </div>
-
-          {/* 3 Quick Pill Highlights */}
-          <div className="grid grid-cols-3 gap-2 max-w-lg mx-auto lg:mx-0">
-            <div className="rounded-xl border border-white/10 bg-black/50 px-2.5 py-2 text-left">
-              <Flame className="w-3.5 h-3.5 text-fuchsia-400 mb-1" />
-              <p className="text-[10px] font-black uppercase text-white">Distortions</p>
-              <p className="text-[9px] text-zinc-400">Rules mutate every round</p>
-            </div>
-            <div className="rounded-xl border border-white/10 bg-black/50 px-2.5 py-2 text-left">
-              <Crown className="w-3.5 h-3.5 text-amber-300 mb-1" />
-              <p className="text-[10px] font-black uppercase text-white">Double ×2</p>
-              <p className="text-[9px] text-zinc-400">Bluff or nuke for 2× dmg</p>
-            </div>
-            <div className="rounded-xl border border-white/10 bg-black/50 px-2.5 py-2 text-left">
-              <Shield className="w-3.5 h-3.5 text-cyan-300 mb-1" />
-              <p className="text-[10px] font-black uppercase text-white">Aura Reads</p>
-              <p className="text-[9px] text-zinc-400">Low / Mid / High bluffing</p>
+                  </motion.div>
+                );
+              })}
             </div>
           </div>
-        </motion.div>
 
-        {/* Right: Matchmaking Console */}
-        <motion.div
-          initial={{ opacity: 0, x: 16 }}
-          animate={{ opacity: 1, x: 0 }}
-          className="lg:col-span-5 w-full max-w-md mx-auto space-y-3"
-        >
+          {/* Shared Callsign Input */}
+          <div className="max-w-md mx-auto">
+            <label className="block text-[11px] font-mono uppercase tracking-widest text-zinc-400 mb-1.5">
+              Duelist Callsign
+            </label>
+            <input
+              type="text"
+              value={nickname}
+              onChange={(e) => persistNickname(e.target.value)}
+              placeholder="Enter your callsign..."
+              maxLength={14}
+              className="w-full rounded-xl border border-zinc-800 bg-zinc-950 px-3.5 py-2.5 text-sm font-medium text-zinc-100 placeholder:text-zinc-600 focus:border-zinc-400 focus:outline-none transition-colors"
+            />
+          </div>
+
           {error && (
-            <div className="rounded-xl border border-rose-500/40 bg-rose-950/50 px-3 py-2 text-xs text-rose-200 text-center">
+            <div className="max-w-md mx-auto rounded-xl border border-rose-500/35 bg-rose-500/10 px-3.5 py-2.5 text-xs text-rose-300 text-center font-medium">
               {error}
             </div>
           )}
 
-          <div className="rounded-3xl border border-fuchsia-400/25 bg-black/70 backdrop-blur-xl p-5 shadow-[0_0_50px_rgba(217,70,239,0.16)] space-y-4">
-            <div className="grid grid-cols-2 gap-1 p-1 rounded-xl bg-zinc-950 border border-white/10">
-              <button
-                type="button"
-                onClick={() => {
-                  setMode('multi');
-                  if (soundEnabled) playSound('tick');
-                }}
-                className={`py-2 rounded-lg text-xs font-black uppercase flex items-center justify-center gap-1.5 transition ${
-                  mode === 'multi'
-                    ? 'bg-gradient-to-r from-fuchsia-500 to-cyan-400 text-black'
-                    : 'text-zinc-400 hover:text-white'
-                }`}
-              >
-                <Users className="w-3.5 h-3.5" /> 1v1 Live PvP
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setMode('solo');
-                  if (soundEnabled) playSound('tick');
-                }}
-                className={`py-2 rounded-lg text-xs font-black uppercase flex items-center justify-center gap-1.5 transition ${
-                  mode === 'solo'
-                    ? 'bg-gradient-to-r from-fuchsia-500 to-cyan-400 text-black'
-                    : 'text-zinc-400 hover:text-white'
-                }`}
-              >
-                <Bot className="w-3.5 h-3.5" /> Solo vs ORACLE
-              </button>
+          {/* Balanced 2-Card Mode Selector */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* 1v1 Multiplayer */}
+            <div className="rounded-2xl border border-zinc-800 bg-[#111113] p-5 flex flex-col justify-between gap-4">
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="inline-flex items-center gap-2 text-sm font-semibold text-zinc-100">
+                    <Users className="w-4 h-4 text-amber-400" /> 1v1 Multiplayer
+                  </span>
+                  <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-md bg-zinc-900 text-zinc-300 border border-zinc-800">
+                    Live PvP
+                  </span>
+                </div>
+                <p className="text-xs text-zinc-400 leading-relaxed">
+                  Open a private 6-character Tarot Rift or join a rival’s table for simultaneous card clashes.
+                </p>
+              </div>
+
+              <div className="space-y-2.5">
+                <button
+                  type="button"
+                  disabled={busy}
+                  onClick={handleCreateMulti}
+                  className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-zinc-50 hover:bg-white py-2.5 px-4 text-sm font-semibold text-zinc-950 transition-colors cursor-pointer disabled:opacity-50"
+                >
+                  <Swords size={15} />
+                  {busy ? 'Opening Rift...' : 'Create 1v1 Room'}
+                </button>
+
+                <form onSubmit={handleJoinMulti} className="flex gap-2">
+                  <input
+                    type="text"
+                    value={joinCode}
+                    onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
+                    placeholder="ROOM CODE"
+                    maxLength={8}
+                    className="flex-1 rounded-xl border border-zinc-800 bg-zinc-950 px-3.5 py-2.5 text-center font-mono text-sm font-semibold uppercase tracking-[0.22em] text-amber-300 placeholder:text-zinc-600 focus:border-zinc-400 focus:outline-none transition-colors"
+                  />
+                  <button
+                    type="submit"
+                    disabled={!joinCode.trim() || busy}
+                    className="rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 px-5 py-2.5 text-xs font-semibold uppercase tracking-wider text-zinc-100 transition-colors cursor-pointer disabled:opacity-40"
+                  >
+                    Join
+                  </button>
+                </form>
+              </div>
             </div>
 
-            <div className="space-y-1.5">
-              <label className="block text-[10px] font-mono uppercase tracking-[0.25em] text-zinc-400">
-                Duelist Callsign
-              </label>
-              <input
-                type="text"
-                value={nickname}
-                onChange={(e) => persistNickname(e.target.value)}
-                placeholder="Enter your callsign..."
-                maxLength={14}
-                className="w-full rounded-xl border border-white/15 bg-zinc-950 px-3.5 py-2.5 text-xs font-bold text-white placeholder:text-zinc-600 focus:border-fuchsia-400 focus:outline-none"
-              />
-            </div>
+            {/* Solo vs ORACLE-AI */}
+            <div className="rounded-2xl border border-zinc-800 bg-[#111113] p-5 flex flex-col justify-between gap-4">
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="inline-flex items-center gap-2 text-sm font-semibold text-zinc-100">
+                    <Bot className="w-4 h-4 text-rose-400" /> Solo vs ORACLE-AI
+                  </span>
+                  <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-md bg-zinc-900 text-zinc-300 border border-zinc-800">
+                    Instant Match
+                  </span>
+                </div>
+                <p className="text-xs text-zinc-400 leading-relaxed mb-3">
+                  Face an AI strategist that reads active World Distortions, times Double Stakes bluffs, and plays around Zero Void.
+                </p>
+                <div className="flex items-center gap-2 text-[11px] font-mono text-zinc-400">
+                  <span className="px-2 py-1 rounded-lg bg-zinc-950 border border-zinc-800/80 text-zinc-300">
+                    {STARTING_HP} HP
+                  </span>
+                  <span className="px-2 py-1 rounded-lg bg-zinc-950 border border-zinc-800/80 text-amber-300">
+                    {CROWNS_TO_WIN} Crowns
+                  </span>
+                  <span className="px-2 py-1 rounded-lg bg-zinc-950 border border-zinc-800/80 text-emerald-300">
+                    12 Arcana
+                  </span>
+                </div>
+              </div>
 
-            {mode === 'multi' ? (
-              <button
-                type="button"
-                disabled={busy}
-                onClick={handleCreateMulti}
-                className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-fuchsia-500 via-violet-500 to-cyan-400 py-3 text-xs font-black uppercase tracking-widest text-black shadow-lg hover:brightness-110 disabled:opacity-50"
-              >
-                <Swords size={15} />
-                {busy ? 'Opening Rift...' : 'Create 1v1 Room'}
-              </button>
-            ) : (
               <button
                 type="button"
                 onClick={startSolo}
-                className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-fuchsia-500 via-violet-500 to-cyan-400 py-3 text-xs font-black uppercase tracking-widest text-black shadow-lg hover:brightness-110"
+                className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 py-2.5 px-4 text-sm font-semibold text-zinc-100 transition-colors cursor-pointer"
               >
                 <Bot size={15} />
                 Challenge ORACLE-AI
               </button>
-            )}
+            </div>
           </div>
-
-          {mode === 'multi' && (
-            <form onSubmit={handleJoinMulti} className="flex gap-2">
-              <input
-                type="text"
-                value={joinCode}
-                onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
-                placeholder="ROOM CODE"
-                maxLength={8}
-                className="flex-1 rounded-xl border border-white/15 bg-zinc-950/90 px-3 py-2.5 text-center font-mono text-xs uppercase tracking-[0.28em] text-cyan-100 placeholder:text-zinc-600 focus:border-cyan-400 focus:outline-none"
-              />
-              <button
-                type="submit"
-                disabled={!joinCode.trim() || busy}
-                className="rounded-xl bg-white px-5 py-2.5 text-xs font-black uppercase tracking-wider text-black hover:bg-cyan-200 disabled:opacity-40"
-              >
-                Join
-              </button>
-            </form>
-          )}
-        </motion.div>
-      </div>
+        </div>
+      </main>
     </div>
   );
 }

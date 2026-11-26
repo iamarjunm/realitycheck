@@ -257,114 +257,122 @@ export default function VoidStepPage() {
   }
 
   return (
-    <div className="min-h-dvh lg:h-dvh lg:overflow-hidden bg-[#04060b] text-white flex flex-col items-center justify-center p-4 relative">
-      <div className="pointer-events-none fixed inset-0">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[450px] bg-violet-600/12 rounded-full blur-[130px]" />
-        <div className="absolute inset-0 bg-grid-white opacity-30" />
-      </div>
+    <div className="min-h-dvh lg:h-dvh lg:overflow-hidden bg-[#09090b] text-zinc-100 flex flex-col relative">
+      <header className="shrink-0 border-b border-zinc-800/80 bg-[#09090b]/90 backdrop-blur-md px-5 h-14 flex items-center justify-between">
+        <Link
+          href="/tactical-games"
+          className="inline-flex items-center gap-2 rounded-xl border border-zinc-800 bg-zinc-900 hover:bg-zinc-800 px-3 py-1.5 text-xs font-medium text-zinc-300 hover:text-zinc-50 transition-colors"
+        >
+          <ArrowLeft size={14} /> Tactical Arenas
+        </Link>
+        <span className="rounded-full border border-zinc-800 bg-zinc-900 px-3 py-1 text-[11px] font-medium text-zinc-300">
+          Abstract Grid Duel
+        </span>
+      </header>
 
-      <Link
-        href="/tactical-games"
-        className="absolute top-4 left-4 z-20 inline-flex items-center gap-2 rounded-full border border-white/10 bg-black/50 px-3.5 py-1.5 text-[11px] font-mono uppercase tracking-widest text-zinc-400 hover:text-white"
-      >
-        <ArrowLeft size={13} /> Tactical Arenas
-      </Link>
-
-      <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="relative z-10 w-full max-w-md">
-        <div className="text-center mb-4">
-          <div className="mx-auto mb-2.5 flex h-12 w-12 items-center justify-center rounded-2xl border border-violet-500/35 bg-violet-950/50">
-            <Hexagon className="text-violet-400" size={22} />
+      <main className="flex-1 flex items-center justify-center p-4">
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="w-full max-w-md space-y-5"
+        >
+          <div className="text-center space-y-2">
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl border border-zinc-800 bg-[#111113]">
+              <Hexagon className="text-indigo-400" size={22} />
+            </div>
+            <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight text-zinc-50">
+              Void Step
+            </h1>
+            <p className="text-xs sm:text-sm text-zinc-400 max-w-xs mx-auto leading-relaxed">
+              Step 1 tile (your old tile collapses), shatter another tile anywhere, and use 2 Blink jumps to trap your rival in the Void.
+            </p>
           </div>
-          <p className="text-[9px] font-mono uppercase tracking-[0.35em] text-violet-400 mb-1">
-            Shattering Grid Duel
-          </p>
-          <h1 className="text-3xl font-black uppercase tracking-tighter text-transparent bg-clip-text bg-gradient-to-br from-violet-300 via-fuchsia-400 to-cyan-300">
-            Void Step
-          </h1>
-          <p className="mt-1 text-xs text-zinc-400 max-w-xs mx-auto">
-            Step 1 tile (your old tile collapses), shatter another tile anywhere, and use 2 Blink jumps to trap your rival in the Void.
-          </p>
-        </div>
 
-        {error && (
-          <div className="mb-3 rounded-xl border border-rose-500/30 bg-rose-950/40 px-3 py-2 text-xs text-rose-200 text-center">
-            {error}
-          </div>
-        )}
+          {error && (
+            <div className="rounded-xl border border-rose-500/30 bg-rose-500/10 px-3.5 py-2.5 text-xs text-rose-300 text-center">
+              {error}
+            </div>
+          )}
 
-        <div className="space-y-3">
-          <div className="rounded-2xl border border-violet-500/20 bg-black/65 backdrop-blur-xl p-5 shadow-2xl space-y-3.5">
-            <div className="grid grid-cols-2 gap-1 p-1 rounded-xl bg-zinc-950 border border-white/10">
-              <button
-                type="button"
-                onClick={() => setMode('multi')}
-                className={`py-2 rounded-lg text-xs font-black uppercase flex items-center justify-center gap-1.5 ${
-                  mode === 'multi' ? 'bg-violet-500 text-white' : 'text-zinc-400 hover:text-white'
-                }`}
-              >
-                <Users className="w-3.5 h-3.5" /> 1v1 Live PvP
-              </button>
-              <button
-                type="button"
-                onClick={() => setMode('solo')}
-                className={`py-2 rounded-lg text-xs font-black uppercase flex items-center justify-center gap-1.5 ${
-                  mode === 'solo' ? 'bg-violet-500 text-white' : 'text-zinc-400 hover:text-white'
-                }`}
-              >
-                <Bot className="w-3.5 h-3.5" /> Solo vs AI
-              </button>
+          <div className="space-y-3">
+            <div className="rounded-2xl border border-zinc-800/90 bg-[#111113] p-5 space-y-4">
+              <div className="grid grid-cols-2 gap-1 p-1 rounded-xl bg-zinc-950 border border-zinc-800">
+                <button
+                  type="button"
+                  onClick={() => setMode('multi')}
+                  className={`py-2 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer ${
+                    mode === 'multi' ? 'bg-zinc-50 text-zinc-950' : 'text-zinc-400 hover:text-zinc-100'
+                  }`}
+                >
+                  <Users className="w-3.5 h-3.5" /> 1v1 Live PvP
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setMode('solo')}
+                  className={`py-2 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer ${
+                    mode === 'solo' ? 'bg-zinc-50 text-zinc-950' : 'text-zinc-400 hover:text-zinc-100'
+                  }`}
+                >
+                  <Bot className="w-3.5 h-3.5" /> Solo vs AI
+                </button>
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-medium text-zinc-400 mb-1.5">
+                  Walker Codename
+                </label>
+                <input
+                  type="text"
+                  value={nickname}
+                  onChange={(e) => setNickname(e.target.value)}
+                  placeholder="Your codename..."
+                  maxLength={14}
+                  className="w-full bg-zinc-950 border border-zinc-800 focus:border-zinc-400 rounded-xl px-3.5 py-2.5 text-sm font-medium text-zinc-100 placeholder:text-zinc-600 focus:outline-none transition-colors"
+                />
+              </div>
+
+              {mode === 'multi' ? (
+                <button
+                  type="button"
+                  disabled={busy}
+                  onClick={handleCreateMulti}
+                  className="w-full py-3 rounded-xl bg-zinc-50 hover:bg-white text-zinc-950 font-semibold text-sm transition-colors cursor-pointer disabled:opacity-50"
+                >
+                  {busy ? 'Opening Grid...' : 'Create 1v1 Void Arena'}
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={startSolo}
+                  className="w-full py-3 rounded-xl bg-zinc-50 hover:bg-white text-zinc-950 font-semibold text-sm transition-colors cursor-pointer"
+                >
+                  Challenge Void AI
+                </button>
+              )}
             </div>
 
-            <input
-              type="text"
-              value={nickname}
-              onChange={(e) => setNickname(e.target.value)}
-              placeholder="Your codename..."
-              maxLength={14}
-              className="w-full bg-zinc-950 border border-white/10 rounded-xl px-3 py-2.5 text-xs font-bold text-white focus:outline-none focus:border-violet-400"
-            />
-
-            {mode === 'multi' ? (
-              <button
-                type="button"
-                disabled={busy}
-                onClick={handleCreateMulti}
-                className="w-full py-3 rounded-xl bg-gradient-to-r from-violet-500 to-cyan-400 text-black font-black uppercase tracking-widest text-xs"
-              >
-                {busy ? 'Opening Grid...' : 'Create 1v1 Void Arena'}
-              </button>
-            ) : (
-              <button
-                type="button"
-                onClick={startSolo}
-                className="w-full py-3 rounded-xl bg-gradient-to-r from-violet-500 to-cyan-400 text-black font-black uppercase tracking-widest text-xs"
-              >
-                Challenge Void AI
-              </button>
+            {mode === 'multi' && (
+              <form onSubmit={handleJoinMulti} className="flex gap-2">
+                <input
+                  type="text"
+                  value={joinCode}
+                  onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
+                  placeholder="ARENA CODE"
+                  maxLength={8}
+                  className="flex-1 bg-zinc-950 border border-zinc-800 focus:border-zinc-400 rounded-xl px-3.5 py-2.5 text-center font-mono text-xs uppercase tracking-[0.25em] text-zinc-100 placeholder:text-zinc-600 focus:outline-none transition-colors"
+                />
+                <button
+                  type="submit"
+                  disabled={!joinCode.trim() || busy}
+                  className="bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-200 font-medium px-5 py-2.5 rounded-xl text-xs transition-colors cursor-pointer disabled:opacity-40"
+                >
+                  Join
+                </button>
+              </form>
             )}
           </div>
-
-          {mode === 'multi' && (
-            <form onSubmit={handleJoinMulti} className="flex gap-2">
-              <input
-                type="text"
-                value={joinCode}
-                onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
-                placeholder="ARENA CODE"
-                maxLength={8}
-                className="flex-1 bg-zinc-950 border border-white/10 rounded-xl px-3 py-2.5 text-center font-mono text-xs uppercase tracking-[0.25em] text-violet-100"
-              />
-              <button
-                type="submit"
-                disabled={!joinCode.trim() || busy}
-                className="bg-white text-black font-black px-5 py-2.5 rounded-xl uppercase text-xs disabled:opacity-40"
-              >
-                Join
-              </button>
-            </form>
-          )}
-        </div>
-      </motion.div>
+        </motion.div>
+      </main>
     </div>
   );
 }

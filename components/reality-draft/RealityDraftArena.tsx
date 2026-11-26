@@ -57,36 +57,40 @@ interface RealityDraftArenaProps {
 
 const AURA_STYLES: Record<
   AuraTier,
-  { label: string; ring: string; badge: string; pulse: string; text: string }
+  { label: string; ring: string; badge: string; text: string }
 > = {
   LOW: {
     label: 'LOW AURA',
-    ring: 'border-cyan-400/75 shadow-[0_0_28px_rgba(34,211,238,0.45)]',
-    badge: 'bg-cyan-500/20 border-cyan-400/60 text-cyan-200',
-    pulse: 'bg-cyan-400/25',
-    text: 'text-cyan-300',
+    ring: 'border-emerald-500/55',
+    badge: 'bg-emerald-500/10 border-emerald-500/40 text-emerald-300',
+    text: 'text-emerald-400',
   },
   MID: {
     label: 'MID AURA',
-    ring: 'border-amber-400/75 shadow-[0_0_28px_rgba(251,191,36,0.45)]',
-    badge: 'bg-amber-500/20 border-amber-400/60 text-amber-200',
-    pulse: 'bg-amber-400/25',
-    text: 'text-amber-300',
+    ring: 'border-amber-400/60',
+    badge: 'bg-amber-500/10 border-amber-400/45 text-amber-300',
+    text: 'text-amber-400',
   },
   HIGH: {
     label: 'HIGH AURA',
-    ring: 'border-fuchsia-400/80 shadow-[0_0_32px_rgba(232,121,249,0.55)]',
-    badge: 'bg-fuchsia-500/25 border-fuchsia-400/70 text-fuchsia-200',
-    pulse: 'bg-fuchsia-500/30',
-    text: 'text-fuchsia-300',
+    ring: 'border-rose-500/65',
+    badge: 'bg-rose-500/10 border-rose-500/45 text-rose-300',
+    text: 'text-rose-400',
   },
 };
 
 const RARITY_BADGE: Record<string, string> = {
-  common: 'text-teal-300 border-teal-400/40 bg-teal-950/60',
-  rare: 'text-cyan-300 border-cyan-400/40 bg-cyan-950/60',
-  epic: 'text-fuchsia-300 border-fuchsia-400/45 bg-fuchsia-950/60',
-  mythic: 'text-amber-200 border-amber-400/55 bg-amber-950/60',
+  common: 'text-zinc-300 border-zinc-700 bg-zinc-900',
+  rare: 'text-emerald-300 border-emerald-500/35 bg-emerald-950/40',
+  epic: 'text-rose-300 border-rose-500/35 bg-rose-950/40',
+  mythic: 'text-amber-300 border-amber-400/45 bg-amber-950/40',
+};
+
+const LUXURY_CARD_ACCENT: Record<string, { border: string; hex: string }> = {
+  common: { border: 'border-zinc-700/90', hex: '#d4d4d8' },
+  rare: { border: 'border-emerald-500/45', hex: '#34d399' },
+  epic: { border: 'border-rose-500/45', hex: '#f43f5e' },
+  mythic: { border: 'border-amber-400/60', hex: '#fbbf24' },
 };
 
 function CardArtworkEmblem({ cardId, color }: { cardId: AnomalyCardId; color: string }) {
@@ -235,6 +239,7 @@ function AnomalyCardView({
   const def = ANOMALY_CARDS[cardId];
   const aura = getDisplayedAuraTier(cardId);
   const auraStyle = AURA_STYLES[aura];
+  const luxuryAccent = LUXURY_CARD_ACCENT[def.rarity] ?? LUXURY_CARD_ACCENT.common;
   const powerDisplay = finalPower !== undefined ? finalPower : projectedPower ?? def.basePower;
   const hasBonus = finalPower !== undefined ? finalPower !== def.basePower : projectedBonus !== 0;
 
@@ -244,25 +249,21 @@ function AnomalyCardView({
       onDoubleClick={disabled ? undefined : onDoubleClick}
       onMouseEnter={() => onHover?.(true)}
       onMouseLeave={() => onHover?.(false)}
-      className={`relative select-none rounded-2xl border overflow-hidden flex flex-col justify-between transition-all duration-200 bg-gradient-to-b from-[#131024] via-[#0b0918] to-[#06050e] ${
+      className={`relative select-none rounded-2xl border overflow-hidden flex flex-col justify-between transition-all duration-200 bg-gradient-to-b from-[#17171a] via-[#111113] to-[#0b0b0d] ${
         selected
-          ? 'border-white ring-2 ring-fuchsia-400/80 shadow-[0_0_32px_rgba(232,121,249,0.55)]'
-          : `${def.borderClass} ${def.glowClass}`
+          ? 'border-amber-400 ring-1 ring-amber-400/70'
+          : `${luxuryAccent.border} hover:border-zinc-500`
       } ${compact ? 'w-[150px] sm:w-[172px] h-[206px] sm:h-[224px] p-2.5' : 'w-[134px] sm:w-[152px] xl:w-[164px] h-[196px] sm:h-[214px] xl:h-[224px] p-2.5'} ${
         disabled ? 'opacity-60 cursor-not-allowed' : onClick ? 'cursor-pointer' : ''
       }`}
     >
-      {/* Holographic Foil Layer */}
-      <div className={`absolute inset-0 opacity-35 ${def.foilClass}`} />
-      <div
-        className="pointer-events-none absolute -top-10 -right-10 w-24 h-24 rounded-full blur-2xl opacity-35"
-        style={{ backgroundColor: def.accentHex }}
-      />
+      {/* Luxury Matte Tarot Inner Hairline Frame */}
+      <div className="pointer-events-none absolute inset-1.5 rounded-xl border border-white/[0.05]" />
 
       {/* Top Row: Tarot Roman + Power Orb */}
       <div className="relative z-10 flex items-start justify-between gap-1">
         <div className="flex flex-col">
-          <span className="text-[9px] font-mono tracking-[0.2em] text-zinc-400 uppercase leading-none">
+          <span className="text-[9px] font-mono tracking-[0.18em] text-zinc-400 uppercase leading-none">
             {def.roman} • {def.archetype}
           </span>
           <span
@@ -274,21 +275,20 @@ function AnomalyCardView({
 
         <div className="relative flex flex-col items-end">
           <div
-            className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-full border-2 font-black text-base sm:text-lg shadow-lg"
+            className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-full border-2 font-mono font-bold text-base sm:text-lg bg-zinc-950 tabular-nums"
             style={{
-              borderColor: def.accentHex,
-              background: `radial-gradient(circle at 30% 30%, ${def.accentHex}44, #090614 85%)`,
-              color: hasBonus && powerDisplay > def.basePower ? '#a3e635' : hasBonus && powerDisplay < def.basePower ? '#fb7185' : '#ffffff',
+              borderColor: luxuryAccent.hex,
+              color: hasBonus && powerDisplay > def.basePower ? '#34d399' : hasBonus && powerDisplay < def.basePower ? '#fb7185' : '#fafafa',
             }}
           >
             {powerDisplay}
           </div>
           {hasBonus && (
             <span
-              className={`-mt-1.5 rounded-full px-1.5 py-0.5 text-[8px] font-mono font-bold border ${
+              className={`-mt-1.5 rounded-full px-1.5 py-0.5 text-[8px] font-mono font-bold border tabular-nums ${
                 powerDisplay > def.basePower
-                  ? 'bg-lime-950/90 border-lime-400/60 text-lime-300'
-                  : 'bg-rose-950/90 border-rose-400/60 text-rose-300'
+                  ? 'bg-emerald-950/95 border-emerald-500/60 text-emerald-300'
+                  : 'bg-rose-950/95 border-rose-500/60 text-rose-300'
               }`}
             >
               {powerDisplay > def.basePower ? `+${powerDisplay - def.basePower}` : powerDisplay - def.basePower}
@@ -299,20 +299,17 @@ function AnomalyCardView({
 
       {/* Center Emblem */}
       <div className="relative z-10 my-auto flex flex-col items-center justify-center py-0.5">
-        <div
-          className="relative flex items-center justify-center rounded-full p-2 border border-white/10 bg-black/45"
-          style={{ boxShadow: `inset 0 0 18px ${def.accentHex}33` }}
-        >
-          <CardArtworkEmblem cardId={cardId} color={def.accentHex} />
+        <div className="relative flex items-center justify-center rounded-full p-2 border border-zinc-800 bg-zinc-950/85">
+          <CardArtworkEmblem cardId={cardId} color={luxuryAccent.hex} />
         </div>
-        <h3 className="mt-1.5 text-center text-[11px] sm:text-xs font-black tracking-tight text-white uppercase leading-tight">
+        <h3 className="mt-1.5 text-center text-[11px] sm:text-xs font-semibold tracking-wide text-zinc-50 uppercase leading-tight">
           {def.name}
         </h3>
       </div>
 
       {/* Ability Box */}
-      <div className="relative z-10 rounded-lg border border-white/10 bg-black/65 px-2 py-1.5">
-        <p className="text-[9px] sm:text-[9.5px] leading-[1.25] text-zinc-200 line-clamp-3">
+      <div className="relative z-10 rounded-lg border border-zinc-800/90 bg-zinc-950/85 px-2 py-1.5">
+        <p className="text-[9px] sm:text-[9.5px] leading-[1.28] text-zinc-300 line-clamp-3">
           {def.ability}
         </p>
       </div>
@@ -324,30 +321,30 @@ function AnomalyCardView({
         </span>
         {stanceBadge && stanceBadge !== 'hold' ? (
           <span
-            className={`px-1.5 py-0.5 rounded font-bold ${
+            className={`px-1.5 py-0.5 rounded font-semibold ${
               stanceBadge === 'double'
-                ? 'bg-fuchsia-500/30 text-fuchsia-200 border border-fuchsia-400/60'
-                : 'bg-cyan-500/30 text-cyan-200 border border-cyan-400/60'
+                ? 'bg-rose-500/15 text-rose-300 border border-rose-500/50'
+                : 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/50'
             }`}
           >
             {stanceBadge === 'double' ? '×2 STAKES' : 'WARD +1'}
           </span>
         ) : (
-          <span className="text-zinc-500">BASE {def.basePower}</span>
+          <span className="text-zinc-500 tabular-nums">BASE {def.basePower}</span>
         )}
       </div>
 
       {/* Nullified / Shattered Stamps */}
       {nullified && (
-        <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center bg-fuchsia-950/40 backdrop-blur-[1px]">
-          <span className="-rotate-12 rounded-md border-2 border-fuchsia-400 bg-black/85 px-2.5 py-1 text-[10px] font-black tracking-[0.2em] text-fuchsia-300 shadow-lg">
+        <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center bg-zinc-950/65 backdrop-blur-[1px]">
+          <span className="-rotate-12 rounded-md border border-amber-400 bg-zinc-950 px-2.5 py-1 text-[10px] font-mono font-bold tracking-[0.2em] text-amber-300">
             NULLIFIED
           </span>
         </div>
       )}
       {shattered && (
-        <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center bg-sky-950/45 backdrop-blur-[1px]">
-          <span className="rotate-12 rounded-md border-2 border-rose-400 bg-black/85 px-2.5 py-1 text-[10px] font-black tracking-[0.2em] text-rose-300 shadow-lg">
+        <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center bg-zinc-950/65 backdrop-blur-[1px]">
+          <span className="rotate-12 rounded-md border border-rose-500 bg-zinc-950 px-2.5 py-1 text-[10px] font-mono font-bold tracking-[0.2em] text-rose-300">
             SHATTERED!
           </span>
         </div>
@@ -370,24 +367,23 @@ function FaceDownAuraCard({
   const style = AURA_STYLES[aura];
   return (
     <div
-      className={`relative w-[150px] sm:w-[172px] h-[206px] sm:h-[224px] rounded-2xl border-2 bg-gradient-to-b from-[#150c28] via-[#0a0717] to-[#04030a] p-3 flex flex-col items-center justify-between overflow-hidden ${style.ring}`}
+      className={`relative w-[150px] sm:w-[172px] h-[206px] sm:h-[224px] rounded-2xl border bg-gradient-to-b from-[#17171a] via-[#111113] to-[#0b0b0d] p-3 flex flex-col items-center justify-between overflow-hidden ${style.ring}`}
     >
-      <div className="absolute inset-0 bg-dot-matrix opacity-35" />
-      <motion.div
-        animate={pulsing ? { opacity: [0.25, 0.75, 0.25], scale: [0.92, 1.08, 0.92] } : undefined}
-        transition={{ duration: 1.2, repeat: Infinity, ease: 'easeInOut' }}
-        className={`pointer-events-none absolute inset-6 rounded-full blur-2xl ${style.pulse}`}
-      />
+      <div className="pointer-events-none absolute inset-2 rounded-xl border border-white/[0.06]" />
 
       <span className="relative z-10 text-[9px] font-mono uppercase tracking-[0.25em] text-zinc-400">
         {label}
       </span>
 
-      <div className="relative z-10 flex flex-col items-center gap-2">
-        <div className={`w-16 h-16 rounded-full border-2 flex items-center justify-center bg-black/60 ${style.ring}`}>
-          <Sparkles className={`w-7 h-7 ${style.text}`} />
-        </div>
-        <span className={`px-2.5 py-1 rounded-full border text-[10px] font-mono font-black tracking-widest ${style.badge}`}>
+      <div className="relative z-10 flex flex-col items-center gap-2.5">
+        <motion.div
+          animate={pulsing ? { scale: [0.96, 1.04, 0.96] } : undefined}
+          transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}
+          className={`w-16 h-16 rounded-full border flex items-center justify-center bg-zinc-950 ${style.ring}`}
+        >
+          <Sparkles className={`w-6 h-6 ${style.text}`} />
+        </motion.div>
+        <span className={`px-2.5 py-1 rounded-md border text-[10px] font-mono font-semibold tracking-wider ${style.badge}`}>
           {style.label} ({getAuraRangeLabel(aura)})
         </span>
       </div>
@@ -395,10 +391,10 @@ function FaceDownAuraCard({
       <div className="relative z-10 h-5 flex items-center justify-center">
         {stance && stance !== 'hold' ? (
           <span
-            className={`px-2 py-0.5 rounded-full text-[9px] font-mono font-black uppercase tracking-wider border ${
+            className={`px-2 py-0.5 rounded-md text-[9px] font-mono font-semibold uppercase tracking-wider border ${
               stance === 'double'
-                ? 'bg-fuchsia-500/30 border-fuchsia-400 text-fuchsia-200'
-                : 'bg-cyan-500/30 border-cyan-400 text-cyan-200'
+                ? 'bg-rose-500/15 border-rose-500/50 text-rose-300'
+                : 'bg-emerald-500/15 border-emerald-500/50 text-emerald-300'
             }`}
           >
             {stance === 'double' ? 'DOUBLE STAKES ×2' : 'WARD SHIELD'}
@@ -430,18 +426,16 @@ function PlayerHudStrip({
   const hpBarColor =
     hpPct > 55
       ? isMe
-        ? 'from-cyan-400 to-fuchsia-400'
-        : 'from-rose-400 to-amber-400'
+        ? 'bg-emerald-500'
+        : 'bg-rose-500'
       : hpPct > 25
-        ? 'from-amber-400 to-orange-500'
-        : 'from-rose-500 to-red-600';
+        ? 'bg-amber-400'
+        : 'bg-rose-600';
 
   return (
     <div
-      className={`relative flex items-center gap-2.5 rounded-xl border px-3 py-1.5 backdrop-blur-md ${
-        isMe
-          ? 'border-cyan-400/30 bg-cyan-950/25'
-          : 'border-fuchsia-400/30 bg-fuchsia-950/25'
+      className={`relative flex items-center gap-2.5 rounded-xl border px-3 py-1.5 bg-[#111113] ${
+        isMe ? 'border-zinc-800' : 'border-zinc-800'
       }`}
     >
       <div className="min-w-0 flex-1">
@@ -449,25 +443,25 @@ function PlayerHudStrip({
           <div className="flex items-center gap-1.5 min-w-0">
             <span
               className={`h-2 w-2 rounded-full shrink-0 ${
-                isMe ? 'bg-cyan-400 shadow-[0_0_8px_#22d3ee]' : 'bg-fuchsia-400 shadow-[0_0_8px_#e879f9]'
+                isMe ? 'bg-emerald-400' : 'bg-rose-500'
               }`}
             />
-            <span className="truncate text-xs font-black uppercase tracking-wide text-white">
+            <span className="truncate text-xs font-semibold tracking-wide text-zinc-100">
               {player.nickname}
             </span>
             {isMe && (
-              <span className="text-[9px] font-mono uppercase text-cyan-300/80">(YOU)</span>
+              <span className="text-[9px] font-mono uppercase text-zinc-500">(YOU)</span>
             )}
             {player.nextRoundCurse < 0 && (
-              <span className="inline-flex items-center gap-0.5 rounded border border-teal-400/60 bg-teal-950/80 px-1 py-0.5 text-[8px] font-mono font-bold text-teal-200 animate-pulse">
+              <span className="inline-flex items-center gap-0.5 rounded border border-rose-500/45 bg-rose-500/10 px-1 py-0.5 text-[8px] font-mono font-semibold text-rose-300 animate-pulse">
                 <Skull className="w-2.5 h-2.5" /> {player.nextRoundCurse} PWR
               </span>
             )}
           </div>
 
           <div className="flex items-center gap-1.5 shrink-0">
-            <Heart className="w-3 h-3 text-rose-400 fill-rose-400/40" />
-            <span className="font-mono text-xs font-black text-white">
+            <Heart className="w-3 h-3 text-rose-400 fill-rose-400/30" />
+            <span className="font-mono text-xs font-semibold text-zinc-100 tabular-nums">
               {player.hp}
               <span className="text-zinc-500 font-normal">/{MAX_HP}</span>
             </span>
@@ -475,37 +469,37 @@ function PlayerHudStrip({
         </div>
 
         {/* HP Bar */}
-        <div className="mt-1 h-2 w-full rounded-full bg-black/70 border border-white/10 overflow-hidden">
+        <div className="mt-1 h-1.5 w-full rounded-full bg-zinc-900 border border-zinc-800 overflow-hidden">
           <motion.div
             animate={{ width: `${hpPct}%` }}
             transition={{ type: 'spring', stiffness: 120, damping: 18 }}
-            className={`h-full rounded-full bg-gradient-to-r ${hpBarColor}`}
+            className={`h-full rounded-full ${hpBarColor}`}
           />
         </div>
 
         {/* Crowns + Charges + Void */}
-        <div className="mt-1 flex items-center justify-between gap-2 text-[9px] font-mono text-zinc-400">
+        <div className="mt-1 flex items-center justify-between gap-2 text-[9px] font-mono text-zinc-400 tabular-nums">
           <div className="flex items-center gap-0.5" title={`Crowns: ${player.crowns}/${CROWNS_TO_WIN}`}>
             {Array.from({ length: CROWNS_TO_WIN }).map((_, idx) => (
               <Crown
                 key={idx}
-                className={`w-3 h-3 transition-all ${
+                className={`w-3 h-3 transition-colors ${
                   idx < player.crowns
-                    ? 'text-amber-300 fill-amber-400 drop-shadow-[0_0_6px_rgba(251,191,36,0.8)]'
-                    : 'text-zinc-700'
+                    ? 'text-amber-400 fill-amber-400'
+                    : 'text-zinc-800'
                 }`}
               />
             ))}
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="text-fuchsia-300/90" title="Double Stakes Remaining">
+            <span className="text-rose-400" title="Double Stakes Remaining">
               ×2:{player.doubleUsesLeft}
             </span>
-            <span className="text-cyan-300/90" title="Ward Shields Remaining">
+            <span className="text-emerald-400" title="Ward Shields Remaining">
               🛡:{player.wardUsesLeft}
             </span>
-            <span className="hidden sm:inline text-zinc-400" title="Deck / Discard Void">
+            <span className="hidden sm:inline text-zinc-500" title="Deck / Discard Void">
               <Layers className="inline w-2.5 h-2.5 mr-0.5" />
               {player.deck.length}/{player.discard.length}
             </span>
@@ -520,7 +514,7 @@ function PlayerHudStrip({
             initial={{ opacity: 0, y: 10, scale: 0.7 }}
             animate={{ opacity: 1, y: -14, scale: 1.05 }}
             exit={{ opacity: 0, y: -26 }}
-            className="pointer-events-none absolute -bottom-3 right-3 z-30 rounded-full border border-rose-400 bg-rose-950/95 px-2 py-0.5 text-[11px] font-mono font-black text-rose-200 shadow-lg"
+            className="pointer-events-none absolute -bottom-3 right-3 z-30 rounded-full border border-rose-500/60 bg-rose-950 px-2 py-0.5 text-[11px] font-mono font-bold text-rose-200 tabular-nums"
           >
             -{deltaDmg} HP
           </motion.div>
@@ -530,7 +524,7 @@ function PlayerHudStrip({
             initial={{ opacity: 0, y: 10, scale: 0.7 }}
             animate={{ opacity: 1, y: -14, scale: 1.05 }}
             exit={{ opacity: 0, y: -26 }}
-            className="pointer-events-none absolute -bottom-3 left-3 z-30 rounded-full border border-emerald-400 bg-emerald-950/95 px-2 py-0.5 text-[11px] font-mono font-black text-emerald-200 shadow-lg"
+            className="pointer-events-none absolute -bottom-3 left-3 z-30 rounded-full border border-emerald-500/60 bg-emerald-950 px-2 py-0.5 text-[11px] font-mono font-bold text-emerald-200 tabular-nums"
           >
             +{deltaHeal} HP
           </motion.div>
@@ -664,23 +658,20 @@ export function RealityDraftArena({
   // Guest Join Gate (when arriving at a waiting PvP room via link)
   if (meIdx === -1 && game.state === 'waiting' && onJoinRoom) {
     return (
-      <div className="min-h-dvh bg-[#05030c] text-white flex items-center justify-center p-4 relative overflow-hidden">
-        <div className={`pointer-events-none fixed inset-0 bg-gradient-to-b ${distortionDef.auraGradient}`} />
-        <div className="pointer-events-none fixed inset-0 bg-grid-white opacity-30" />
-
+      <div className="min-h-dvh bg-[#09090b] text-zinc-100 flex items-center justify-center p-4 relative overflow-hidden">
         <motion.div
-          initial={{ opacity: 0, scale: 0.94 }}
+          initial={{ opacity: 0, scale: 0.96 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="relative z-10 w-full max-w-md rounded-3xl border border-fuchsia-400/30 bg-black/75 backdrop-blur-xl p-6 shadow-2xl space-y-4 text-center"
+          className="relative z-10 w-full max-w-md rounded-2xl border border-zinc-800 bg-[#111113] p-6 space-y-4 text-center"
         >
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl border border-fuchsia-400/40 bg-fuchsia-950/60">
-            <Swords className="text-fuchsia-300" size={22} />
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl border border-zinc-800 bg-zinc-950">
+            <Swords className="text-amber-400" size={22} />
           </div>
           <div>
-            <p className="text-[10px] font-mono uppercase tracking-[0.3em] text-fuchsia-400">
+            <p className="text-[10px] font-mono uppercase tracking-[0.25em] text-amber-400">
               REALITY DRAFT • ROOM {game.gameId}
             </p>
-            <h1 className="mt-1 text-2xl font-black uppercase tracking-tight">
+            <h1 className="mt-1 text-2xl font-semibold tracking-tight text-zinc-50">
               Enter The Anomaly Duel
             </h1>
             <p className="mt-1 text-xs text-zinc-400">
@@ -704,12 +695,12 @@ export function RealityDraftArena({
               onChange={(e) => setJoinName(e.target.value)}
               placeholder="Your Callsign..."
               maxLength={14}
-              className="w-full rounded-xl border border-white/15 bg-zinc-950 px-3.5 py-2.5 text-center text-sm font-bold text-white focus:border-fuchsia-400 focus:outline-none"
+              className="w-full rounded-xl border border-zinc-800 bg-zinc-950 px-3.5 py-2.5 text-center text-sm font-medium text-zinc-100 placeholder:text-zinc-600 focus:border-zinc-400 focus:outline-none transition-colors"
             />
             <button
               type="submit"
               disabled={busy}
-              className="w-full rounded-xl bg-gradient-to-r from-fuchsia-500 via-violet-500 to-cyan-400 py-3 text-xs font-black uppercase tracking-widest text-black shadow-lg disabled:opacity-50"
+              className="w-full rounded-xl bg-zinc-50 hover:bg-white py-2.5 text-xs font-semibold uppercase tracking-wider text-zinc-950 transition-colors cursor-pointer disabled:opacity-50"
             >
               {busy ? 'Summoning Deck...' : 'Join 1v1 Reality Draft'}
             </button>
@@ -722,13 +713,13 @@ export function RealityDraftArena({
   // Spectator guard if room already full
   if (meIdx === -1) {
     return (
-      <div className="min-h-dvh bg-[#05030c] text-white flex flex-col items-center justify-center p-6 text-center gap-4">
-        <h1 className="text-2xl font-black uppercase">Reality Rift Already Sealed</h1>
+      <div className="min-h-dvh bg-[#09090b] text-zinc-100 flex flex-col items-center justify-center p-6 text-center gap-4">
+        <h1 className="text-2xl font-semibold tracking-tight text-zinc-50">Reality Rift Already Sealed</h1>
         <p className="text-xs text-zinc-400">This 1v1 duel already has two duelists locked in.</p>
         <button
           type="button"
           onClick={onExit}
-          className="rounded-xl bg-fuchsia-500 px-5 py-2.5 text-xs font-black uppercase text-black"
+          className="rounded-xl bg-zinc-50 hover:bg-white px-5 py-2.5 text-xs font-semibold uppercase tracking-wider text-zinc-950 transition-colors cursor-pointer"
         >
           Return to Lobby
         </button>
@@ -753,40 +744,28 @@ export function RealityDraftArena({
           : { x: 0, y: 0 }
       }
       transition={{ duration: 0.42, ease: 'easeOut' }}
-      className="min-h-dvh lg:h-dvh lg:overflow-hidden bg-[#05030c] text-white flex flex-col justify-between relative selection:bg-fuchsia-500/30"
+      className="min-h-dvh lg:h-dvh lg:overflow-hidden bg-[#09090b] text-zinc-100 flex flex-col justify-between relative selection:bg-amber-500/20"
     >
-      {/* Dynamic Cosmic Distortion Atmosphere */}
-      <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div
-          className={`absolute inset-0 bg-gradient-to-b transition-colors duration-700 ${distortionDef.auraGradient}`}
-        />
-        <div
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[720px] h-[720px] rounded-full blur-[160px] opacity-25 transition-colors duration-700"
-          style={{ backgroundColor: distortionDef.accentHex }}
-        />
-        <div className="absolute inset-0 bg-grid-white opacity-25" />
-      </div>
-
       {/* ─── TOP HUD BAR ─── */}
-      <header className="relative z-20 shrink-0 px-3 sm:px-5 pt-2.5 pb-1.5">
+      <header className="relative z-20 shrink-0 px-3 sm:px-5 pt-2.5 pb-2 border-b border-zinc-800/80 bg-[#09090b]/95 backdrop-blur-md">
         <div className="mx-auto max-w-6xl flex flex-wrap lg:flex-nowrap items-center justify-between gap-2">
           {/* Left Controls */}
           <div className="flex items-center gap-2">
             <button
               type="button"
               onClick={onExit}
-              className="inline-flex items-center gap-1.5 rounded-xl border border-white/10 bg-black/55 px-2.5 py-1.5 text-[11px] font-mono uppercase tracking-wider text-zinc-300 hover:border-white/25 hover:text-white"
+              className="inline-flex items-center gap-1.5 rounded-xl border border-zinc-800 bg-[#111113] px-2.5 py-1.5 text-[11px] font-medium text-zinc-300 hover:bg-zinc-900 hover:text-zinc-100 transition-colors cursor-pointer"
             >
               <ArrowLeft size={13} />
               <span className="hidden sm:inline">Exit</span>
             </button>
 
-            <div className="flex items-center gap-1.5 rounded-xl border border-fuchsia-400/30 bg-black/55 px-2.5 py-1.5">
-              <Sparkles className="w-3.5 h-3.5 text-fuchsia-300" />
-              <span className="text-[11px] font-black uppercase tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-fuchsia-300 to-cyan-300">
+            <div className="flex items-center gap-1.5 rounded-xl border border-zinc-800 bg-[#111113] px-2.5 py-1.5">
+              <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+              <span className="text-xs font-semibold tracking-tight text-zinc-50">
                 Reality Draft
               </span>
-              <span className="rounded bg-white/10 px-1.5 py-0.5 text-[9px] font-mono text-zinc-300">
+              <span className="rounded bg-zinc-900 border border-zinc-800 px-1.5 py-0.5 text-[9px] font-mono text-amber-400 tabular-nums">
                 R{game.round}
               </span>
             </div>
@@ -795,10 +774,10 @@ export function RealityDraftArena({
               <button
                 type="button"
                 onClick={handleCopyRoomCode}
-                className="inline-flex items-center gap-1 rounded-xl border border-white/10 bg-black/55 px-2.5 py-1.5 text-[10px] font-mono uppercase tracking-widest text-cyan-300 hover:border-cyan-400/40"
+                className="inline-flex items-center gap-1 rounded-xl border border-zinc-800 bg-[#111113] px-2.5 py-1.5 text-[10px] font-mono uppercase tracking-widest text-amber-300 hover:border-zinc-700 transition-colors cursor-pointer"
                 title="Copy Room Code"
               >
-                {copiedCode ? <Check size={12} className="text-lime-400" /> : <Copy size={12} />}
+                {copiedCode ? <Check size={12} className="text-emerald-400" /> : <Copy size={12} className="text-zinc-400" />}
                 {game.gameId}
               </button>
             )}
@@ -824,7 +803,7 @@ export function RealityDraftArena({
                 showDeltas={game.state === 'clash' && revealStage === 'impact'}
               />
             ) : (
-              <div className="flex items-center justify-center rounded-xl border border-dashed border-fuchsia-400/30 bg-black/40 px-3 py-2 text-[10px] font-mono uppercase tracking-widest text-fuchsia-300/75">
+              <div className="flex items-center justify-center rounded-xl border border-dashed border-zinc-800 bg-[#111113] px-3 py-2 text-[10px] font-mono uppercase tracking-widest text-zinc-500">
                 Awaiting Challenger...
               </div>
             )}
@@ -838,20 +817,20 @@ export function RealityDraftArena({
                 if (soundEnabled) playSound('rule_check');
                 setShowCodex(true);
               }}
-              className="inline-flex items-center gap-1 rounded-xl border border-white/10 bg-black/55 px-2.5 py-1.5 text-[10px] font-mono uppercase tracking-wider text-zinc-300 hover:border-fuchsia-400/40 hover:text-white"
+              className="inline-flex items-center gap-1 rounded-xl border border-zinc-800 bg-[#111113] px-2.5 py-1.5 text-[10px] font-mono uppercase tracking-wider text-zinc-300 hover:bg-zinc-900 hover:text-zinc-100 transition-colors cursor-pointer"
               title="Anomaly Codex & Rules"
             >
-              <BookOpen size={13} />
+              <BookOpen size={13} className="text-amber-400" />
               <span className="hidden sm:inline">Codex</span>
             </button>
 
             <button
               type="button"
               onClick={onToggleSound}
-              className="rounded-xl border border-white/10 bg-black/55 p-1.5 text-zinc-300 hover:border-white/25 hover:text-white"
+              className="rounded-xl border border-zinc-800 bg-[#111113] p-1.5 text-zinc-300 hover:bg-zinc-900 hover:text-zinc-100 transition-colors cursor-pointer"
               aria-label="Toggle Audio"
             >
-              {soundEnabled ? <Volume2 size={15} /> : <VolumeX size={15} />}
+              {soundEnabled ? <Volume2 size={15} /> : <VolumeX size={15} className="text-zinc-600" />}
             </button>
           </div>
         </div>
@@ -861,18 +840,18 @@ export function RealityDraftArena({
       <main className="relative z-10 flex-1 min-h-0 flex flex-col items-center justify-center px-3 sm:px-5 py-1.5 gap-2.5">
         {game.state === 'waiting' ? (
           <motion.div
-            initial={{ opacity: 0, y: 12 }}
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="w-full max-w-md rounded-3xl border border-fuchsia-400/35 bg-black/70 backdrop-blur-xl p-6 text-center shadow-[0_0_50px_rgba(217,70,239,0.2)] space-y-4"
+            className="w-full max-w-md rounded-2xl border border-zinc-800 bg-[#111113] p-6 text-center space-y-4"
           >
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full border border-fuchsia-400/50 bg-fuchsia-950/60">
-              <Sparkles className="w-7 h-7 text-fuchsia-300 animate-spin" style={{ animationDuration: '9s' }} />
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full border border-amber-400/40 bg-zinc-950">
+              <Sparkles className="w-6 h-6 text-amber-400 animate-spin" style={{ animationDuration: '9s' }} />
             </div>
             <div>
-              <p className="text-[10px] font-mono uppercase tracking-[0.35em] text-fuchsia-400">
+              <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-amber-400">
                 DIMENSIONAL RIFT OPEN
               </p>
-              <h2 className="mt-1 text-2xl font-black uppercase tracking-tight">
+              <h2 className="mt-1 text-2xl font-semibold tracking-tight text-zinc-50">
                 Share Your Room Code
               </h2>
               <p className="mt-1 text-xs text-zinc-400">
@@ -880,16 +859,16 @@ export function RealityDraftArena({
               </p>
             </div>
             <div className="flex items-center justify-center gap-2">
-              <div className="rounded-2xl border border-cyan-400/40 bg-zinc-950 px-6 py-3 font-mono text-2xl font-black tracking-[0.3em] text-cyan-200">
+              <div className="rounded-xl border border-dashed border-zinc-700 bg-zinc-950 px-6 py-3 font-mono text-2xl font-bold tracking-[0.28em] text-amber-400">
                 {game.gameId}
               </div>
               <button
                 type="button"
                 onClick={handleCopyRoomCode}
-                className="rounded-2xl border border-white/15 bg-white/10 p-3.5 text-white hover:bg-white/20"
+                className="rounded-xl border border-zinc-800 bg-zinc-900 p-3.5 text-zinc-100 hover:bg-zinc-800 transition-colors cursor-pointer"
                 title="Copy Code"
               >
-                {copiedCode ? <Check className="text-lime-400" size={20} /> : <Copy size={20} />}
+                {copiedCode ? <Check className="text-emerald-400" size={20} /> : <Copy size={20} />}
               </button>
             </div>
             <p className="text-[11px] font-mono uppercase tracking-widest text-zinc-500 animate-pulse">
@@ -901,37 +880,31 @@ export function RealityDraftArena({
             {/* REALITY DISTORTION ALTAR BANNER */}
             <motion.div
               key={game.distortion}
-              initial={{ opacity: 0, y: -8, scale: 0.96 }}
+              initial={{ opacity: 0, y: -6, scale: 0.98 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              className={`w-full max-w-3xl rounded-2xl border bg-black/65 backdrop-blur-xl px-4 py-2 flex flex-wrap sm:flex-nowrap items-center justify-between gap-2 ${distortionDef.borderGlow}`}
+              className="w-full max-w-3xl rounded-2xl border border-zinc-800 bg-[#111113] px-4 py-2 flex flex-wrap sm:flex-nowrap items-center justify-between gap-2"
             >
               <div className="flex items-center gap-2.5 min-w-0">
-                <div
-                  className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full border bg-black/70"
-                  style={{ borderColor: distortionDef.accentHex }}
-                >
+                <div className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-amber-400/45 bg-zinc-950">
                   <motion.div
                     animate={{ rotate: 360 }}
                     transition={{ duration: 14, repeat: Infinity, ease: 'linear' }}
-                    className="absolute inset-0.5 rounded-full border border-dashed opacity-55"
-                    style={{ borderColor: distortionDef.accentHex }}
+                    className="absolute inset-0.5 rounded-full border border-dashed border-amber-400/45"
                   />
-                  <Flame className="w-4 h-4" style={{ color: distortionDef.accentHex }} />
+                  <Flame className="w-4 h-4 text-amber-400" />
                 </div>
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="text-[9px] font-mono uppercase tracking-[0.28em] text-zinc-400">
+                    <span className="text-[9px] font-mono uppercase tracking-[0.25em] text-zinc-500">
                       WORLD DISTORTION
                     </span>
-                    <span
-                      className={`rounded-full border px-2 py-0.5 text-[9px] font-mono font-bold uppercase ${distortionDef.badgeClass}`}
-                    >
+                    <span className="rounded-md border border-amber-400/35 bg-amber-500/10 px-2 py-0.5 text-[9px] font-mono font-semibold uppercase text-amber-300">
                       {distortionDef.shortRule}
                     </span>
                   </div>
-                  <p className="text-sm sm:text-base font-black uppercase tracking-tight text-white truncate">
+                  <p className="text-sm sm:text-base font-semibold tracking-tight text-zinc-50 truncate">
                     {distortionDef.name}{' '}
-                    <span className="text-xs font-normal text-zinc-300 hidden md:inline">
+                    <span className="text-xs font-normal text-zinc-400 hidden md:inline">
                       — {distortionDef.rule}
                     </span>
                   </p>
@@ -941,11 +914,11 @@ export function RealityDraftArena({
               <div className="text-[10px] font-mono uppercase tracking-widest text-zinc-400 shrink-0 hidden sm:block">
                 {game.state === 'clash'
                   ? lastClash?.lowestWins
-                    ? '⚡ LOWEST WINS'
-                    : '⚔ HIGHEST WINS'
+                    ? 'LOWEST WINS'
+                    : 'HIGHEST WINS'
                   : game.distortion === 'INVERTED_GRAVITY'
-                    ? '⚡ LOWEST WINS'
-                    : '⚔ HIGHEST WINS'}
+                    ? 'LOWEST WINS'
+                    : 'HIGHEST WINS'}
               </div>
             </motion.div>
 
@@ -955,7 +928,7 @@ export function RealityDraftArena({
                 <div className="w-full flex items-center justify-center gap-4 sm:gap-10">
                   {/* YOUR SUMMON SLOT */}
                   <div className="flex flex-col items-center gap-1.5">
-                    <span className="text-[9px] font-mono uppercase tracking-[0.25em] text-cyan-300">
+                    <span className="text-[9px] font-mono uppercase tracking-[0.24em] text-emerald-400">
                       {me.locked ? 'SEALED ON ALTAR' : 'YOUR SUMMON'}
                     </span>
 
@@ -987,9 +960,9 @@ export function RealityDraftArena({
                         />
                       </motion.div>
                     ) : (
-                      <div className="w-[150px] sm:w-[172px] h-[206px] sm:h-[224px] rounded-2xl border-2 border-dashed border-cyan-400/35 bg-black/40 flex flex-col items-center justify-center gap-2 p-4 text-center">
-                        <Swords className="w-7 h-7 text-cyan-400/50" />
-                        <p className="text-[10px] font-mono uppercase tracking-widest text-zinc-400">
+                      <div className="w-[150px] sm:w-[172px] h-[206px] sm:h-[224px] rounded-2xl border border-dashed border-zinc-800 bg-[#111113]/60 flex flex-col items-center justify-center gap-2 p-4 text-center">
+                        <Swords className="w-6 h-6 text-zinc-600" />
+                        <p className="text-[10px] font-mono uppercase tracking-widest text-zinc-500">
                           Pick an Anomaly Card Below
                         </p>
                       </div>
@@ -998,27 +971,27 @@ export function RealityDraftArena({
 
                   {/* CENTER VS VORTEX */}
                   <div className="flex flex-col items-center justify-center gap-2">
-                    <div className="relative flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-full border border-white/15 bg-black/70 shadow-[0_0_30px_rgba(217,70,239,0.28)]">
+                    <div className="relative flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-full border border-zinc-800 bg-[#111113]">
                       <motion.div
                         animate={{ rotate: -360 }}
-                        transition={{ duration: 10, repeat: Infinity, ease: 'linear' }}
-                        className="absolute inset-1 rounded-full border border-dashed border-fuchsia-400/50"
+                        transition={{ duration: 12, repeat: Infinity, ease: 'linear' }}
+                        className="absolute inset-1 rounded-full border border-dashed border-amber-400/45"
                       />
-                      <span className="font-black text-lg sm:text-xl italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-br from-cyan-300 to-fuchsia-400">
+                      <span className="font-mono font-bold text-base sm:text-lg tracking-wider text-amber-400">
                         VS
                       </span>
                     </div>
                     {previewCalc && !me.locked && (
-                      <div className="rounded-lg border border-white/10 bg-black/65 px-2.5 py-1 text-center font-mono text-[10px]">
-                        <span className="text-zinc-400">EST </span>
-                        <span className="font-black text-cyan-300">{previewCalc.total} PWR</span>
+                      <div className="rounded-lg border border-zinc-800 bg-[#111113] px-2.5 py-1 text-center font-mono text-[10px] tabular-nums">
+                        <span className="text-zinc-500">EST </span>
+                        <span className="font-semibold text-amber-300">{previewCalc.total} PWR</span>
                       </div>
                     )}
                   </div>
 
                   {/* RIVAL SUMMON SLOT */}
                   <div className="flex flex-col items-center gap-1.5">
-                    <span className="text-[9px] font-mono uppercase tracking-[0.25em] text-fuchsia-300">
+                    <span className="text-[9px] font-mono uppercase tracking-[0.24em] text-rose-400">
                       {opp?.nickname ?? 'RIVAL'}
                     </span>
 
@@ -1026,26 +999,26 @@ export function RealityDraftArena({
                       <motion.div
                         initial={{ scale: 1.15, y: -26, opacity: 0 }}
                         animate={{ scale: 1, y: 0, opacity: 1 }}
-                        className="w-[150px] sm:w-[172px] h-[206px] sm:h-[224px] rounded-2xl border-2 border-fuchsia-400/75 bg-gradient-to-b from-[#1a0b2e] to-[#07040f] flex flex-col items-center justify-center gap-2.5 p-4 text-center shadow-[0_0_30px_rgba(232,121,249,0.4)]"
+                        className="w-[150px] sm:w-[172px] h-[206px] sm:h-[224px] rounded-2xl border border-rose-500/50 bg-[#111113] flex flex-col items-center justify-center gap-2.5 p-4 text-center"
                       >
-                        <Lock className="w-8 h-8 text-fuchsia-300 animate-pulse" />
-                        <span className="text-[10px] font-mono font-black uppercase tracking-[0.2em] text-fuchsia-200">
+                        <Lock className="w-7 h-7 text-rose-400 animate-pulse" />
+                        <span className="text-[10px] font-mono font-semibold uppercase tracking-[0.2em] text-rose-300">
                           ANOMALY SEALED
                         </span>
-                        <span className="text-[9px] font-mono text-zinc-400">
+                        <span className="text-[9px] font-mono text-zinc-500">
                           Lock yours to clash!
                         </span>
                       </motion.div>
                     ) : (
-                      <div className="w-[150px] sm:w-[172px] h-[206px] sm:h-[224px] rounded-2xl border-2 border-dashed border-fuchsia-400/30 bg-black/40 flex flex-col items-center justify-center gap-2.5 p-4 text-center">
+                      <div className="w-[150px] sm:w-[172px] h-[206px] sm:h-[224px] rounded-2xl border border-dashed border-zinc-800 bg-[#111113]/60 flex flex-col items-center justify-center gap-2.5 p-4 text-center">
                         <motion.div
                           animate={{ rotate: 360 }}
                           transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
-                          className="h-10 w-10 rounded-full border border-dashed border-fuchsia-400/60 flex items-center justify-center"
+                          className="h-10 w-10 rounded-full border border-dashed border-zinc-700 flex items-center justify-center"
                         >
-                          <Sparkles className="w-4 h-4 text-fuchsia-300" />
+                          <Sparkles className="w-4 h-4 text-amber-400/70" />
                         </motion.div>
-                        <p className="text-[10px] font-mono uppercase tracking-widest text-zinc-400">
+                        <p className="text-[10px] font-mono uppercase tracking-widest text-zinc-500">
                           {opp?.isBot ? 'Oracle Calculating...' : 'Rival Choosing...'}
                         </p>
                       </div>
@@ -1060,7 +1033,7 @@ export function RealityDraftArena({
                   <div className="w-full flex items-start justify-center gap-3 sm:gap-8">
                     {/* MY CLASH CARD + MATH */}
                     <div className="flex flex-col items-center gap-1.5">
-                      <span className="text-[9px] font-mono uppercase tracking-[0.25em] text-cyan-300">
+                      <span className="text-[9px] font-mono uppercase tracking-[0.24em] text-emerald-400">
                         {me?.nickname}
                       </span>
 
@@ -1118,16 +1091,16 @@ export function RealityDraftArena({
                               initial={{ opacity: 0, scale: 0.7 }}
                               animate={{ opacity: 1, scale: 1 }}
                               transition={{ delay: i * 0.14 }}
-                              className={`rounded-md border px-1.5 py-0.5 text-[9px] font-mono font-bold ${
+                              className={`rounded-md border px-1.5 py-0.5 text-[9px] font-mono font-semibold tabular-nums ${
                                 step.tone === 'paradox'
-                                  ? 'border-fuchsia-400 bg-fuchsia-950/80 text-fuchsia-200'
+                                  ? 'border-amber-400/55 bg-amber-500/10 text-amber-200'
                                   : step.tone === 'distortion'
-                                    ? 'border-cyan-400 bg-cyan-950/80 text-cyan-200'
+                                    ? 'border-zinc-700 bg-zinc-900 text-zinc-200'
                                     : step.tone === 'buff'
-                                      ? 'border-lime-400/70 bg-lime-950/80 text-lime-200'
+                                      ? 'border-emerald-500/50 bg-emerald-500/10 text-emerald-300'
                                       : step.tone === 'debuff'
-                                        ? 'border-rose-400/70 bg-rose-950/80 text-rose-200'
-                                        : 'border-white/20 bg-zinc-900/90 text-zinc-200'
+                                        ? 'border-rose-500/50 bg-rose-500/10 text-rose-300'
+                                        : 'border-zinc-800 bg-zinc-950 text-zinc-300'
                               }`}
                             >
                               {i === 0
@@ -1144,9 +1117,9 @@ export function RealityDraftArena({
                         <motion.div
                           initial={{ scale: 0.85, opacity: 0 }}
                           animate={{ scale: 1, opacity: 1 }}
-                          className="rounded-2xl border border-fuchsia-400/40 bg-black/75 px-3.5 py-2.5"
+                          className="rounded-xl border border-zinc-800 bg-[#111113] px-3.5 py-2.5"
                         >
-                          <p className="text-[10px] font-mono uppercase tracking-[0.25em] text-fuchsia-300 animate-pulse">
+                          <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-amber-400 animate-pulse">
                             SCANNING AURAS...
                           </p>
                         </motion.div>
@@ -1156,9 +1129,9 @@ export function RealityDraftArena({
                         <motion.div
                           initial={{ scale: 0.85, opacity: 0 }}
                           animate={{ scale: 1, opacity: 1 }}
-                          className="rounded-2xl border border-cyan-400/45 bg-black/75 px-3.5 py-2.5"
+                          className="rounded-xl border border-zinc-800 bg-[#111113] px-3.5 py-2.5"
                         >
-                          <p className="text-[10px] font-mono uppercase tracking-[0.25em] text-cyan-300">
+                          <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-zinc-200">
                             ANOMALIES REVEALED
                           </p>
                         </motion.div>
@@ -1168,18 +1141,18 @@ export function RealityDraftArena({
                         <motion.div
                           initial={{ scale: 0.85, opacity: 0 }}
                           animate={{ scale: 1, opacity: 1 }}
-                          className="rounded-2xl border border-amber-400/50 bg-black/80 px-3.5 py-2.5 space-y-1"
+                          className="rounded-xl border border-amber-400/45 bg-[#111113] px-3.5 py-2.5 space-y-1"
                         >
-                          <p className="text-[9px] font-mono uppercase tracking-[0.25em] text-amber-300">
+                          <p className="text-[9px] font-mono uppercase tracking-[0.22em] text-amber-400">
                             COMPUTING REALITY
                           </p>
-                          <p className="text-xl font-black font-mono text-white">
+                          <p className="text-xl font-bold font-mono text-zinc-50 tabular-nums">
                             {lastClash.finalPowers[myIndex]}{' '}
                             <span className="text-xs text-zinc-500">VS</span>{' '}
                             {lastClash.finalPowers[oppIndex]}
                           </p>
                           {lastClash.lowestWins && (
-                            <span className="inline-block rounded bg-lime-500/20 border border-lime-400/50 px-1.5 py-0.5 text-[9px] font-mono text-lime-300">
+                            <span className="inline-block rounded bg-emerald-500/15 border border-emerald-500/40 px-1.5 py-0.5 text-[9px] font-mono text-emerald-300">
                               LOWEST WINS!
                             </span>
                           )}
@@ -1188,23 +1161,23 @@ export function RealityDraftArena({
 
                       {revealStage === 'impact' && (
                         <motion.div
-                          initial={{ scale: 1.25, opacity: 0 }}
+                          initial={{ scale: 1.2, opacity: 0 }}
                           animate={{ scale: 1, opacity: 1 }}
-                          className={`rounded-2xl border-2 bg-black/85 px-4 py-3 shadow-2xl space-y-1.5 ${
+                          className={`rounded-2xl border bg-[#111113] px-4 py-3 space-y-1.5 ${
                             lastClash.winnerIdx === myIndex
-                              ? 'border-lime-400/80 shadow-[0_0_32px_rgba(163,230,53,0.35)]'
+                              ? 'border-emerald-500/60'
                               : lastClash.winnerIdx === oppIndex
-                                ? 'border-rose-500/80 shadow-[0_0_32px_rgba(244,63,94,0.35)]'
-                                : 'border-fuchsia-400/75 shadow-[0_0_32px_rgba(232,121,249,0.35)]'
+                                ? 'border-rose-500/60'
+                                : 'border-amber-400/60'
                           }`}
                         >
                           <p
-                            className={`text-sm sm:text-base font-black uppercase tracking-tight ${
+                            className={`text-sm sm:text-base font-semibold uppercase tracking-wide ${
                               lastClash.winnerIdx === myIndex
-                                ? 'text-lime-300'
+                                ? 'text-emerald-400'
                                 : lastClash.winnerIdx === oppIndex
-                                  ? 'text-rose-300'
-                                  : 'text-fuchsia-300'
+                                  ? 'text-rose-400'
+                                  : 'text-amber-300'
                             }`}
                           >
                             {lastClash.winnerIdx === myIndex
@@ -1214,16 +1187,16 @@ export function RealityDraftArena({
                                 : 'PARADOX TIE'}
                           </p>
 
-                          <div className="flex items-center justify-center gap-2 font-mono text-lg font-black text-white">
-                            <span className="text-cyan-300">{lastClash.finalPowers[myIndex]}</span>
+                          <div className="flex items-center justify-center gap-2 font-mono text-lg font-bold text-zinc-50 tabular-nums">
+                            <span className="text-emerald-400">{lastClash.finalPowers[myIndex]}</span>
                             <span className="text-[10px] text-zinc-500">
                               {lastClash.lowestWins ? '(<)' : '(>)'}
                             </span>
-                            <span className="text-fuchsia-300">{lastClash.finalPowers[oppIndex]}</span>
+                            <span className="text-rose-400">{lastClash.finalPowers[oppIndex]}</span>
                           </div>
 
                           {lastClash.damageMultiplier > 1 && (
-                            <span className="inline-block rounded-full border border-fuchsia-400/60 bg-fuchsia-500/20 px-2 py-0.5 text-[9px] font-mono font-black text-fuchsia-200">
+                            <span className="inline-block rounded-md border border-rose-500/45 bg-rose-500/10 px-2 py-0.5 text-[9px] font-mono font-semibold text-rose-300">
                               ×{lastClash.damageMultiplier} DAMAGE MULTIPLIER
                             </span>
                           )}
@@ -1232,7 +1205,7 @@ export function RealityDraftArena({
                             type="button"
                             disabled={busy}
                             onClick={onNextRound}
-                            className="mt-1 w-full rounded-xl bg-gradient-to-r from-cyan-400 via-fuchsia-400 to-amber-300 px-4 py-2 text-[11px] font-black uppercase tracking-widest text-black shadow-lg hover:brightness-110 disabled:opacity-50"
+                            className="mt-1 w-full rounded-xl bg-zinc-50 hover:bg-white px-4 py-2 text-[11px] font-semibold uppercase tracking-wider text-zinc-950 transition-colors cursor-pointer disabled:opacity-50"
                           >
                             {lastClash.pendingMatchWinnerUid
                               ? 'Claim Final Verdict'
@@ -1244,7 +1217,7 @@ export function RealityDraftArena({
 
                     {/* RIVAL CLASH CARD + MATH */}
                     <div className="flex flex-col items-center gap-1.5">
-                      <span className="text-[9px] font-mono uppercase tracking-[0.25em] text-fuchsia-300">
+                      <span className="text-[9px] font-mono uppercase tracking-[0.24em] text-rose-400">
                         {opp?.nickname}
                       </span>
 
@@ -1302,16 +1275,16 @@ export function RealityDraftArena({
                               initial={{ opacity: 0, scale: 0.7 }}
                               animate={{ opacity: 1, scale: 1 }}
                               transition={{ delay: i * 0.14 }}
-                              className={`rounded-md border px-1.5 py-0.5 text-[9px] font-mono font-bold ${
+                              className={`rounded-md border px-1.5 py-0.5 text-[9px] font-mono font-semibold tabular-nums ${
                                 step.tone === 'paradox'
-                                  ? 'border-fuchsia-400 bg-fuchsia-950/80 text-fuchsia-200'
+                                  ? 'border-amber-400/55 bg-amber-500/10 text-amber-200'
                                   : step.tone === 'distortion'
-                                    ? 'border-cyan-400 bg-cyan-950/80 text-cyan-200'
+                                    ? 'border-zinc-700 bg-zinc-900 text-zinc-200'
                                     : step.tone === 'buff'
-                                      ? 'border-lime-400/70 bg-lime-950/80 text-lime-200'
+                                      ? 'border-emerald-500/50 bg-emerald-500/10 text-emerald-300'
                                       : step.tone === 'debuff'
-                                        ? 'border-rose-400/70 bg-rose-950/80 text-rose-200'
-                                        : 'border-white/20 bg-zinc-900/90 text-zinc-200'
+                                        ? 'border-rose-500/50 bg-rose-500/10 text-rose-300'
+                                        : 'border-zinc-800 bg-zinc-950 text-zinc-300'
                               }`}
                             >
                               {i === 0
@@ -1329,11 +1302,11 @@ export function RealityDraftArena({
                       <motion.div
                         initial={{ opacity: 0, y: 6 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="w-full max-w-3xl rounded-xl border border-white/10 bg-black/70 px-3 py-1.5 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-[10px] font-mono text-zinc-200"
+                        className="w-full max-w-3xl rounded-xl border border-zinc-800 bg-[#111113] px-3 py-1.5 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-[10px] font-mono text-zinc-300"
                       >
                         {lastClash.events.slice(0, 3).map((evt: string, idx: number) => (
                           <span key={idx} className="inline-flex items-center gap-1">
-                            <Zap className="w-3 h-3 text-fuchsia-400 shrink-0" />
+                            <Zap className="w-3 h-3 text-amber-400 shrink-0" />
                             {evt}
                           </span>
                         ))}
@@ -1346,12 +1319,12 @@ export function RealityDraftArena({
         )}
       </main>
 
-      {/* ─── BOTTOM STANCE CONTROLS + FANNED 3D HOLOGRAPHIC HAND ─── */}
+      {/* ─── BOTTOM STANCE CONTROLS + FANNED 3D TAROT HAND ─── */}
       {me && game.state !== 'waiting' && (
         <section className="relative z-20 shrink-0 px-3 sm:px-5 pb-3 pt-1">
           <div className="mx-auto max-w-5xl flex flex-col items-center gap-2">
             {/* Tactical Stance Bar + Lock In CTA */}
-            <div className="w-full max-w-3xl flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-white/10 bg-black/70 backdrop-blur-xl px-3 py-1.5">
+            <div className="w-full max-w-3xl flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-zinc-800 bg-[#111113] px-3 py-1.5">
               <div className="flex flex-wrap items-center gap-1.5">
                 <span className="text-[9px] font-mono uppercase tracking-[0.22em] text-zinc-500 mr-1 hidden sm:inline">
                   STANCE
@@ -1364,10 +1337,10 @@ export function RealityDraftArena({
                     setSelectedStance('hold');
                     if (soundEnabled) playSound('tick');
                   }}
-                  className={`rounded-xl border px-2.5 py-1.5 text-[10px] font-mono font-bold uppercase tracking-wider transition ${
+                  className={`rounded-xl border px-2.5 py-1.5 text-[10px] font-mono font-semibold uppercase tracking-wider transition-colors cursor-pointer ${
                     selectedStance === 'hold'
-                      ? 'border-white/60 bg-white/15 text-white'
-                      : 'border-white/10 bg-zinc-950/70 text-zinc-400 hover:text-white'
+                      ? 'border-zinc-50 bg-zinc-50 text-zinc-950'
+                      : 'border-zinc-800 bg-zinc-950 text-zinc-400 hover:text-zinc-100 hover:border-zinc-700'
                   } disabled:opacity-45`}
                 >
                   HOLD
@@ -1380,15 +1353,15 @@ export function RealityDraftArena({
                     setSelectedStance('double');
                     if (soundEnabled) playSound('chip');
                   }}
-                  className={`inline-flex items-center gap-1 rounded-xl border px-2.5 py-1.5 text-[10px] font-mono font-bold uppercase tracking-wider transition ${
+                  className={`inline-flex items-center gap-1 rounded-xl border px-2.5 py-1.5 text-[10px] font-mono font-semibold uppercase tracking-wider transition-colors cursor-pointer ${
                     selectedStance === 'double'
-                      ? 'border-fuchsia-400 bg-fuchsia-500/25 text-fuchsia-100 shadow-[0_0_16px_rgba(232,121,249,0.4)]'
-                      : 'border-fuchsia-400/25 bg-zinc-950/70 text-fuchsia-300/80 hover:border-fuchsia-400/60'
+                      ? 'border-rose-500 bg-rose-500/15 text-rose-200'
+                      : 'border-zinc-800 bg-zinc-950 text-rose-300/80 hover:border-rose-500/45'
                   } disabled:opacity-35`}
                 >
                   <Flame size={12} />
                   DOUBLE ×2
-                  <span className="rounded bg-black/60 px-1 text-[9px]">{me.doubleUsesLeft}</span>
+                  <span className="rounded bg-zinc-900 px-1 text-[9px] tabular-nums">{me.doubleUsesLeft}</span>
                 </button>
 
                 <button
@@ -1398,15 +1371,15 @@ export function RealityDraftArena({
                     setSelectedStance('ward');
                     if (soundEnabled) playSound('shield');
                   }}
-                  className={`inline-flex items-center gap-1 rounded-xl border px-2.5 py-1.5 text-[10px] font-mono font-bold uppercase tracking-wider transition ${
+                  className={`inline-flex items-center gap-1 rounded-xl border px-2.5 py-1.5 text-[10px] font-mono font-semibold uppercase tracking-wider transition-colors cursor-pointer ${
                     selectedStance === 'ward'
-                      ? 'border-cyan-400 bg-cyan-500/25 text-cyan-100 shadow-[0_0_16px_rgba(34,211,238,0.4)]'
-                      : 'border-cyan-400/25 bg-zinc-950/70 text-cyan-300/80 hover:border-cyan-400/60'
+                      ? 'border-emerald-500 bg-emerald-500/15 text-emerald-200'
+                      : 'border-zinc-800 bg-zinc-950 text-emerald-300/80 hover:border-emerald-500/45'
                   } disabled:opacity-35`}
                 >
                   <Shield size={12} />
                   WARD +1
-                  <span className="rounded bg-black/60 px-1 text-[9px]">{me.wardUsesLeft}</span>
+                  <span className="rounded bg-zinc-900 px-1 text-[9px] tabular-nums">{me.wardUsesLeft}</span>
                 </button>
               </div>
 
@@ -1414,7 +1387,7 @@ export function RealityDraftArena({
                 type="button"
                 disabled={!selectedCard || me.locked || game.state !== 'selecting' || busy}
                 onClick={() => handleConfirmLock()}
-                className="ml-auto inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-fuchsia-500 via-violet-500 to-cyan-400 px-4 py-1.5 text-[11px] font-black uppercase tracking-widest text-black shadow-[0_0_20px_rgba(217,70,239,0.4)] transition hover:brightness-110 disabled:opacity-35 disabled:shadow-none"
+                className="ml-auto inline-flex items-center gap-1.5 rounded-xl bg-zinc-50 hover:bg-white px-4 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-zinc-950 transition-colors cursor-pointer disabled:opacity-35"
               >
                 <Swords size={13} />
                 {me.locked
@@ -1425,7 +1398,7 @@ export function RealityDraftArena({
               </button>
             </div>
 
-            {/* Fanned 5-Card Holographic Hand */}
+            {/* Fanned 5-Card Matte Tarot Hand */}
             <div className="w-full flex items-end justify-center gap-1.5 sm:gap-2.5 overflow-x-auto no-scrollbar pt-4 pb-1 px-2">
               {me.hand.map((cardId, idx) => {
                 const count = me.hand.length;
@@ -1487,31 +1460,31 @@ export function RealityDraftArena({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
           >
             <motion.div
-              initial={{ scale: 0.9, y: 20 }}
+              initial={{ scale: 0.94, y: 14 }}
               animate={{ scale: 1, y: 0 }}
-              className="w-full max-w-md rounded-3xl border border-fuchsia-400/40 bg-[#0b0718] p-6 text-center shadow-[0_0_60px_rgba(217,70,239,0.3)] space-y-4"
+              className="w-full max-w-md rounded-2xl border border-zinc-800 bg-[#111113] p-6 text-center space-y-4"
             >
               <div
-                className={`mx-auto flex h-16 w-16 items-center justify-center rounded-full border-2 ${
+                className={`mx-auto flex h-14 w-14 items-center justify-center rounded-full border ${
                   isVictory
-                    ? 'border-amber-300 bg-amber-950/60 text-amber-300'
+                    ? 'border-amber-400/50 bg-amber-500/10 text-amber-400'
                     : isTie
-                      ? 'border-fuchsia-400 bg-fuchsia-950/60 text-fuchsia-300'
-                      : 'border-rose-400 bg-rose-950/60 text-rose-300'
+                      ? 'border-zinc-700 bg-zinc-900 text-zinc-200'
+                      : 'border-rose-500/50 bg-rose-500/10 text-rose-400'
                 }`}
               >
-                {isVictory ? <Crown size={30} /> : isTie ? <Sparkles size={28} /> : <Skull size={28} />}
+                {isVictory ? <Crown size={28} /> : isTie ? <Sparkles size={26} /> : <Skull size={26} />}
               </div>
 
               <div>
-                <p className="text-[10px] font-mono uppercase tracking-[0.35em] text-fuchsia-400">
+                <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-amber-400">
                   REALITY COLLAPSED • {game.history.length} CLASHES
                 </p>
-                <h2 className="mt-1 text-3xl font-black uppercase tracking-tight text-white">
-                  {isVictory ? 'Reality Claimed!' : isTie ? 'Paradox Draw' : 'Shattered'}
+                <h2 className="mt-1 text-3xl font-semibold tracking-tight text-zinc-50">
+                  {isVictory ? 'Reality Claimed' : isTie ? 'Paradox Draw' : 'Shattered'}
                 </h2>
                 <p className="mt-1 text-xs text-zinc-400">
                   {isVictory
@@ -1522,18 +1495,18 @@ export function RealityDraftArena({
                 </p>
               </div>
 
-              <div className="grid grid-cols-2 gap-2.5 rounded-2xl border border-white/10 bg-black/50 p-3 font-mono text-xs">
+              <div className="grid grid-cols-2 gap-2.5 rounded-xl border border-zinc-800 bg-zinc-950 p-3 font-mono text-xs tabular-nums">
                 <div className="space-y-1">
-                  <p className="text-[10px] text-cyan-300 uppercase">{me.nickname}</p>
-                  <p className="text-lg font-black text-white">{me.hp} HP</p>
-                  <p className="text-[10px] text-amber-300">
+                  <p className="text-[10px] text-emerald-400 uppercase">{me.nickname}</p>
+                  <p className="text-lg font-bold text-zinc-50">{me.hp} HP</p>
+                  <p className="text-[10px] text-amber-400">
                     {me.crowns}/{CROWNS_TO_WIN} Crowns
                   </p>
                 </div>
-                <div className="space-y-1 border-l border-white/10">
-                  <p className="text-[10px] text-fuchsia-300 uppercase">{opp.nickname}</p>
-                  <p className="text-lg font-black text-white">{opp.hp} HP</p>
-                  <p className="text-[10px] text-amber-300">
+                <div className="space-y-1 border-l border-zinc-800">
+                  <p className="text-[10px] text-rose-400 uppercase">{opp.nickname}</p>
+                  <p className="text-lg font-bold text-zinc-50">{opp.hp} HP</p>
+                  <p className="text-[10px] text-amber-400">
                     {opp.crowns}/{CROWNS_TO_WIN} Crowns
                   </p>
                 </div>
@@ -1545,19 +1518,19 @@ export function RealityDraftArena({
                     type="button"
                     disabled={busy}
                     onClick={onPlayAgain}
-                    className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-fuchsia-500 via-violet-500 to-cyan-400 py-3 text-xs font-black uppercase tracking-widest text-black disabled:opacity-50"
+                    className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-xl bg-zinc-50 hover:bg-white py-2.5 text-xs font-semibold uppercase tracking-wider text-zinc-950 transition-colors cursor-pointer disabled:opacity-50"
                   >
                     <RotateCcw size={14} /> Rematch
                   </button>
                 ) : (
-                  <div className="flex-1 rounded-xl border border-white/10 bg-white/5 py-3 text-[10px] font-mono uppercase tracking-widest text-zinc-400">
+                  <div className="flex-1 rounded-xl border border-zinc-800 bg-zinc-950 py-2.5 text-[10px] font-mono uppercase tracking-widest text-zinc-400">
                     Host Can Start Rematch
                   </div>
                 )}
                 <button
                   type="button"
                   onClick={onExit}
-                  className="rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-xs font-black uppercase tracking-wider text-white hover:bg-white/15"
+                  className="rounded-xl border border-zinc-800 bg-zinc-900 hover:bg-zinc-800 px-4 py-2.5 text-xs font-medium uppercase tracking-wider text-zinc-100 transition-colors cursor-pointer"
                 >
                   Lobby
                 </button>
@@ -1575,67 +1548,67 @@ export function RealityDraftArena({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setShowCodex(false)}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
           >
             <motion.div
-              initial={{ scale: 0.94, y: 16 }}
+              initial={{ scale: 0.95, y: 12 }}
               animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.94, y: 16 }}
+              exit={{ scale: 0.95, y: 12 }}
               onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-4xl max-h-[86dvh] overflow-y-auto rounded-3xl border border-fuchsia-400/35 bg-[#090614] p-5 shadow-2xl space-y-5"
+              className="w-full max-w-4xl max-h-[86dvh] overflow-y-auto rounded-2xl border border-zinc-800 bg-[#111113] p-5 space-y-5"
             >
-              <div className="flex items-center justify-between border-b border-white/10 pb-3">
+              <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
                 <div>
-                  <p className="text-[10px] font-mono uppercase tracking-[0.3em] text-fuchsia-400">
+                  <p className="text-[10px] font-mono uppercase tracking-[0.25em] text-amber-400">
                     TAROT ARCHIVE
                   </p>
-                  <h2 className="text-xl font-black uppercase tracking-tight">
+                  <h2 className="text-xl font-semibold tracking-tight text-zinc-50">
                     Reality Draft Codex
                   </h2>
                 </div>
                 <button
                   type="button"
                   onClick={() => setShowCodex(false)}
-                  className="rounded-xl border border-white/15 p-2 text-zinc-300 hover:bg-white/10"
+                  className="rounded-xl border border-zinc-800 bg-zinc-900 hover:bg-zinc-800 p-2 text-zinc-400 hover:text-zinc-100 transition-colors cursor-pointer"
                 >
                   <X size={16} />
                 </button>
               </div>
 
               <div className="grid sm:grid-cols-3 gap-2 text-xs">
-                <div className="rounded-xl border border-white/10 bg-black/50 p-3">
-                  <p className="font-mono text-[10px] uppercase text-cyan-300 mb-1">Win Condition</p>
+                <div className="rounded-xl border border-zinc-800 bg-zinc-950 p-3">
+                  <p className="font-mono text-[10px] uppercase text-emerald-400 mb-1">Win Condition</p>
                   <p className="text-zinc-300">
                     Start at 30 HP. First to drop rival to 0 HP OR win 4 Clashes claims victory.
                   </p>
                 </div>
-                <div className="rounded-xl border border-white/10 bg-black/50 p-3">
-                  <p className="font-mono text-[10px] uppercase text-fuchsia-300 mb-1">Clash Damage</p>
+                <div className="rounded-xl border border-zinc-800 bg-zinc-950 p-3">
+                  <p className="font-mono text-[10px] uppercase text-rose-400 mb-1">Clash Damage</p>
                   <p className="text-zinc-300">
                     HOLD deals Power Diff + 4 (min 5). DOUBLE STAKES (×2) doubles all clash damage!
                   </p>
                 </div>
-                <div className="rounded-xl border border-white/10 bg-black/50 p-3">
-                  <p className="font-mono text-[10px] uppercase text-amber-300 mb-1">Ward & Auras</p>
+                <div className="rounded-xl border border-zinc-800 bg-zinc-950 p-3">
+                  <p className="font-mono text-[10px] uppercase text-amber-400 mb-1">Ward &amp; Auras</p>
                   <p className="text-zinc-300">
-                    WARD gives +1 Power & halves damage taken. Face-down cards pulse LOW (0–3), MID (4–6), or HIGH (7–9).
+                    WARD gives +1 Power &amp; halves damage taken. Face-down cards pulse LOW (0–3), MID (4–6), or HIGH (7–9).
                   </p>
                 </div>
               </div>
 
               <div>
-                <h3 className="text-xs font-mono uppercase tracking-widest text-amber-300 mb-2">
+                <h3 className="text-xs font-mono uppercase tracking-widest text-amber-400 mb-2">
                   5 World Distortions
                 </h3>
                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-2">
                   {ALL_DISTORTION_IDS.map((id) => {
                     const d = WORLD_DISTORTIONS[id];
                     return (
-                      <div key={id} className="rounded-xl border border-white/10 bg-black/55 p-2.5">
-                        <p className="text-xs font-black uppercase" style={{ color: d.accentHex }}>
+                      <div key={id} className="rounded-xl border border-zinc-800 bg-zinc-950 p-2.5">
+                        <p className="text-xs font-semibold uppercase text-amber-300">
                           {d.name}
                         </p>
-                        <p className="mt-0.5 text-[11px] text-zinc-300">{d.rule}</p>
+                        <p className="mt-0.5 text-[11px] text-zinc-400">{d.rule}</p>
                       </div>
                     );
                   })}
@@ -1643,26 +1616,27 @@ export function RealityDraftArena({
               </div>
 
               <div>
-                <h3 className="text-xs font-mono uppercase tracking-widest text-fuchsia-300 mb-2">
+                <h3 className="text-xs font-mono uppercase tracking-widest text-amber-400 mb-2">
                   12 Anomaly Cards
                 </h3>
                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-2">
                   {ALL_CARD_IDS.map((id) => {
                     const c = ANOMALY_CARDS[id];
+                    const accent = LUXURY_CARD_ACCENT[c.rarity] ?? LUXURY_CARD_ACCENT.common;
                     return (
-                      <div key={id} className="rounded-xl border border-white/10 bg-black/55 p-2.5 flex items-start gap-2.5">
+                      <div key={id} className="rounded-xl border border-zinc-800 bg-zinc-950 p-2.5 flex items-start gap-2.5">
                         <div
-                          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border font-black text-sm"
-                          style={{ borderColor: c.accentHex, color: c.accentHex }}
+                          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border font-mono font-bold text-sm bg-[#111113]"
+                          style={{ borderColor: accent.hex, color: accent.hex }}
                         >
                           {c.basePower}
                         </div>
                         <div className="min-w-0">
-                          <p className="text-xs font-black uppercase text-white">
+                          <p className="text-xs font-semibold uppercase text-zinc-100">
                             {c.name}{' '}
-                            <span className="text-[9px] font-mono text-zinc-400">({c.roman})</span>
+                            <span className="text-[9px] font-mono text-zinc-500">({c.roman})</span>
                           </p>
-                          <p className="mt-0.5 text-[10.5px] leading-snug text-zinc-300">{c.ability}</p>
+                          <p className="mt-0.5 text-[10.5px] leading-snug text-zinc-400">{c.ability}</p>
                         </div>
                       </div>
                     );

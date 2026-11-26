@@ -101,29 +101,23 @@ export function VoidStepArena({
   };
 
   return (
-    <div className="min-h-dvh lg:h-dvh lg:overflow-hidden bg-[#04060b] text-white flex flex-col relative">
-      <div className="pointer-events-none fixed inset-0">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[850px] h-[450px] bg-violet-600/[0.1] rounded-full blur-[130px]" />
-        <div className="absolute bottom-0 right-0 w-[500px] h-[350px] bg-cyan-500/[0.08] rounded-full blur-[110px]" />
-        <div className="absolute inset-0 bg-grid-white opacity-25" />
-      </div>
-
+    <div className="min-h-dvh lg:h-dvh lg:overflow-hidden bg-[#09090b] text-zinc-100 flex flex-col relative">
       {/* 48px HUD */}
-      <header className="relative z-20 w-full border-b border-violet-500/20 bg-black/75 backdrop-blur-xl shrink-0">
+      <header className="relative z-20 w-full border-b border-zinc-800/80 bg-[#09090b]/90 backdrop-blur-md shrink-0">
         <div className="max-w-[1340px] mx-auto px-3 sm:px-5 h-12 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <button
               type="button"
               onClick={() => { sfx('chip'); onExit(); }}
-              className="inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-widest text-zinc-400 hover:text-white"
+              className="inline-flex items-center gap-1.5 rounded-xl border border-zinc-800 bg-zinc-900 hover:bg-zinc-800 px-2.5 py-1 text-xs font-medium text-zinc-300 hover:text-zinc-50 transition-colors cursor-pointer"
             >
               <ArrowLeft className="w-3.5 h-3.5" /> Lobby
             </button>
-            <span className="text-white/15">|</span>
-            <span className="font-black uppercase tracking-tight text-xs sm:text-sm text-white">
+            <span className="text-zinc-800">|</span>
+            <span className="font-semibold tracking-tight text-sm text-zinc-50">
               Void Step
             </span>
-            <span className="px-2 py-0.5 rounded-full border border-violet-400/30 bg-violet-500/10 font-mono text-[10px] font-bold text-violet-300">
+            <span className="px-2.5 py-0.5 rounded-full border border-zinc-800 bg-zinc-900 font-mono text-[11px] font-medium text-zinc-300">
               Round {game.round} · First to {game.winScore}
             </span>
           </div>
@@ -131,9 +125,9 @@ export function VoidStepArena({
           <button
             type="button"
             onClick={onToggleSound}
-            className="p-1.5 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10"
+            className="p-1.5 rounded-xl border border-zinc-800 bg-zinc-900 hover:bg-zinc-800 transition-colors cursor-pointer"
           >
-            {soundEnabled ? <Volume2 className="w-3.5 h-3.5 text-violet-400" /> : <VolumeX className="w-3.5 h-3.5 text-zinc-500" />}
+            {soundEnabled ? <Volume2 className="w-3.5 h-3.5 text-zinc-200" /> : <VolumeX className="w-3.5 h-3.5 text-zinc-500" />}
           </button>
         </div>
       </header>
@@ -141,11 +135,13 @@ export function VoidStepArena({
       <main className="relative z-10 flex-1 min-h-0 w-full max-w-[1340px] mx-auto px-3 sm:px-5 py-3 flex flex-col justify-center">
         {/* WAITING */}
         {game.state === 'waiting' && (
-          <div className="max-w-md w-full mx-auto bg-black/75 border border-violet-500/25 rounded-2xl p-6 text-center space-y-4 shadow-2xl">
-            <Hexagon className="w-10 h-10 text-violet-400 mx-auto" />
+          <div className="max-w-md w-full mx-auto bg-[#111113] border border-zinc-800/90 rounded-2xl p-6 text-center space-y-4">
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl border border-zinc-800 bg-zinc-950">
+              <Hexagon className="w-6 h-6 text-indigo-400" />
+            </div>
             {meIdx === -1 && onJoinRoom ? (
               <>
-                <h1 className="text-xl font-black uppercase">Enter Void Arena</h1>
+                <h1 className="text-xl font-semibold tracking-tight text-zinc-50">Enter Void Arena</h1>
                 <div className="flex gap-2">
                   <input
                     type="text"
@@ -153,13 +149,13 @@ export function VoidStepArena({
                     onChange={(e) => setJoinName(e.target.value)}
                     placeholder="CODENAME"
                     maxLength={14}
-                    className="flex-1 bg-zinc-950 border border-violet-500/30 rounded-xl px-3 py-2 text-xs font-mono uppercase text-white"
+                    className="flex-1 bg-zinc-950 border border-zinc-800 focus:border-zinc-400 focus:outline-none rounded-xl px-3 py-2 text-xs font-mono uppercase text-zinc-100 placeholder:text-zinc-600"
                   />
                   <button
                     type="button"
                     disabled={busy || !joinName.trim()}
                     onClick={() => onJoinRoom(joinName.trim())}
-                    className="px-5 py-2 rounded-xl bg-violet-500 text-white font-black uppercase text-xs disabled:opacity-40"
+                    className="px-5 py-2 rounded-xl bg-zinc-50 hover:bg-white text-zinc-950 font-semibold text-xs transition-colors cursor-pointer disabled:opacity-40"
                   >
                     Join
                   </button>
@@ -167,12 +163,12 @@ export function VoidStepArena({
               </>
             ) : (
               <>
-                <h1 className="text-xl font-black uppercase">Waiting for Rival</h1>
+                <h1 className="text-xl font-semibold tracking-tight text-zinc-50">Waiting for Rival</h1>
                 {game.gameId && (
-                  <div className="flex items-center justify-between bg-zinc-950 border border-violet-500/25 rounded-xl px-4 py-3 text-left">
+                  <div className="flex items-center justify-between bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-left">
                     <div>
-                      <div className="text-[9px] font-mono uppercase text-zinc-500">Arena Code</div>
-                      <div className="font-mono text-2xl font-black tracking-[0.22em] text-violet-300">{game.gameId}</div>
+                      <div className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">Arena Code</div>
+                      <div className="font-mono text-2xl font-semibold tracking-[0.22em] text-zinc-100">{game.gameId}</div>
                     </div>
                     <button
                       type="button"
@@ -181,7 +177,7 @@ export function VoidStepArena({
                         setCopied(true);
                         setTimeout(() => setCopied(false), 1600);
                       }}
-                      className="px-3 py-1.5 rounded-lg bg-white/10 text-xs font-bold flex items-center gap-1"
+                      className="px-3 py-1.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-200 text-xs font-medium flex items-center gap-1.5 transition-colors cursor-pointer"
                     >
                       {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
                       {copied ? 'Copied' : 'Copy'}
@@ -198,7 +194,7 @@ export function VoidStepArena({
           <div className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-4 items-center">
             {/* LEFT 7 COLS: 7x7 SHATTERING GRID */}
             <section className="lg:col-span-7 flex flex-col items-center justify-center">
-              <div className="aspect-square w-full max-w-[440px] rounded-2xl border-2 border-violet-500/30 bg-black/80 p-2 shadow-[0_0_50px_rgba(139,92,246,0.14)]">
+              <div className="aspect-square w-full max-w-[440px] rounded-2xl border border-zinc-800/90 bg-[#111113] p-2.5">
                 <div className="grid grid-cols-7 grid-rows-7 gap-1.5 w-full h-full">
                   {Array.from({ length: VOID_GRID_SIZE * VOID_GRID_SIZE }).map((_, i) => {
                     const x = i % VOID_GRID_SIZE;
@@ -218,18 +214,18 @@ export function VoidStepArena({
                         onClick={() => handleCellClick(x, y)}
                         className={`relative rounded-lg border transition-all flex items-center justify-center ${
                           isVoid
-                            ? 'bg-black/95 border-white/[0.03] opacity-25 scale-90 cursor-default'
+                            ? 'bg-[#09090b] border-zinc-900/70 opacity-45 scale-90 cursor-default'
                             : isP0
-                            ? 'bg-cyan-500 border-cyan-200 shadow-[0_0_20px_rgba(34,211,238,0.6)] text-black'
+                            ? 'bg-indigo-500 border-indigo-300 text-zinc-50'
                             : isP1
-                            ? 'bg-rose-500 border-rose-200 shadow-[0_0_20px_rgba(244,63,94,0.6)] text-black'
+                            ? 'bg-rose-500 border-rose-300 text-zinc-50'
                             : isMoveTarget
                             ? blinkMode
-                              ? 'bg-amber-400/25 border-amber-400 hover:bg-amber-400/40 cursor-pointer animate-pulse'
-                              : 'bg-cyan-400/20 border-cyan-400/80 hover:bg-cyan-400/35 cursor-pointer'
+                              ? 'bg-amber-500/20 border-amber-400 hover:bg-amber-500/30 cursor-pointer'
+                              : 'bg-indigo-500/15 border-indigo-400/75 hover:bg-indigo-500/25 cursor-pointer'
                             : isShatterTarget
-                            ? 'bg-zinc-900/90 border-white/15 hover:border-rose-400 hover:bg-rose-500/25 cursor-crosshair'
-                            : 'bg-zinc-900/80 border-white/10 cursor-default'
+                            ? 'bg-[#18181b] border-zinc-700 hover:border-rose-400/80 hover:bg-rose-500/15 cursor-crosshair'
+                            : 'bg-[#18181b] border-zinc-800 cursor-default'
                         }`}
                       >
                         {isP0 && (game.players[0].isBot ? <Cpu size={18} /> : <UserRound size={18} />)}
@@ -247,24 +243,24 @@ export function VoidStepArena({
               <div className="grid grid-cols-2 gap-2.5">
                 {game.players.map((p, idx) => {
                   const active = game.state === 'playing' && game.turnIdx === idx;
-                  const isCyan = idx === 0;
+                  const isP1Color = idx === 0;
                   return (
                     <div
                       key={p.sessionId}
-                      className={`rounded-xl border p-3 transition-all ${
+                      className={`rounded-xl border p-3.5 transition-colors bg-[#111113] ${
                         active
-                          ? isCyan
-                            ? 'border-cyan-400 bg-cyan-950/30'
-                            : 'border-rose-400 bg-rose-950/30'
-                          : 'border-white/10 bg-black/55'
+                          ? isP1Color
+                            ? 'border-indigo-400/75'
+                            : 'border-rose-400/75'
+                          : 'border-zinc-800/90'
                       }`}
                     >
-                      <div className={`text-xs font-black uppercase truncate ${isCyan ? 'text-cyan-300' : 'text-rose-300'}`}>
+                      <div className={`text-xs font-semibold truncate ${isP1Color ? 'text-indigo-400' : 'text-rose-400'}`}>
                         {p.nickname} {idx === meIdx ? '(You)' : ''}
                       </div>
                       <div className="flex items-center justify-between mt-1.5 font-mono text-xs">
-                        <span className="text-zinc-400">Wins: <strong className="text-white">{p.score}</strong></span>
-                        <span className="text-amber-300">⚡ {p.blinksLeft}</span>
+                        <span className="text-zinc-400">Wins: <strong className="text-zinc-50">{p.score}</strong></span>
+                        <span className="text-amber-400">⚡ {p.blinksLeft}</span>
                       </div>
                     </div>
                   );
@@ -272,13 +268,13 @@ export function VoidStepArena({
               </div>
 
               {/* Phase Instruction Card */}
-              <div className="rounded-2xl border border-violet-500/25 bg-black/65 p-5 space-y-4 shadow-2xl">
+              <div className="rounded-2xl border border-zinc-800/90 bg-[#111113] p-5 space-y-4">
                 {game.state === 'playing' ? (
                   <>
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-black uppercase tracking-wider text-white flex items-center gap-2">
+                      <span className="text-sm font-semibold text-zinc-50 flex items-center gap-2">
                         {game.subPhase === 'move' ? (
-                          <Footprints className="w-4 h-4 text-cyan-400" />
+                          <Footprints className="w-4 h-4 text-indigo-400" />
                         ) : (
                           <Flame className="w-4 h-4 text-rose-400" />
                         )}
@@ -293,8 +289,8 @@ export function VoidStepArena({
                     <p className="text-xs text-zinc-400 leading-relaxed">
                       {isMyTurn
                         ? game.subPhase === 'move'
-                          ? 'Click a glowing tile to step (your old tile collapses!). Or activate Blink to jump 2 tiles over the void.'
-                          : 'Click ANY intact tile on the 7×7 grid to destroy it permanently and trap your opponent.'
+                          ? 'Click a highlighted tile to step (your old tile collapses). Or activate Blink to jump 2 tiles over the void.'
+                          : 'Click any intact tile on the 7×7 grid to destroy it permanently and trap your opponent.'
                         : 'Wait while your opponent moves and shatters a tile.'}
                     </p>
 
@@ -306,10 +302,10 @@ export function VoidStepArena({
                           sfx('chip');
                           setBlinkMode((b) => !b);
                         }}
-                        className={`w-full py-3 rounded-xl border-2 font-black uppercase tracking-widest text-xs flex items-center justify-center gap-2 transition-all disabled:opacity-35 ${
+                        className={`w-full py-2.5 rounded-xl border font-semibold text-xs flex items-center justify-center gap-2 transition-colors cursor-pointer disabled:opacity-35 disabled:cursor-not-allowed ${
                           blinkMode
-                            ? 'border-amber-400 bg-amber-400 text-black shadow-[0_0_20px_rgba(251,191,36,0.4)]'
-                            : 'border-amber-400/40 bg-amber-500/10 text-amber-300 hover:border-amber-300'
+                            ? 'border-amber-400 bg-amber-400 text-zinc-950'
+                            : 'border-amber-500/40 bg-zinc-900 hover:bg-zinc-800 text-amber-400'
                         }`}
                       >
                         <Zap className="w-4 h-4" />
@@ -319,14 +315,14 @@ export function VoidStepArena({
                       </button>
                     )}
 
-                    <div className="rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 font-mono text-[11px] text-zinc-300 text-center">
+                    <div className="rounded-xl border border-zinc-800 bg-zinc-950 px-3 py-2 font-mono text-[11px] text-zinc-300 text-center">
                       {game.lastEvent}
                     </div>
                   </>
                 ) : game.state === 'round_over' ? (
                   <div className="text-center space-y-3">
-                    <h2 className="text-xl font-black uppercase text-violet-300">
-                      {game.roundWinnerIdx === meIdx ? 'Rival Trapped!' : 'You Fell Into The Void!'}
+                    <h2 className="text-xl font-semibold tracking-tight text-zinc-50">
+                      {game.roundWinnerIdx === meIdx ? 'Rival Trapped' : 'You Fell Into the Void'}
                     </h2>
                     <p className="text-xs text-zinc-400">{game.lastEvent}</p>
                     {isHost && onNextRound ? (
@@ -334,7 +330,7 @@ export function VoidStepArena({
                         type="button"
                         disabled={busy}
                         onClick={() => { sfx('deal'); onNextRound(); }}
-                        className="w-full py-3 rounded-xl bg-violet-500 hover:bg-violet-400 text-white font-black uppercase tracking-widest text-xs"
+                        className="w-full py-3 rounded-xl bg-zinc-50 hover:bg-white text-zinc-950 font-semibold text-sm transition-colors cursor-pointer disabled:opacity-50"
                       >
                         Start Round {game.round + 1}
                       </button>
@@ -350,19 +346,21 @@ export function VoidStepArena({
       </main>
 
       {game.state === 'finished' && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4">
-          <div className="w-full max-w-sm bg-zinc-950 border border-violet-500/30 rounded-2xl p-6 text-center space-y-4">
-            <Trophy className="w-10 h-10 text-amber-300 mx-auto" />
-            <h2 className="text-2xl font-black uppercase">
-              {game.winnerUid === me?.uid ? 'Void Sovereign!' : 'Consumed By Void'}
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+          <div className="w-full max-w-sm bg-[#111113] border border-zinc-800 rounded-2xl p-6 text-center space-y-4">
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl border border-zinc-800 bg-zinc-950">
+              <Trophy className="w-6 h-6 text-amber-400" />
+            </div>
+            <h2 className="text-2xl font-semibold tracking-tight text-zinc-50">
+              {game.winnerUid === me?.uid ? 'Void Sovereign' : 'Consumed by Void'}
             </h2>
-            <div className="flex gap-2">
+            <div className="flex gap-2.5">
               {isHost && onPlayAgain && (
                 <button
                   type="button"
                   disabled={busy}
                   onClick={onPlayAgain}
-                  className="flex-1 py-2.5 rounded-xl bg-violet-500 text-white font-black uppercase text-xs flex items-center justify-center gap-1"
+                  className="flex-1 py-2.5 rounded-xl bg-zinc-50 hover:bg-white text-zinc-950 font-semibold text-xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer disabled:opacity-50"
                 >
                   <RotateCcw className="w-3.5 h-3.5" /> Play Again
                 </button>
@@ -370,7 +368,7 @@ export function VoidStepArena({
               <button
                 type="button"
                 onClick={onExit}
-                className="flex-1 py-2.5 rounded-xl border border-white/15 bg-white/5 text-white font-bold uppercase text-xs"
+                className="flex-1 py-2.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-200 font-medium text-xs transition-colors cursor-pointer"
               >
                 Lobby
               </button>

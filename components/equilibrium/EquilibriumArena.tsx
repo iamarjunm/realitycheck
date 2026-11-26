@@ -170,56 +170,49 @@ export default function EquilibriumArena({
   const oppRevealNum = summary ? (meIdx === 0 ? summary.effP1 : summary.effP0) : 0;
 
   return (
-    <div className="min-h-dvh lg:h-dvh lg:overflow-hidden bg-[#04060d] text-slate-100 flex flex-col relative select-none">
-      {/* Ambient math-cyber glow */}
-      <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div className="absolute -top-36 left-1/4 w-[520px] h-[380px] rounded-full bg-cyan-500/10 blur-[140px]" />
-        <div className="absolute -bottom-36 right-1/4 w-[520px] h-[380px] rounded-full bg-violet-500/12 blur-[140px]" />
-        <div className="absolute inset-0 bg-grid-white opacity-25" />
-      </div>
-
+    <div className="min-h-dvh lg:h-dvh lg:overflow-hidden bg-[#09090b] text-zinc-100 flex flex-col relative select-none selection:bg-amber-500/20">
       {/* Top HUD */}
-      <header className="relative z-10 shrink-0 border-b border-white/10 bg-slate-950/80 backdrop-blur-xl px-4 py-2.5 flex items-center justify-between gap-3">
+      <header className="relative z-10 shrink-0 border-b border-zinc-800/80 bg-[#09090b]/95 backdrop-blur-md px-4 py-2.5 flex items-center justify-between gap-3">
         <div className="flex items-center gap-2.5 min-w-0">
           <button
             onClick={onBack}
-            className="p-2 rounded-xl bg-white/5 border border-white/10 hover:border-cyan-400/50 text-slate-300 hover:text-cyan-300 transition-colors cursor-pointer"
+            className="p-2 rounded-xl bg-zinc-900 border border-zinc-800 hover:bg-zinc-800 hover:border-zinc-700 text-zinc-300 hover:text-zinc-100 transition-colors cursor-pointer"
             title="Leave Arena"
           >
             <ArrowLeft className="w-4 h-4" />
           </button>
           <div className="min-w-0">
             <div className="flex items-center gap-2">
-              <Sigma className="w-4 h-4 text-cyan-400 shrink-0" />
-              <h1 className="font-black uppercase tracking-wider text-sm sm:text-base text-white truncate">
+              <Sigma className="w-4 h-4 text-amber-400 shrink-0" />
+              <h1 className="font-semibold tracking-tight text-sm sm:text-base text-zinc-50 truncate">
                 Equilibrium
               </h1>
-              <span className="hidden sm:inline-flex px-2 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-widest bg-cyan-500/15 text-cyan-300 border border-cyan-500/30">
+              <span className="hidden sm:inline-flex px-2 py-0.5 rounded-md text-[10px] font-mono uppercase tracking-wider bg-[#111113] text-zinc-300 border border-zinc-800">
                 {isSolo ? 'Solo vs EULER-AI' : '1v1 Game Theory'}
               </span>
             </div>
-            <p className="text-[11px] text-slate-400 hidden sm:block">
+            <p className="text-[11px] font-mono text-zinc-500 hidden sm:block">
               Round {state.round} · Dynamic Nash Equations · Exact-Match Paradox
             </p>
           </div>
         </div>
 
         {/* Center HP Scoreboard */}
-        <div className="flex items-center gap-3 sm:gap-5 bg-black/60 border border-white/10 rounded-2xl px-3.5 py-1.5">
+        <div className="flex items-center gap-3 sm:gap-5 bg-[#111113] border border-zinc-800 rounded-xl px-3.5 py-1.5">
           {/* Me */}
           <div className="flex items-center gap-2">
             <div className="text-right">
-              <div className="text-[10px] font-mono uppercase tracking-wider text-cyan-400 font-bold max-w-[90px] truncate">
+              <div className="text-[10px] font-mono uppercase tracking-wider text-emerald-400 font-semibold max-w-[90px] truncate">
                 {me?.nickname ?? 'You'}
               </div>
               <div className="flex items-center justify-end gap-0.5 mt-0.5">
                 {Array.from({ length: me?.maxHp ?? 5 }).map((_, i) => (
                   <Heart
                     key={i}
-                    className={`w-3.5 h-3.5 transition-all ${
+                    className={`w-3.5 h-3.5 transition-colors ${
                       i < (me?.hp ?? 0)
-                        ? 'text-cyan-400 fill-cyan-400 drop-shadow-[0_0_6px_rgba(34,211,238,0.8)]'
-                        : 'text-slate-700'
+                        ? 'text-emerald-400 fill-emerald-400'
+                        : 'text-zinc-800'
                     }`}
                   />
                 ))}
@@ -227,24 +220,24 @@ export default function EquilibriumArena({
             </div>
           </div>
 
-          <div className="px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-[10px] font-mono font-black text-slate-400">
+          <div className="px-2 py-0.5 rounded-md bg-zinc-950 border border-zinc-800 text-[10px] font-mono font-semibold text-zinc-400 tabular-nums">
             R{state.round}
           </div>
 
           {/* Opponent */}
           <div className="flex items-center gap-2">
             <div className="text-left">
-              <div className="text-[10px] font-mono uppercase tracking-wider text-rose-400 font-bold max-w-[90px] truncate">
+              <div className="text-[10px] font-mono uppercase tracking-wider text-rose-400 font-semibold max-w-[90px] truncate">
                 {opp?.nickname ?? 'Awaiting…'}
               </div>
               <div className="flex items-center gap-0.5 mt-0.5">
                 {Array.from({ length: opp?.maxHp ?? 5 }).map((_, i) => (
                   <Heart
                     key={i}
-                    className={`w-3.5 h-3.5 transition-all ${
+                    className={`w-3.5 h-3.5 transition-colors ${
                       i < (opp?.hp ?? 0)
-                        ? 'text-rose-400 fill-rose-400 drop-shadow-[0_0_6px_rgba(244,63,94,0.8)]'
-                        : 'text-slate-700'
+                        ? 'text-rose-500 fill-rose-500'
+                        : 'text-zinc-800'
                     }`}
                   />
                 ))}
@@ -258,10 +251,10 @@ export default function EquilibriumArena({
           {roomCode && (
             <button
               onClick={copyCode}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-cyan-500/10 border border-cyan-500/30 hover:bg-cyan-500/20 text-cyan-300 font-mono text-xs font-bold transition-colors cursor-pointer"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-[#111113] border border-zinc-800 hover:border-zinc-700 text-amber-300 font-mono text-xs font-semibold transition-colors cursor-pointer"
             >
               <span>{roomCode}</span>
-              {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+              {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5 text-zinc-400" />}
             </button>
           )}
         </div>
@@ -271,26 +264,26 @@ export default function EquilibriumArena({
       <main className="relative z-10 flex-1 min-h-0 flex flex-col justify-center p-3 sm:p-4 max-w-6xl w-full mx-auto">
         {/* WAITING */}
         {state.status === 'waiting' && (
-          <div className="max-w-md w-full mx-auto rounded-3xl border border-cyan-500/30 bg-slate-950/85 backdrop-blur-xl p-7 text-center shadow-2xl">
-            <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-cyan-500/15 border border-cyan-400/40 flex items-center justify-center">
-              <Sigma className="w-8 h-8 text-cyan-300 animate-pulse" />
+          <div className="max-w-md w-full mx-auto rounded-2xl border border-zinc-800 bg-[#111113] p-7 text-center">
+            <div className="w-14 h-14 mx-auto mb-4 rounded-xl bg-zinc-950 border border-zinc-800 flex items-center justify-center">
+              <Sigma className="w-7 h-7 text-amber-400 animate-pulse" />
             </div>
-            <h2 className="text-xl font-black uppercase tracking-wider text-white mb-1">
+            <h2 className="text-xl font-semibold tracking-tight text-zinc-50 mb-1">
               Awaiting Rival Mind
             </h2>
-            <p className="text-sm text-slate-400 mb-5">
-              Share this room frequency for a 1v1 Equilibrium game-theory showdown.
+            <p className="text-xs sm:text-sm text-zinc-400 mb-5">
+              Share this room code for a 1v1 Equilibrium game-theory showdown.
             </p>
             {roomCode && (
               <button
                 onClick={copyCode}
-                className="w-full py-3.5 px-4 rounded-2xl bg-black/70 border-2 border-cyan-400/40 hover:border-cyan-300 flex items-center justify-center gap-3 font-mono text-2xl font-black tracking-[0.25em] text-cyan-300 transition-all cursor-pointer mb-3"
+                className="w-full py-3.5 px-4 rounded-xl bg-zinc-950 border border-dashed border-zinc-700 hover:border-amber-400/60 flex items-center justify-center gap-3 font-mono text-2xl font-bold tracking-[0.25em] text-amber-300 transition-colors cursor-pointer mb-3"
               >
                 <span>{roomCode}</span>
-                {copied ? <Check className="w-5 h-5 text-emerald-400" /> : <Copy className="w-5 h-5" />}
+                {copied ? <Check className="w-5 h-5 text-emerald-400" /> : <Copy className="w-5 h-5 text-zinc-400" />}
               </button>
             )}
-            <p className="text-xs text-slate-500">
+            <p className="text-xs font-mono text-zinc-500">
               5 Dynamic Laws · Bullseye (±1) Deals -2 HP · Exact-Match Paradox Hurts Both
             </p>
           </div>
@@ -302,41 +295,41 @@ export default function EquilibriumArena({
             {/* LEFT 8 COLS: Active Law + Number Dial + Protocols */}
             <div className="lg:col-span-8 flex flex-col gap-3 min-h-0">
               {/* Active Equation Law Banner */}
-              <div className="rounded-2xl border border-cyan-500/30 bg-gradient-to-br from-cyan-950/40 via-slate-950/90 to-violet-950/30 p-4 shadow-xl">
+              <div className="rounded-2xl border border-zinc-800 bg-[#111113] p-4">
                 <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-cyan-500/15 border border-cyan-400/30 text-[10px] font-mono font-bold uppercase tracking-widest text-cyan-300">
-                    <Sparkles className="w-3 h-3" /> Active Law · Round {state.round}
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-zinc-950 border border-zinc-800 text-[10px] font-mono uppercase tracking-widest text-zinc-300">
+                    <Sparkles className="w-3 h-3 text-amber-400" /> Active Law · Round {state.round}
                   </span>
-                  <span className="text-[11px] font-mono font-bold text-amber-300 bg-amber-500/10 border border-amber-500/30 px-2.5 py-0.5 rounded-full">
+                  <span className="text-[11px] font-mono font-medium text-amber-300 bg-amber-500/10 border border-amber-500/30 px-2.5 py-0.5 rounded-md">
                     {law.twistLabel}
                   </span>
                 </div>
-                <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-1">
-                  <h2 className="text-2xl sm:text-3xl font-black uppercase tracking-tight text-white">
+                <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2">
+                  <h2 className="text-xl sm:text-2xl font-semibold tracking-tight text-zinc-50">
                     {law.name}
                   </h2>
-                  <div className="font-mono text-lg sm:text-xl font-black text-cyan-300 bg-black/60 border border-cyan-500/30 px-3 py-1 rounded-xl">
+                  <div className="font-mono text-base sm:text-lg font-semibold text-amber-300 bg-zinc-950 border border-zinc-800 px-3 py-1 rounded-xl tabular-nums">
                     {law.formulaLabel}
                   </div>
                 </div>
-                <p className="text-xs text-slate-300 mt-1.5">
-                  {law.shortRule} <span className="text-slate-400">· Bullseye (±1 of Target) deals -2 HP · Same number = Paradox (-1 HP both).</span>
+                <p className="text-xs text-zinc-300 mt-2">
+                  {law.shortRule} <span className="text-zinc-500">· Bullseye (±1 of Target) deals -2 HP · Same number = Paradox (-1 HP both).</span>
                 </p>
               </div>
 
               {/* Number Dial Panel */}
-              <div className="rounded-2xl border border-white/10 bg-slate-950/85 backdrop-blur-xl p-4 sm:p-5 flex-1 flex flex-col justify-between gap-3">
+              <div className="rounded-2xl border border-zinc-800 bg-[#111113] p-4 sm:p-5 flex-1 flex flex-col justify-between gap-3.5">
                 <div className="flex items-center justify-between">
                   <div>
-                    <div className="text-[10px] font-mono uppercase tracking-widest text-slate-400">
+                    <div className="text-[10px] font-mono uppercase tracking-widest text-zinc-500">
                       Select Integer (0 – 100)
                     </div>
                     <div className="flex items-baseline gap-2.5 mt-0.5">
-                      <span className="text-5xl sm:text-6xl font-black font-mono tracking-tight text-white">
+                      <span className="text-5xl sm:text-6xl font-bold font-mono tracking-tight text-zinc-50 tabular-nums">
                         {isLocked ? me.lockedNumber : selectedNum}
                       </span>
                       {isPrimeNumber(isLocked ? (me.lockedNumber ?? 0) : selectedNum) && (
-                        <span className="px-2 py-0.5 rounded-md bg-violet-500/20 border border-violet-400/40 text-violet-300 text-[10px] font-mono font-bold uppercase">
+                        <span className="px-2 py-0.5 rounded-md bg-amber-500/10 border border-amber-500/35 text-amber-300 text-[10px] font-mono font-semibold uppercase tracking-wider">
                           PRIME
                         </span>
                       )}
@@ -351,7 +344,7 @@ export default function EquilibriumArena({
                           playSound('tick');
                           setSelectedNum((n) => Math.max(0, n - 1));
                         }}
-                        className="w-10 h-10 rounded-xl bg-white/5 hover:bg-white/15 border border-white/10 font-black text-lg cursor-pointer"
+                        className="w-10 h-10 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 font-mono font-bold text-lg text-zinc-100 transition-colors cursor-pointer"
                       >
                         −
                       </button>
@@ -365,14 +358,14 @@ export default function EquilibriumArena({
                           if (Number.isNaN(v)) setSelectedNum(0);
                           else setSelectedNum(Math.max(0, Math.min(100, v)));
                         }}
-                        className="w-16 h-10 text-center rounded-xl bg-black border border-cyan-500/40 font-mono font-black text-lg text-cyan-300 focus:outline-none focus:border-cyan-300"
+                        className="w-16 h-10 text-center rounded-xl bg-zinc-950 border border-zinc-800 focus:border-zinc-400 font-mono font-bold text-lg text-zinc-100 tabular-nums focus:outline-none transition-colors"
                       />
                       <button
                         onClick={() => {
                           playSound('tick');
                           setSelectedNum((n) => Math.min(100, n + 1));
                         }}
-                        className="w-10 h-10 rounded-xl bg-white/5 hover:bg-white/15 border border-white/10 font-black text-lg cursor-pointer"
+                        className="w-10 h-10 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 font-mono font-bold text-lg text-zinc-100 transition-colors cursor-pointer"
                       >
                         +
                       </button>
@@ -389,7 +382,7 @@ export default function EquilibriumArena({
                       max={100}
                       value={selectedNum}
                       onChange={(e) => setSelectedNum(Number(e.target.value))}
-                      className="w-full accent-cyan-400 h-2.5 bg-slate-800 rounded-lg cursor-pointer"
+                      className="w-full accent-amber-400 h-2 bg-zinc-800 rounded-lg cursor-pointer"
                     />
                     <div className="flex flex-wrap gap-1.5">
                       {QUICK_PICKS.map((q) => (
@@ -399,10 +392,10 @@ export default function EquilibriumArena({
                             playSound('tick');
                             setSelectedNum(q);
                           }}
-                          className={`px-2.5 py-1 rounded-lg font-mono text-xs font-bold border transition-all cursor-pointer ${
+                          className={`px-2.5 py-1 rounded-lg font-mono text-xs font-semibold border transition-colors cursor-pointer tabular-nums ${
                             selectedNum === q
-                              ? 'bg-cyan-500 text-slate-950 border-cyan-300'
-                              : 'bg-black/60 border-white/10 text-slate-300 hover:border-cyan-400/50'
+                              ? 'bg-zinc-50 text-zinc-950 border-zinc-50'
+                              : 'bg-zinc-950 border-zinc-800 text-zinc-300 hover:border-zinc-600 hover:text-zinc-100'
                           }`}
                         >
                           {q}
@@ -411,12 +404,12 @@ export default function EquilibriumArena({
                     </div>
                   </div>
                 ) : (
-                  <div className="rounded-xl bg-cyan-500/10 border border-cyan-400/30 p-3.5 flex items-center justify-between">
-                    <div className="flex items-center gap-2 text-cyan-300 text-sm font-bold">
+                  <div className="rounded-xl bg-emerald-500/10 border border-emerald-500/30 p-3.5 flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-emerald-300 text-sm font-medium">
                       <Lock className="w-4 h-4" />
-                      Number & Protocol Locked In
+                      Number &amp; Protocol Locked In
                     </div>
-                    <span className="text-xs font-mono text-slate-400">
+                    <span className="text-xs font-mono text-zinc-400">
                       {oppLocked ? 'Resolving equation…' : `Waiting for ${opp.nickname}…`}
                     </span>
                   </div>
@@ -424,7 +417,7 @@ export default function EquilibriumArena({
 
                 {/* 1-Use IQ Protocols */}
                 <div>
-                  <div className="text-[10px] font-mono uppercase tracking-widest text-slate-400 mb-1.5">
+                  <div className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 mb-1.5">
                     Optional 1-Use IQ Protocol (Once per match)
                   </div>
                   <div className="grid grid-cols-3 gap-2">
@@ -440,23 +433,23 @@ export default function EquilibriumArena({
                             playSound('card_pick');
                             setSelectedProto((curr) => (curr === p.id ? 'none' : p.id));
                           }}
-                          className={`p-2.5 rounded-xl border text-left transition-all ${
+                          className={`p-2.5 rounded-xl border text-left transition-colors ${
                             alreadyUsed
-                              ? 'bg-black/30 border-white/5 opacity-35 cursor-not-allowed'
+                              ? 'bg-zinc-950/60 border-zinc-900 opacity-40 cursor-not-allowed'
                               : active
-                              ? 'bg-cyan-500/20 border-cyan-400 shadow-[0_0_16px_rgba(34,211,238,0.25)] cursor-pointer'
-                              : 'bg-black/50 border-white/10 hover:border-white/30 cursor-pointer'
+                              ? 'bg-amber-500/10 border-amber-400/70 cursor-pointer'
+                              : 'bg-zinc-950 border-zinc-800 hover:border-zinc-700 cursor-pointer'
                           }`}
                           title={p.desc}
                         >
                           <div className="flex items-center justify-between mb-1">
-                            <Icon className="w-3.5 h-3.5 text-cyan-300" />
-                            <span className="text-[9px] font-mono uppercase text-slate-400">
+                            <Icon className={`w-3.5 h-3.5 ${active ? 'text-amber-400' : 'text-zinc-400'}`} />
+                            <span className={`text-[9px] font-mono uppercase ${active ? 'text-amber-300 font-semibold' : 'text-zinc-500'}`}>
                               {alreadyUsed ? 'USED' : active ? 'ARMED' : '1×'}
                             </span>
                           </div>
-                          <div className="text-xs font-black text-white">{p.name}</div>
-                          <div className="text-[10px] text-slate-400 leading-tight mt-0.5">{p.short}</div>
+                          <div className="text-xs font-semibold text-zinc-100">{p.name}</div>
+                          <div className="text-[10px] text-zinc-500 leading-tight mt-0.5">{p.short}</div>
                         </button>
                       );
                     })}
@@ -467,7 +460,7 @@ export default function EquilibriumArena({
                 {!isLocked && (
                   <button
                     onClick={handleConfirmLock}
-                    className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-cyan-400 via-sky-400 to-violet-400 hover:brightness-110 text-slate-950 font-black uppercase tracking-widest text-sm flex items-center justify-center gap-2 shadow-[0_0_30px_rgba(34,211,238,0.35)] transition-all cursor-pointer"
+                    className="w-full py-3 rounded-xl bg-zinc-50 hover:bg-white text-zinc-950 font-semibold tracking-wide text-sm flex items-center justify-center gap-2 transition-colors cursor-pointer"
                   >
                     <Lock className="w-4 h-4" />
                     Lock {selectedNum}
@@ -480,18 +473,18 @@ export default function EquilibriumArena({
             {/* RIGHT 4 COLS: Live Mental-Math Sandbox + Match History */}
             <div className="lg:col-span-4 flex flex-col gap-3 min-h-0">
               {/* Interactive What-If Simulator */}
-              <div className="rounded-2xl border border-violet-500/30 bg-slate-950/85 backdrop-blur-xl p-4 space-y-3">
+              <div className="rounded-2xl border border-zinc-800 bg-[#111113] p-4 space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="inline-flex items-center gap-1.5 text-[11px] font-mono font-bold uppercase tracking-wider text-violet-300">
-                    <Calculator className="w-3.5 h-3.5" /> Nash Sandbox
+                  <span className="inline-flex items-center gap-1.5 text-[11px] font-mono font-semibold uppercase tracking-wider text-zinc-200">
+                    <Calculator className="w-3.5 h-3.5 text-amber-400" /> Nash Sandbox
                   </span>
-                  <span className="text-[10px] font-mono text-slate-400">Test Rival Pick</span>
+                  <span className="text-[10px] font-mono text-zinc-500">Test Rival Pick</span>
                 </div>
 
                 <div>
-                  <div className="flex justify-between text-xs mb-1">
-                    <span className="text-slate-400">If {opp.nickname} picks:</span>
-                    <span className="font-mono font-black text-rose-300">{simOppNum}</span>
+                  <div className="flex justify-between text-xs mb-1.5">
+                    <span className="text-zinc-400">If {opp.nickname} picks:</span>
+                    <span className="font-mono font-bold text-rose-400 tabular-nums">{simOppNum}</span>
                   </div>
                   <input
                     type="range"
@@ -499,21 +492,21 @@ export default function EquilibriumArena({
                     max={100}
                     value={simOppNum}
                     onChange={(e) => setSimOppNum(Number(e.target.value))}
-                    className="w-full accent-rose-400 h-2 bg-slate-800 rounded-lg cursor-pointer"
+                    className="w-full accent-rose-500 h-2 bg-zinc-800 rounded-lg cursor-pointer"
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-2 text-center">
-                  <div className="p-2.5 rounded-xl bg-black/60 border border-white/10">
-                    <div className="text-[9px] font-mono uppercase text-slate-400">Target</div>
-                    <div className="text-2xl font-black font-mono text-amber-300">
+                  <div className="p-2.5 rounded-xl bg-zinc-950 border border-zinc-800">
+                    <div className="text-[9px] font-mono uppercase tracking-wider text-zinc-500">Target</div>
+                    <div className="text-2xl font-bold font-mono text-amber-400 tabular-nums mt-0.5">
                       {simResult.finalTarget}
                     </div>
                   </div>
-                  <div className="p-2.5 rounded-xl bg-black/60 border border-white/10">
-                    <div className="text-[9px] font-mono uppercase text-slate-400">Outcome</div>
+                  <div className="p-2.5 rounded-xl bg-zinc-950 border border-zinc-800">
+                    <div className="text-[9px] font-mono uppercase tracking-wider text-zinc-500">Outcome</div>
                     <div
-                      className={`text-sm font-black uppercase mt-1 ${
+                      className={`text-xs font-mono font-bold uppercase mt-2 ${
                         simResult.winnerIdx === 0
                           ? 'text-emerald-400'
                           : simResult.winnerIdx === 1
@@ -531,20 +524,20 @@ export default function EquilibriumArena({
                     </div>
                   </div>
                 </div>
-                <p className="text-[11px] text-slate-400 leading-snug">{simResult.specialNote}</p>
+                <p className="text-[11px] font-mono text-zinc-400 leading-snug">{simResult.specialNote}</p>
               </div>
 
               {/* Rival Status + History Log */}
-              <div className="rounded-2xl border border-white/10 bg-slate-950/85 p-4 flex-1 flex flex-col min-h-[150px] overflow-hidden">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-[10px] font-mono uppercase tracking-widest text-slate-400">
+              <div className="rounded-2xl border border-zinc-800 bg-[#111113] p-4 flex-1 flex flex-col min-h-[150px] overflow-hidden">
+                <div className="flex items-center justify-between mb-2.5">
+                  <span className="text-[10px] font-mono uppercase tracking-widest text-zinc-500">
                     Round Ledger
                   </span>
                   <span
-                    className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-full border ${
+                    className={`text-[10px] font-mono font-medium px-2 py-0.5 rounded-md border ${
                       oppLocked
-                        ? 'bg-emerald-500/15 border-emerald-400/30 text-emerald-300'
-                        : 'bg-slate-800 border-white/10 text-slate-400'
+                        ? 'bg-emerald-500/10 border-emerald-500/35 text-emerald-300'
+                        : 'bg-zinc-950 border-zinc-800 text-zinc-400'
                     }`}
                   >
                     {oppLocked ? `${opp.nickname}: LOCKED` : `${opp.nickname}: THINKING`}
@@ -552,8 +545,8 @@ export default function EquilibriumArena({
                 </div>
                 <div className="flex-1 overflow-y-auto space-y-1.5 pr-1">
                   {state.history.length === 0 ? (
-                    <p className="text-xs text-slate-500 italic">
-                      No rounds resolved yet. Read your rival&apos;s psychology.
+                    <p className="text-xs text-zinc-500">
+                      No rounds resolved yet. Read your rival&apos;s pattern.
                     </p>
                   ) : (
                     state.history.map((h) => {
@@ -563,20 +556,20 @@ export default function EquilibriumArena({
                       return (
                         <div
                           key={h.round}
-                          className={`p-2 rounded-xl border text-[11px] font-mono flex items-center justify-between ${
+                          className={`p-2 rounded-xl border text-[11px] font-mono tabular-nums flex items-center justify-between ${
                             iWon
-                              ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-200'
+                              ? 'bg-emerald-500/[0.08] border-emerald-500/30 text-emerald-200'
                               : h.winnerIdx === 'paradox'
-                              ? 'bg-amber-500/10 border-amber-500/30 text-amber-200'
+                              ? 'bg-amber-500/[0.08] border-amber-500/30 text-amber-200'
                               : h.winnerIdx === 'draw'
-                              ? 'bg-white/5 border-white/10 text-slate-300'
-                              : 'bg-rose-500/10 border-rose-500/30 text-rose-200'
+                              ? 'bg-zinc-950 border-zinc-800 text-zinc-300'
+                              : 'bg-rose-500/[0.08] border-rose-500/30 text-rose-200'
                           }`}
                         >
                           <span>
-                            R{h.round}: You <b>{myN}</b> vs <b>{oppN}</b>
+                            R{h.round}: You <b className="text-zinc-50">{myN}</b> vs <b className="text-zinc-50">{oppN}</b>
                           </span>
-                          <span className="text-amber-300 font-bold">T={h.finalTarget}</span>
+                          <span className="text-amber-400 font-semibold">T={h.finalTarget}</span>
                         </div>
                       );
                     })
@@ -590,74 +583,74 @@ export default function EquilibriumArena({
         {/* REVEAL PHASE */}
         {state.status === 'reveal' && summary && me && opp && (
           <motion.div
-            initial={{ opacity: 0, scale: 0.96 }}
+            initial={{ opacity: 0, scale: 0.98 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="max-w-3xl w-full mx-auto rounded-3xl border border-cyan-500/35 bg-slate-950/90 backdrop-blur-xl p-5 sm:p-7 shadow-2xl space-y-5"
+            className="max-w-3xl w-full mx-auto rounded-2xl border border-zinc-800 bg-[#111113] p-5 sm:p-7 space-y-5"
           >
-            <div className="text-center space-y-1">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[10px] font-mono uppercase tracking-widest text-cyan-300">
+            <div className="text-center space-y-1.5">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-zinc-950 border border-zinc-800 text-[10px] font-mono uppercase tracking-widest text-zinc-300">
                 Round {summary.round} · {EQUATION_LAWS[summary.lawId].name}
               </div>
               <h2
-                className={`text-3xl sm:text-4xl font-black uppercase tracking-tight ${
+                className={`text-2xl sm:text-4xl font-semibold tracking-tight ${
                   summary.winnerIdx === meIdx
                     ? 'text-emerald-400'
                     : summary.winnerIdx === 'paradox'
                     ? 'text-amber-400'
                     : summary.winnerIdx === 'draw'
-                    ? 'text-slate-300'
+                    ? 'text-zinc-200'
                     : 'text-rose-400'
                 }`}
               >
                 {summary.winnerIdx === meIdx
-                  ? 'You Solved The Rival!'
+                  ? 'You Solved The Rival'
                   : summary.winnerIdx === 'paradox'
-                  ? 'Exact-Match Paradox!'
+                  ? 'Exact-Match Paradox'
                   : summary.winnerIdx === 'draw'
                   ? 'Perfect Stalemate'
                   : `${opp.nickname} Outcalculated You`}
               </h2>
-              <p className="text-xs sm:text-sm text-slate-300 font-mono">{summary.specialNote}</p>
+              <p className="text-xs sm:text-sm text-zinc-400 font-mono">{summary.specialNote}</p>
             </div>
 
             {/* 3 Stat Reveal Boxes */}
             <div className="grid grid-cols-3 gap-3 text-center">
-              <div className="p-4 rounded-2xl bg-cyan-500/10 border border-cyan-400/35">
-                <div className="text-[10px] font-mono uppercase text-cyan-300">{me.nickname}</div>
-                <div className="text-4xl font-black font-mono text-white mt-1">{myRevealNum}</div>
-                <div className="text-[11px] font-mono text-slate-400 mt-1">
+              <div className="p-4 rounded-xl bg-zinc-950 border border-emerald-500/35">
+                <div className="text-[10px] font-mono uppercase tracking-wider text-emerald-400">{me.nickname}</div>
+                <div className="text-4xl font-bold font-mono text-zinc-50 tabular-nums mt-1">{myRevealNum}</div>
+                <div className="text-[11px] font-mono text-zinc-500 tabular-nums mt-1">
                   Δ {Math.abs(myRevealNum - summary.finalTarget)} from T
                 </div>
               </div>
 
-              <div className="p-4 rounded-2xl bg-amber-500/15 border border-amber-400/50 shadow-[0_0_30px_rgba(245,158,11,0.18)]">
-                <div className="text-[10px] font-mono uppercase text-amber-300">Equilibrium Target</div>
-                <div className="text-4xl font-black font-mono text-amber-300 mt-1">
+              <div className="p-4 rounded-xl bg-amber-500/[0.08] border border-amber-400/50">
+                <div className="text-[10px] font-mono uppercase tracking-wider text-amber-400">Equilibrium Target</div>
+                <div className="text-4xl font-bold font-mono text-amber-300 tabular-nums mt-1">
                   {summary.finalTarget}
                 </div>
-                <div className="text-[10px] font-mono text-amber-200/70 mt-1">
+                <div className="text-[10px] font-mono text-amber-300/75 mt-1">
                   {EQUATION_LAWS[summary.lawId].formulaLabel}
                 </div>
               </div>
 
-              <div className="p-4 rounded-2xl bg-rose-500/10 border border-rose-400/35">
-                <div className="text-[10px] font-mono uppercase text-rose-300">{opp.nickname}</div>
-                <div className="text-4xl font-black font-mono text-white mt-1">{oppRevealNum}</div>
-                <div className="text-[11px] font-mono text-slate-400 mt-1">
+              <div className="p-4 rounded-xl bg-zinc-950 border border-rose-500/35">
+                <div className="text-[10px] font-mono uppercase tracking-wider text-rose-400">{opp.nickname}</div>
+                <div className="text-4xl font-bold font-mono text-zinc-50 tabular-nums mt-1">{oppRevealNum}</div>
+                <div className="text-[11px] font-mono text-zinc-500 tabular-nums mt-1">
                   Δ {Math.abs(oppRevealNum - summary.finalTarget)} from T
                 </div>
               </div>
             </div>
 
             {/* Visual 0–100 Number Line */}
-            <div className="pt-4 pb-2 px-2">
-              <div className="relative h-3 rounded-full bg-slate-900 border border-white/10">
-                {/* Target marker */}
+            <div className="pt-5 pb-2 px-2">
+              <div className="relative h-2.5 rounded-full bg-zinc-950 border border-zinc-800">
+                {/* Target needle marker */}
                 <motion.div
                   initial={{ left: '50%', scale: 0 }}
                   animate={{ left: `${summary.finalTarget}%`, scale: 1 }}
                   transition={{ type: 'spring', stiffness: 180, damping: 18 }}
-                  className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-amber-400 border-2 border-white shadow-[0_0_16px_rgba(251,191,36,0.9)] z-30"
+                  className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-amber-400 border-2 border-zinc-950 ring-2 ring-amber-400/40 z-30"
                   title={`Target: ${summary.finalTarget}`}
                 />
                 {/* My marker */}
@@ -665,9 +658,9 @@ export default function EquilibriumArena({
                   initial={{ left: '0%' }}
                   animate={{ left: `${myRevealNum}%` }}
                   transition={{ duration: 0.5 }}
-                  className="absolute -top-6 -translate-x-1/2 flex flex-col items-center z-20"
+                  className="absolute -top-7 -translate-x-1/2 flex flex-col items-center z-20"
                 >
-                  <span className="px-1.5 py-0.5 rounded bg-cyan-500 text-slate-950 font-mono text-[10px] font-black">
+                  <span className="px-1.5 py-0.5 rounded bg-emerald-500 text-zinc-950 font-mono text-[10px] font-bold tabular-nums">
                     YOU {myRevealNum}
                   </span>
                 </motion.div>
@@ -678,12 +671,12 @@ export default function EquilibriumArena({
                   transition={{ duration: 0.5 }}
                   className="absolute top-4 -translate-x-1/2 flex flex-col items-center z-20"
                 >
-                  <span className="px-1.5 py-0.5 rounded bg-rose-500 text-white font-mono text-[10px] font-black">
+                  <span className="px-1.5 py-0.5 rounded bg-rose-500 text-white font-mono text-[10px] font-bold tabular-nums">
                     RIVAL {oppRevealNum}
                   </span>
                 </motion.div>
               </div>
-              <div className="flex justify-between text-[10px] font-mono text-slate-500 mt-7">
+              <div className="flex justify-between text-[10px] font-mono text-zinc-500 tabular-nums mt-8">
                 <span>0</span>
                 <span>25</span>
                 <span>50</span>
@@ -698,7 +691,7 @@ export default function EquilibriumArena({
                 onNextRound();
               }}
               disabled={!isSolo && state.readyForNext?.[meIdx]}
-              className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-cyan-400 to-violet-400 hover:brightness-110 text-slate-950 font-black uppercase tracking-widest text-sm flex items-center justify-center gap-2 transition-all cursor-pointer disabled:opacity-50"
+              className="w-full py-3 rounded-xl bg-zinc-50 hover:bg-white text-zinc-950 font-semibold text-sm flex items-center justify-center gap-2 transition-colors cursor-pointer disabled:opacity-50"
             >
               <Flame className="w-4 h-4" />
               {!isSolo && state.readyForNext?.[meIdx]
@@ -716,39 +709,39 @@ export default function EquilibriumArena({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4"
+            className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4"
           >
             <motion.div
-              initial={{ scale: 0.9, y: 16 }}
+              initial={{ scale: 0.94, y: 12 }}
               animate={{ scale: 1, y: 0 }}
-              className="max-w-sm w-full rounded-3xl border border-cyan-500/40 bg-slate-950 p-6 text-center shadow-2xl"
+              className="max-w-sm w-full rounded-2xl border border-zinc-800 bg-[#111113] p-6 text-center"
             >
               <div
-                className={`w-16 h-16 mx-auto mb-4 rounded-2xl flex items-center justify-center border ${
+                className={`w-14 h-14 mx-auto mb-4 rounded-xl flex items-center justify-center border ${
                   state.winnerIdx === meIdx
-                    ? 'bg-cyan-500/20 border-cyan-400 text-cyan-300'
+                    ? 'bg-emerald-500/10 border-emerald-500/40 text-emerald-400'
                     : state.winnerIdx === null
-                    ? 'bg-amber-500/20 border-amber-400 text-amber-300'
-                    : 'bg-rose-500/20 border-rose-400 text-rose-300'
+                    ? 'bg-amber-500/10 border-amber-500/40 text-amber-400'
+                    : 'bg-rose-500/10 border-rose-500/40 text-rose-400'
                 }`}
               >
                 {state.winnerIdx === meIdx ? (
-                  <Trophy className="w-8 h-8" />
+                  <Trophy className="w-7 h-7" />
                 ) : state.winnerIdx === null ? (
-                  <Brain className="w-8 h-8" />
+                  <Brain className="w-7 h-7" />
                 ) : (
-                  <Skull className="w-8 h-8" />
+                  <Skull className="w-7 h-7" />
                 )}
               </div>
 
-              <h2 className="text-2xl font-black uppercase tracking-wider text-white mb-1">
+              <h2 className="text-2xl font-semibold tracking-tight text-zinc-50 mb-1">
                 {state.winnerIdx === meIdx
                   ? 'Grandmaster Victory'
                   : state.winnerIdx === null
                   ? 'Mutual Annihilation'
                   : 'Out-Solved'}
               </h2>
-              <p className="text-sm text-slate-400 mb-5">
+              <p className="text-xs sm:text-sm text-zinc-400 mb-5">
                 {state.winnerIdx === meIdx
                   ? `You broke ${opp?.nickname}'s equilibrium in ${state.round} rounds.`
                   : state.winnerIdx === null
@@ -759,13 +752,13 @@ export default function EquilibriumArena({
               <div className="flex gap-2.5">
                 <button
                   onClick={onBack}
-                  className="flex-1 py-3 rounded-xl bg-white/10 hover:bg-white/15 text-white font-bold text-sm cursor-pointer"
+                  className="flex-1 py-2.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-100 font-medium text-sm transition-colors cursor-pointer"
                 >
                   Lobby
                 </button>
                 <button
                   onClick={onRematch}
-                  className="flex-1 py-3 rounded-xl bg-gradient-to-r from-cyan-400 to-violet-400 text-slate-950 font-black text-sm flex items-center justify-center gap-1.5 cursor-pointer"
+                  className="flex-1 py-2.5 rounded-xl bg-zinc-50 hover:bg-white text-zinc-950 font-semibold text-sm flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
                 >
                   <RotateCcw className="w-4 h-4" />
                   Rematch

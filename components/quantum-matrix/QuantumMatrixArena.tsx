@@ -125,7 +125,7 @@ export function QuantumMatrixArena({
         particleCount: 110,
         spread: 80,
         origin: { y: 0.58 },
-        colors: ['#22d3ee', '#818cf8', '#fbbf24', '#f472b6'],
+        colors: ['#818cf8', '#fb7185', '#fbbf24', '#f4f4f5'],
       });
     } else if (isTie) {
       if (soundEnabled) playSound('rule_check');
@@ -263,139 +263,124 @@ export function QuantumMatrixArena({
   if (game.state === 'waiting') {
     const canJoin = meIdx === -1 && game.players.length < 2 && Boolean(onJoinRoom);
     return (
-      <div className="min-h-dvh lg:h-dvh lg:overflow-hidden bg-[#04060d] text-white flex flex-col items-center justify-center p-4 relative">
-        <div className="pointer-events-none fixed inset-0 overflow-hidden">
-          <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[780px] h-[420px] rounded-full bg-indigo-600/18 blur-[130px]" />
-          <div className="absolute bottom-0 right-0 w-[480px] h-[360px] rounded-full bg-amber-500/10 blur-[120px]" />
-        </div>
+      <div className="min-h-dvh lg:h-dvh lg:overflow-hidden bg-[#09090b] text-zinc-100 flex flex-col relative">
+        <header className="shrink-0 border-b border-zinc-800/80 bg-[#09090b]/90 backdrop-blur-md px-5 h-14 flex items-center justify-between">
+          <button
+            type="button"
+            onClick={onExit}
+            className="inline-flex items-center gap-2 rounded-xl border border-zinc-800 bg-zinc-900 hover:bg-zinc-800 px-3 py-1.5 text-xs font-medium text-zinc-300 hover:text-zinc-50 transition-colors cursor-pointer"
+          >
+            <ArrowLeft size={14} /> Lobby
+          </button>
+          <span className="rounded-full border border-zinc-800 bg-zinc-900 px-3 py-1 text-[11px] font-medium text-zinc-300">
+            Quantum Matrix · 1v1 Link
+          </span>
+        </header>
 
-        <button
-          type="button"
-          onClick={onExit}
-          className="absolute top-4 left-4 z-20 inline-flex items-center gap-2 rounded-full border border-white/10 bg-black/50 px-3.5 py-1.5 text-[11px] font-mono uppercase tracking-widest text-zinc-400 hover:text-white transition"
-        >
-          <ArrowLeft size={13} /> Lobby
-        </button>
-
-        <motion.div
-          initial={{ opacity: 0, y: 14 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="relative z-10 w-full max-w-md rounded-3xl border border-indigo-500/25 bg-[#090d1a]/90 backdrop-blur-2xl p-6 shadow-2xl space-y-5"
-        >
-          <div className="text-center space-y-1.5">
-            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl border border-cyan-400/35 bg-cyan-950/50">
-              <Cpu className="text-cyan-300" size={24} />
-            </div>
-            <p className="text-[10px] font-mono uppercase tracking-[0.35em] text-amber-400">
-              Quantum Matrix · 1v1 Link
-            </p>
-            <h1 className="text-2xl font-black tracking-tight uppercase text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-indigo-300 to-amber-300">
-              {canJoin ? 'Join Cyber-Matrix' : 'Awaiting Challenger'}
-            </h1>
-          </div>
-
-          {game.gameId && (
-            <div className="rounded-2xl border border-white/10 bg-black/55 p-4 text-center space-y-2">
-              <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-400">
-                Room Code
-              </p>
-              <div className="flex items-center justify-center gap-3">
-                <span className="font-mono text-3xl font-black tracking-[0.32em] text-cyan-200 pl-2">
-                  {game.gameId}
-                </span>
-                <button
-                  type="button"
-                  onClick={handleCopyCode}
-                  className="inline-flex items-center gap-1.5 rounded-xl border border-cyan-400/30 bg-cyan-500/15 px-3 py-2 text-[11px] font-mono font-bold uppercase text-cyan-200 hover:bg-cyan-500/25 transition"
-                >
-                  {copiedCode ? <Check size={14} /> : <Copy size={14} />}
-                  {copiedCode ? 'Copied' : 'Copy'}
-                </button>
+        <main className="flex-1 flex items-center justify-center p-4">
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="w-full max-w-md rounded-2xl border border-zinc-800/90 bg-[#111113] p-6 space-y-5"
+          >
+            <div className="text-center space-y-2">
+              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl border border-zinc-800 bg-zinc-950">
+                <Cpu className="text-indigo-400" size={22} />
               </div>
-              <p className="text-[11px] text-zinc-500">
-                Host: <span className="text-cyan-300 font-bold">{p0?.nickname || 'Host'}</span> · 2× Amp
-                Cells Locked ({game.ampCells.map(coordLabel).join(' & ')})
-              </p>
+              <h1 className="text-2xl font-semibold tracking-tight text-zinc-50">
+                {canJoin ? 'Join Quantum Matrix' : 'Awaiting Challenger'}
+              </h1>
             </div>
-          )}
 
-          {canJoin ? (
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                if (onJoinRoom) onJoinRoom(joinName.trim() || 'Challenger');
-              }}
-              className="space-y-3"
-            >
-              <div>
-                <label className="block text-[10px] font-mono uppercase tracking-widest text-zinc-400 mb-1.5">
-                  Your Callsign
-                </label>
-                <input
-                  type="text"
-                  value={joinName}
-                  onChange={(e) => setJoinName(e.target.value)}
-                  placeholder="Enter callsign..."
-                  maxLength={14}
-                  className="w-full rounded-xl border border-white/15 bg-black/70 px-3.5 py-2.5 text-sm font-bold text-white focus:border-cyan-400 focus:outline-none"
-                />
+            {game.gameId && (
+              <div className="rounded-xl border border-zinc-800 bg-zinc-950 p-4 text-center space-y-2">
+                <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-zinc-500">
+                  Room Code
+                </p>
+                <div className="flex items-center justify-center gap-3">
+                  <span className="font-mono text-3xl font-semibold tracking-[0.28em] text-zinc-100 pl-2">
+                    {game.gameId}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={handleCopyCode}
+                    className="inline-flex items-center gap-1.5 rounded-xl border border-zinc-800 bg-zinc-900 hover:bg-zinc-800 px-3 py-2 text-xs font-medium text-zinc-200 transition-colors cursor-pointer"
+                  >
+                    {copiedCode ? <Check size={14} className="text-emerald-400" /> : <Copy size={14} />}
+                    {copiedCode ? 'Copied' : 'Copy'}
+                  </button>
+                </div>
+                <p className="text-xs text-zinc-500">
+                  Host: <span className="text-indigo-400 font-medium">{p0?.nickname || 'Host'}</span> · 2× Amp
+                  Cells Locked ({game.ampCells.map(coordLabel).join(' & ')})
+                </p>
               </div>
-              <button
-                type="submit"
-                disabled={busy}
-                className="w-full rounded-xl bg-gradient-to-r from-cyan-400 via-indigo-400 to-amber-400 py-3 text-xs font-black uppercase tracking-widest text-black hover:brightness-110 transition disabled:opacity-50"
+            )}
+
+            {canJoin ? (
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  if (onJoinRoom) onJoinRoom(joinName.trim() || 'Challenger');
+                }}
+                className="space-y-3.5"
               >
-                {busy ? 'Syncing Matrix...' : 'Lock In & Start Duel'}
-              </button>
-            </form>
-          ) : (
-            <div className="flex flex-col items-center gap-2 py-2">
-              <div className="flex items-center gap-2 text-xs font-mono text-indigo-300">
-                <span className="h-2 w-2 rounded-full bg-cyan-400 animate-ping" />
-                Share code with rival or open in a second tab to test locally
+                <div>
+                  <label className="block text-[11px] font-medium text-zinc-400 mb-1.5">
+                    Your Callsign
+                  </label>
+                  <input
+                    type="text"
+                    value={joinName}
+                    onChange={(e) => setJoinName(e.target.value)}
+                    placeholder="Enter callsign..."
+                    maxLength={14}
+                    className="w-full rounded-xl border border-zinc-800 bg-zinc-950 px-3.5 py-2.5 text-sm font-medium text-zinc-100 placeholder:text-zinc-600 focus:border-zinc-400 focus:outline-none transition-colors"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  disabled={busy}
+                  className="w-full rounded-xl bg-zinc-50 hover:bg-white py-3 text-sm font-semibold text-zinc-950 transition-colors cursor-pointer disabled:opacity-50"
+                >
+                  {busy ? 'Syncing Matrix...' : 'Lock In & Start Duel'}
+                </button>
+              </form>
+            ) : (
+              <div className="flex flex-col items-center gap-2 py-2">
+                <div className="flex items-center gap-2 text-xs text-zinc-400">
+                  <span className="h-2 w-2 rounded-full bg-indigo-400 animate-ping" />
+                  Share code with a rival or open in a second tab to test locally
+                </div>
               </div>
-            </div>
-          )}
-        </motion.div>
+            )}
+          </motion.div>
+        </main>
       </div>
     );
   }
 
   return (
-    <div className="min-h-dvh lg:h-dvh lg:overflow-hidden bg-[#04060d] text-white flex flex-col relative select-none">
-      {/* Ambient Obsidian / Indigo / Amber Glow */}
-      <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div className="absolute -top-40 left-1/4 w-[620px] h-[360px] rounded-full bg-indigo-600/15 blur-[130px]" />
-        <div className="absolute bottom-0 right-1/4 w-[520px] h-[340px] rounded-full bg-amber-500/10 blur-[125px]" />
-        <div
-          className="absolute inset-0 opacity-[0.06]"
-          style={{
-            backgroundImage:
-              'linear-gradient(to right, #818cf8 1px, transparent 1px), linear-gradient(to bottom, #818cf8 1px, transparent 1px)',
-            backgroundSize: '36px 36px',
-          }}
-        />
-      </div>
-
+    <div className="min-h-dvh lg:h-dvh lg:overflow-hidden bg-[#09090b] text-zinc-100 flex flex-col relative select-none">
       {/* Top HUD Bar */}
-      <header className="relative z-20 flex items-center justify-between gap-3 border-b border-white/10 bg-[#070a15]/85 backdrop-blur-xl px-4 py-2.5 shrink-0">
+      <header className="relative z-20 flex items-center justify-between gap-3 border-b border-zinc-800/80 bg-[#09090b]/90 backdrop-blur-md px-4 py-2.5 shrink-0">
         <div className="flex items-center gap-3 min-w-0">
           <button
             type="button"
             onClick={onExit}
-            className="inline-flex items-center gap-1.5 rounded-xl border border-white/10 bg-white/5 px-2.5 py-1.5 text-[11px] font-mono uppercase tracking-wider text-zinc-300 hover:bg-white/10 hover:text-white transition"
+            className="inline-flex items-center gap-1.5 rounded-xl border border-zinc-800 bg-zinc-900 hover:bg-zinc-800 px-2.5 py-1.5 text-xs font-medium text-zinc-300 hover:text-zinc-50 transition-colors cursor-pointer"
           >
             <ArrowLeft size={13} /> Exit
           </button>
           <div className="flex items-center gap-2 min-w-0">
-            <div className="hidden sm:flex h-7 w-7 items-center justify-center rounded-lg border border-indigo-400/35 bg-indigo-500/15">
-              <Cpu size={15} className="text-cyan-300" />
+            <div className="hidden sm:flex h-7 w-7 items-center justify-center rounded-lg border border-zinc-800 bg-[#111113]">
+              <Cpu size={14} className="text-indigo-400" />
             </div>
             <div className="leading-tight truncate">
-              <h1 className="text-sm sm:text-base font-black uppercase tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-indigo-200 to-amber-300">
+              <h1 className="text-sm sm:text-base font-semibold tracking-tight text-zinc-50">
                 Quantum Matrix
               </h1>
-              <p className="text-[9px] font-mono uppercase tracking-[0.24em] text-zinc-500 hidden sm:block">
+              <p className="text-[10px] font-mono text-zinc-500 hidden sm:block">
                 4×4 Math-Tactical Grid
               </p>
             </div>
@@ -408,22 +393,22 @@ export function QuantumMatrixArena({
               type="button"
               onClick={handleCopyCode}
               title="Copy Room Code"
-              className="inline-flex items-center gap-1.5 rounded-xl border border-cyan-500/30 bg-cyan-950/40 px-2.5 py-1.5 text-[11px] font-mono font-bold tracking-widest text-cyan-200 hover:bg-cyan-900/50 transition"
+              className="inline-flex items-center gap-1.5 rounded-xl border border-zinc-800 bg-zinc-900 hover:bg-zinc-800 px-2.5 py-1.5 text-xs font-mono font-medium tracking-widest text-zinc-200 transition-colors cursor-pointer"
             >
               <span>{game.gameId}</span>
               {copiedCode ? <Check size={12} className="text-emerald-400" /> : <Copy size={12} />}
             </button>
           )}
 
-          <div className="rounded-xl border border-white/10 bg-black/50 px-2.5 py-1.5 text-[11px] font-mono text-zinc-300">
-            TURN <span className="font-black text-amber-300">{Math.min(game.turnCount + (game.state === 'playing' ? 1 : 0), TOTAL_CELLS)}</span>
+          <div className="rounded-xl border border-zinc-800 bg-zinc-900 px-2.5 py-1.5 text-[11px] font-mono text-zinc-300">
+            Turn <span className="font-semibold text-amber-400">{Math.min(game.turnCount + (game.state === 'playing' ? 1 : 0), TOTAL_CELLS)}</span>
             <span className="text-zinc-500">/{TOTAL_CELLS}</span>
           </div>
 
           <button
             type="button"
             onClick={() => setShowRules((s) => !s)}
-            className="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-zinc-300 hover:bg-white/10 hover:text-white transition"
+            className="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-zinc-800 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-zinc-50 transition-colors cursor-pointer"
             title="Tactical Rules"
           >
             <HelpCircle size={15} />
@@ -432,7 +417,7 @@ export function QuantumMatrixArena({
           <button
             type="button"
             onClick={onToggleSound}
-            className="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-zinc-300 hover:bg-white/10 hover:text-white transition"
+            className="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-zinc-800 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-zinc-50 transition-colors cursor-pointer"
             title={soundEnabled ? 'Mute SFX' : 'Enable SFX'}
           >
             {soundEnabled ? <Volume2 size={15} /> : <VolumeX size={15} />}
@@ -453,43 +438,43 @@ export function QuantumMatrixArena({
             const accentRing =
               pIdx === 0
                 ? isActiveTurn
-                  ? 'border-cyan-400/70 shadow-[0_0_24px_rgba(34,211,238,0.2)]'
-                  : 'border-cyan-500/20'
+                  ? 'border-indigo-400/80'
+                  : 'border-zinc-800/90'
                 : isActiveTurn
-                  ? 'border-amber-400/70 shadow-[0_0_24px_rgba(251,191,36,0.2)]'
-                  : 'border-amber-500/20';
+                  ? 'border-rose-400/80'
+                  : 'border-zinc-800/90';
             const badgeBg =
               pIdx === 0
-                ? 'bg-cyan-500/15 text-cyan-300 border-cyan-400/35'
-                : 'bg-amber-500/15 text-amber-300 border-amber-400/35';
+                ? 'bg-indigo-500/15 text-indigo-300 border-indigo-500/35'
+                : 'bg-rose-500/15 text-rose-300 border-rose-500/35';
 
             return (
               <div
                 key={player.sessionId || pIdx}
-                className={`rounded-2xl border bg-[#090d1b]/90 backdrop-blur-xl p-3 transition-all ${accentRing}`}
+                className={`rounded-2xl border bg-[#111113] p-3.5 transition-colors ${accentRing}`}
               >
-                <div className="flex items-center justify-between gap-2 mb-2">
+                <div className="flex items-center justify-between gap-2 mb-2.5">
                   <div className="flex items-center gap-2 min-w-0">
                     <div
-                      className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border text-xs font-black ${badgeBg}`}
+                      className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border text-xs font-semibold ${badgeBg}`}
                     >
                       {player.isBot ? <Bot size={14} /> : `P${pIdx + 1}`}
                     </div>
                     <div className="min-w-0">
                       <div className="flex items-center gap-1.5">
-                        <span className="text-xs font-black uppercase tracking-wide truncate">
+                        <span className="text-xs font-semibold text-zinc-100 truncate">
                           {player.nickname}
                         </span>
                         {isMe && (
-                          <span className="rounded bg-white/10 px-1.5 py-0.5 text-[9px] font-mono text-zinc-300">
+                          <span className="rounded bg-zinc-800 px-1.5 py-0.5 text-[9px] font-mono text-zinc-300">
                             YOU
                           </span>
                         )}
                       </div>
                       <div className="flex items-center gap-1.5 text-[10px] font-mono text-zinc-400">
                         {isActiveTurn ? (
-                          <span className={pIdx === 0 ? 'text-cyan-300 font-bold' : 'text-amber-300 font-bold'}>
-                            ● ACTIVE TURN
+                          <span className={pIdx === 0 ? 'text-indigo-400 font-semibold' : 'text-rose-400 font-semibold'}>
+                            ● Active Turn
                           </span>
                         ) : (
                           <span>{detail.cellCount} cells</span>
@@ -500,10 +485,10 @@ export function QuantumMatrixArena({
                   <div className="text-right">
                     <motion.div
                       key={detail.total}
-                      initial={{ scale: 1.2 }}
+                      initial={{ scale: 1.15 }}
                       animate={{ scale: 1 }}
-                      className={`text-2xl font-black font-mono leading-none ${
-                        pIdx === 0 ? 'text-cyan-300' : 'text-amber-300'
+                      className={`text-2xl font-semibold font-mono leading-none ${
+                        pIdx === 0 ? 'text-indigo-400' : 'text-rose-400'
                       }`}
                     >
                       {detail.total}
@@ -515,24 +500,24 @@ export function QuantumMatrixArena({
                 </div>
 
                 {/* Score Breakdown Strip */}
-                <div className="grid grid-cols-3 gap-1.5 rounded-xl bg-black/45 border border-white/5 p-1.5 text-center mb-2">
+                <div className="grid grid-cols-3 gap-1.5 rounded-xl bg-zinc-950 border border-zinc-800/80 p-1.5 text-center mb-2.5">
                   <div>
-                    <div className="text-[11px] font-mono font-bold text-white">
+                    <div className="text-[11px] font-mono font-semibold text-zinc-100">
                       {detail.basePoints}
                     </div>
-                    <div className="text-[8px] font-mono uppercase text-zinc-500">Cores</div>
+                    <div className="text-[9px] font-mono text-zinc-500">Cores</div>
                   </div>
                   <div>
-                    <div className="text-[11px] font-mono font-bold text-amber-300">
+                    <div className="text-[11px] font-mono font-semibold text-amber-400">
                       +{detail.ampBonus}
                     </div>
-                    <div className="text-[8px] font-mono uppercase text-zinc-500">2× Amp</div>
+                    <div className="text-[9px] font-mono text-zinc-500">2× Amp</div>
                   </div>
                   <div>
-                    <div className="text-[11px] font-mono font-bold text-indigo-300">
+                    <div className="text-[11px] font-mono font-semibold text-zinc-200">
                       +{detail.lineBonus}
                     </div>
-                    <div className="text-[8px] font-mono uppercase text-zinc-500">
+                    <div className="text-[9px] font-mono text-zinc-500">
                       {detail.linesWon} Lines
                     </div>
                   </div>
@@ -543,12 +528,12 @@ export function QuantumMatrixArena({
                   <span
                     className={`inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 border ${
                       player.invertLeft > 0
-                        ? 'border-fuchsia-400/40 bg-fuchsia-500/15 text-fuchsia-300'
-                        : 'border-white/10 bg-white/5 text-zinc-500 line-through'
+                        ? 'border-zinc-700 bg-zinc-900 text-zinc-200'
+                        : 'border-zinc-800/80 bg-zinc-950 text-zinc-600 line-through'
                     }`}
                   >
                     <RefreshCw size={10} />
-                    INVERT {player.invertLeft > 0 ? 'READY' : 'USED'}
+                    Invert {player.invertLeft > 0 ? 'Ready' : 'Used'}
                   </span>
 
                   <div className="flex items-center gap-0.5">
@@ -557,12 +542,12 @@ export function QuantumMatrixArena({
                       return (
                         <span
                           key={v}
-                          className={`w-4 h-4 rounded text-[9px] font-bold flex items-center justify-center ${
+                          className={`w-4 h-4 rounded text-[9px] font-semibold flex items-center justify-center ${
                             has
                               ? pIdx === 0
-                                ? 'bg-cyan-500/20 text-cyan-200 border border-cyan-500/35'
-                                : 'bg-amber-500/20 text-amber-200 border border-amber-500/35'
-                              : 'bg-white/[0.03] text-zinc-700'
+                                ? 'bg-indigo-500/15 text-indigo-300 border border-indigo-500/35'
+                                : 'bg-rose-500/15 text-rose-300 border border-rose-500/35'
+                              : 'bg-zinc-950 text-zinc-700'
                           }`}
                         >
                           {v}
@@ -576,27 +561,27 @@ export function QuantumMatrixArena({
           })}
 
           {/* Compact Combat Rules Reference */}
-          <div className="rounded-2xl border border-indigo-500/20 bg-[#090d1b]/75 p-3 space-y-2 text-[11px] leading-snug text-zinc-300 mt-auto">
-            <div className="flex items-center gap-1.5 text-[10px] font-mono font-bold uppercase tracking-widest text-indigo-300">
-              <Sparkles size={12} /> Capture Protocol
+          <div className="rounded-2xl border border-zinc-800/90 bg-[#111113] p-3.5 space-y-2 text-[11px] leading-snug text-zinc-400 mt-auto">
+            <div className="flex items-center gap-1.5 text-[10px] font-mono font-semibold uppercase tracking-wider text-zinc-300">
+              <Sparkles size={12} className="text-amber-400" /> Capture Protocol
             </div>
-            <div className="space-y-1.5 text-[10.5px]">
+            <div className="space-y-1.5 text-[11px]">
               <p>
-                <span className="text-cyan-300 font-bold">Outflank:</span> Flip adjacent enemy cores
-                with value <span className="font-mono text-white">&lt; V</span>.
+                <span className="text-indigo-400 font-medium">Outflank:</span> Flip adjacent enemy cores
+                with value <span className="font-mono text-zinc-100">&lt; V</span>.
               </p>
               <p>
-                <span className="text-amber-300 font-bold">Exact-10 Hijack:</span> If{' '}
-                <span className="font-mono text-amber-200">V + Enemy = 10</span>, steal it anyway &amp;
-                boost your core <span className="font-mono text-amber-200">+1</span> (max 9)!
+                <span className="text-amber-400 font-medium">Exact-10 Hijack:</span> If{' '}
+                <span className="font-mono text-amber-300">V + Enemy = 10</span>, steal it anyway &amp;
+                boost your core <span className="font-mono text-amber-300">+1</span> (max 9).
               </p>
               <p>
-                <span className="text-fuchsia-300 font-bold">Polarity Invert (1×):</span> Flip
-                enemies <span className="font-mono text-white">&gt; V</span> for 1 move.
+                <span className="text-zinc-200 font-medium">Polarity Invert (1×):</span> Flip
+                enemies <span className="font-mono text-zinc-100">&gt; V</span> for 1 move.
               </p>
               <p>
-                <span className="text-indigo-300 font-bold">Line Control:</span> Strict lead in any
-                row or column grants <span className="font-mono text-white">+{LINE_CONTROL_BONUS}</span>.
+                <span className="text-zinc-200 font-medium">Line Control:</span> Strict lead in any
+                row or column grants <span className="font-mono text-zinc-100">+{LINE_CONTROL_BONUS}</span>.
               </p>
             </div>
           </div>
@@ -605,41 +590,41 @@ export function QuantumMatrixArena({
         {/* CENTER COLUMN: Turn Status + 4x4 Grid with Row/Col Pills + Hand Dock */}
         <section className="flex flex-col items-center justify-between gap-2.5 min-h-0 order-1 lg:order-2">
           {/* Dynamic Status / Hover Telemetry Strip */}
-          <div className="w-full max-w-[540px] rounded-2xl border border-white/10 bg-[#0a0f1f]/90 backdrop-blur-xl px-3.5 py-2 flex items-center justify-between gap-3">
+          <div className="w-full max-w-[540px] rounded-xl border border-zinc-800/90 bg-[#111113] px-3.5 py-2 flex items-center justify-between gap-3">
             {hoverPreview ? (
               <div className="flex items-center justify-between w-full gap-2">
                 <div className="flex items-center gap-2 min-w-0">
-                  <span className="rounded-lg bg-indigo-500/25 border border-indigo-400/40 px-2 py-0.5 text-[10px] font-mono font-bold text-indigo-200">
+                  <span className="rounded-lg bg-zinc-900 border border-zinc-800 px-2 py-0.5 text-[10px] font-mono font-semibold text-zinc-200">
                     {coordLabel(hoverPreview.cellIdx)}
                   </span>
-                  <div className="flex flex-wrap items-center gap-1.5 text-[11px] font-bold">
+                  <div className="flex flex-wrap items-center gap-1.5 text-[11px] font-semibold">
                     {hoverPreview.hijacked.length > 0 && (
-                      <span className="inline-flex items-center gap-1 rounded-md bg-amber-500/20 border border-amber-400/50 px-1.5 py-0.5 text-amber-300">
-                        <Zap size={11} /> =10 HIJACK ×{hoverPreview.hijacked.length}
+                      <span className="inline-flex items-center gap-1 rounded-md bg-amber-500/15 border border-amber-400/50 px-1.5 py-0.5 text-amber-400">
+                        <Zap size={11} /> =10 Hijack ×{hoverPreview.hijacked.length}
                         {hoverPreview.overloaded ? ' (+1)' : ''}
                       </span>
                     )}
                     {hoverPreview.outflanked.length > 0 && (
-                      <span className="inline-flex items-center gap-1 rounded-md bg-cyan-500/20 border border-cyan-400/50 px-1.5 py-0.5 text-cyan-300">
-                        FLIP ×{hoverPreview.outflanked.length}
+                      <span className="inline-flex items-center gap-1 rounded-md bg-indigo-500/15 border border-indigo-400/50 px-1.5 py-0.5 text-indigo-300">
+                        Flip ×{hoverPreview.outflanked.length}
                       </span>
                     )}
                     {hoverPreview.flips.length === 0 && (
                       <span className="text-zinc-400 font-normal">
                         Deploy Core {hoverPreview.playedValue}
-                        {hoverPreview.isAmpCell ? ' on 2× AMP' : ''}
+                        {hoverPreview.isAmpCell ? ' on 2× Amp' : ''}
                       </span>
                     )}
                   </div>
                 </div>
                 <span
-                  className={`shrink-0 font-mono text-xs font-black px-2 py-0.5 rounded-lg ${
+                  className={`shrink-0 font-mono text-xs font-semibold px-2 py-0.5 rounded-lg border ${
                     hoverPreview.netSwing >= 10
-                      ? 'bg-amber-500/25 text-amber-200 border border-amber-400/40'
-                      : 'bg-cyan-500/20 text-cyan-200 border border-cyan-400/35'
+                      ? 'bg-amber-500/15 text-amber-400 border-amber-400/40'
+                      : 'bg-zinc-900 text-zinc-200 border-zinc-700'
                   }`}
                 >
-                  SWING {hoverPreview.netSwing >= 0 ? `+${hoverPreview.netSwing}` : hoverPreview.netSwing}
+                  Swing {hoverPreview.netSwing >= 0 ? `+${hoverPreview.netSwing}` : hoverPreview.netSwing}
                 </span>
               </div>
             ) : (
@@ -648,19 +633,19 @@ export function QuantumMatrixArena({
                   <Swords
                     size={15}
                     className={
-                      game.turnIdx === 0 ? 'text-cyan-300 shrink-0' : 'text-amber-300 shrink-0'
+                      game.turnIdx === 0 ? 'text-indigo-400 shrink-0' : 'text-rose-400 shrink-0'
                     }
                   />
-                  <span className="text-xs font-bold truncate">
+                  <span className="text-xs font-medium text-zinc-200 truncate">
                     {game.state === 'finished'
                       ? game.winnerIdx === 'tie'
-                        ? 'MATRIX EQUILIBRIUM — MATCH TIED!'
-                        : `${game.players[game.winnerIdx as PlayerIndex]?.nickname} WINS THE MATRIX!`
+                        ? 'Matrix Equilibrium — Match Tied'
+                        : `${game.players[game.winnerIdx as PlayerIndex]?.nickname} wins the matrix`
                       : isMyTurn
                         ? selectedCore === null
                           ? 'Your turn — select a Power Core (1–8) below'
                           : invertArmed
-                            ? `INVERT ARMED · Place Core ${selectedCore} (flips enemies > ${selectedCore})`
+                            ? `Invert Armed · Place Core ${selectedCore} (flips enemies > ${selectedCore})`
                             : `Core ${selectedCore} armed · hover grid to preview captures`
                         : game.players[game.turnIdx]?.isBot
                           ? 'MINIMAX-AI calculating optimal matrix play...'
@@ -668,8 +653,8 @@ export function QuantumMatrixArena({
                   </span>
                 </div>
                 {isMyTurn && (
-                  <span className="shrink-0 rounded-full bg-cyan-500/20 border border-cyan-400/40 px-2.5 py-0.5 text-[10px] font-mono font-bold text-cyan-200">
-                    YOUR MOVE
+                  <span className="shrink-0 rounded-full bg-zinc-900 border border-zinc-700 px-2.5 py-0.5 text-[10px] font-mono font-medium text-zinc-200">
+                    Your Move
                   </span>
                 )}
               </div>
@@ -695,27 +680,30 @@ export function QuantumMatrixArena({
 
                       const emptyClickable = isMyTurn && cell === null && selectedCore !== null;
 
-                      let cellBorder = 'border-white/10 bg-[#0b1021]/90';
+                      let cellBorder = 'border-zinc-800/90 bg-[#111113]';
                       if (cell) {
                         cellBorder =
                           cell.owner === 0
-                            ? 'border-cyan-400/55 bg-gradient-to-br from-cyan-950/90 via-[#0b172c] to-indigo-950/90 shadow-[inset_0_0_20px_rgba(34,211,238,0.14)]'
-                            : 'border-amber-400/55 bg-gradient-to-br from-amber-950/90 via-[#251319] to-rose-950/90 shadow-[inset_0_0_20px_rgba(251,191,36,0.14)]';
+                            ? 'border-indigo-500/50 bg-indigo-950/35'
+                            : 'border-rose-500/50 bg-rose-950/30';
                       } else if (isAmp) {
-                        cellBorder =
-                          'border-amber-400/45 bg-gradient-to-br from-amber-500/12 via-[#0d1124] to-indigo-950/70 shadow-[inset_0_0_18px_rgba(251,191,36,0.12)]';
+                        cellBorder = 'border-amber-500/45 bg-[#111113]';
                       }
 
                       if (flipPreviewType === 'hijack') {
                         cellBorder =
-                          'border-amber-300 ring-2 ring-amber-400/90 bg-gradient-to-br from-amber-900/80 to-yellow-950/80 shadow-[0_0_25px_rgba(251,191,36,0.55)]';
+                          'border-amber-400 ring-2 ring-amber-400/75 bg-amber-950/40';
                       } else if (flipPreviewType === 'outflank') {
                         cellBorder =
-                          'border-cyan-300 ring-2 ring-cyan-400/90 bg-gradient-to-br from-cyan-900/75 to-indigo-950/80 shadow-[0_0_22px_rgba(34,211,238,0.5)]';
+                          meIdx === 1
+                            ? 'border-rose-400 ring-2 ring-rose-400/75 bg-rose-950/40'
+                            : 'border-indigo-400 ring-2 ring-indigo-400/75 bg-indigo-950/45';
                       } else if (isHovered) {
                         cellBorder = invertArmed
-                          ? 'border-fuchsia-400 ring-2 ring-fuchsia-400/75 bg-fuchsia-950/45'
-                          : 'border-cyan-300 ring-2 ring-cyan-400/75 bg-cyan-950/40';
+                          ? 'border-amber-400 ring-2 ring-amber-400/60 bg-zinc-900'
+                          : meIdx === 1
+                            ? 'border-rose-400 ring-2 ring-rose-400/60 bg-rose-950/25'
+                            : 'border-indigo-400 ring-2 ring-indigo-400/60 bg-indigo-950/25';
                       }
 
                       return (
@@ -732,20 +720,20 @@ export function QuantumMatrixArena({
                           onClick={() => handleCellClick(idx)}
                           className={`group relative aspect-square rounded-2xl border transition-all duration-150 flex flex-col items-center justify-center overflow-hidden ${cellBorder} ${
                             emptyClickable
-                              ? 'cursor-pointer hover:scale-[1.02]'
+                              ? 'cursor-pointer hover:border-zinc-600'
                               : cell === null && isMyTurn
-                                ? 'cursor-pointer hover:border-indigo-400/45'
+                                ? 'cursor-pointer hover:border-zinc-700'
                                 : 'cursor-default'
                           }`}
                         >
                           {/* Coordinate Label */}
-                          <span className="absolute top-1.5 left-2 text-[9px] font-mono font-bold text-white/30">
+                          <span className="absolute top-1.5 left-2 text-[9px] font-mono font-medium text-zinc-600">
                             {coordLabel(idx)}
                           </span>
 
                           {/* 2x Amplifier Badge */}
                           {isAmp && (
-                            <span className="absolute top-1.5 right-1.5 rounded-md bg-amber-400/20 border border-amber-300/50 px-1 py-0.5 text-[8px] font-mono font-black tracking-tight text-amber-200">
+                            <span className="absolute top-1.5 right-1.5 rounded-md bg-amber-500/15 border border-amber-400/40 px-1 py-0.5 text-[8px] font-mono font-semibold tracking-tight text-amber-400">
                               2×
                             </span>
                           )}
@@ -760,22 +748,20 @@ export function QuantumMatrixArena({
                               className="flex flex-col items-center justify-center"
                             >
                               <span
-                                className={`text-3xl sm:text-4xl font-black font-mono leading-none tracking-tighter ${
-                                  cell.owner === 0
-                                    ? 'text-cyan-200 drop-shadow-[0_0_12px_rgba(34,211,238,0.65)]'
-                                    : 'text-amber-200 drop-shadow-[0_0_12px_rgba(251,191,36,0.65)]'
+                                className={`text-3xl sm:text-4xl font-bold font-mono leading-none tracking-tighter ${
+                                  cell.owner === 0 ? 'text-indigo-300' : 'text-rose-300'
                                 }`}
                               >
                                 {cell.value}
                               </span>
                               <div className="mt-1 flex items-center gap-1">
                                 {cell.overloaded && (
-                                  <span className="inline-flex items-center gap-0.5 rounded bg-amber-400/25 border border-amber-300/50 px-1 py-0.5 text-[8px] font-mono font-black text-amber-200 leading-none">
+                                  <span className="inline-flex items-center gap-0.5 rounded bg-amber-500/15 border border-amber-400/40 px-1 py-0.5 text-[8px] font-mono font-semibold text-amber-300 leading-none">
                                     <Zap size={8} /> +1
                                   </span>
                                 )}
                                 {isAmp && (
-                                  <span className="rounded bg-black/50 px-1 text-[8px] font-mono font-bold text-amber-300">
+                                  <span className="rounded bg-zinc-950/80 border border-zinc-800 px-1 text-[8px] font-mono font-medium text-amber-400">
                                     ={cell.value * 2}
                                   </span>
                                 )}
@@ -785,21 +771,23 @@ export function QuantumMatrixArena({
                             /* Ghost Preview on Hovered Empty Cell */
                             <div className="flex flex-col items-center justify-center">
                               <span
-                                className={`text-3xl sm:text-4xl font-black font-mono leading-none ${
+                                className={`text-3xl sm:text-4xl font-bold font-mono leading-none ${
                                   hoverPreview.overloaded
-                                    ? 'text-amber-300'
+                                    ? 'text-amber-400'
                                     : invertArmed
-                                      ? 'text-fuchsia-300'
-                                      : 'text-cyan-200/85'
+                                      ? 'text-amber-300'
+                                      : meIdx === 1
+                                        ? 'text-rose-300'
+                                        : 'text-indigo-300'
                                 }`}
                               >
                                 {hoverPreview.finalValue}
                               </span>
                               <span
-                                className={`mt-1 rounded px-1.5 py-0.5 text-[8px] font-mono font-black ${
+                                className={`mt-1 rounded px-1.5 py-0.5 text-[8px] font-mono font-semibold ${
                                   hoverPreview.overloaded
-                                    ? 'bg-amber-500/30 text-amber-200'
-                                    : 'bg-white/10 text-zinc-200'
+                                    ? 'bg-amber-500/20 text-amber-300'
+                                    : 'bg-zinc-900 text-zinc-200 border border-zinc-800'
                                 }`}
                               >
                                 {hoverPreview.netSwing >= 0
@@ -808,31 +796,33 @@ export function QuantumMatrixArena({
                               </span>
                             </div>
                           ) : isAmp ? (
-                            <div className="flex flex-col items-center text-amber-300/60">
-                              <Sparkles size={16} />
-                              <span className="text-[9px] font-mono font-bold uppercase tracking-wider mt-0.5">
+                            <div className="flex flex-col items-center text-amber-400/75">
+                              <Sparkles size={15} />
+                              <span className="text-[9px] font-mono font-semibold uppercase tracking-wider mt-0.5">
                                 2× AMP
                               </span>
                             </div>
                           ) : (
-                            <span className="h-1.5 w-1.5 rounded-full bg-white/10 group-hover:bg-cyan-400/45 transition" />
+                            <span className="h-1.5 w-1.5 rounded-full bg-zinc-800 group-hover:bg-zinc-500 transition-colors" />
                           )}
 
                           {/* Hover Preview Overlay Badge on Adjacent Enemy Cells */}
                           {flipPreviewType === 'hijack' && (
                             <motion.div
-                              initial={{ scale: 0.8, opacity: 0 }}
+                              initial={{ scale: 0.85, opacity: 0 }}
                               animate={{ scale: 1, opacity: 1 }}
-                              className="absolute bottom-1 inset-x-1 rounded-md bg-amber-400 text-black px-1 py-0.5 text-[8px] font-mono font-black tracking-tight flex items-center justify-center gap-0.5 shadow-lg"
+                              className="absolute bottom-1 inset-x-1 rounded-md bg-amber-400 text-zinc-950 px-1 py-0.5 text-[8px] font-mono font-bold tracking-tight flex items-center justify-center gap-0.5"
                             >
-                              <Zap size={9} /> =10! HIJACK
+                              <Zap size={9} /> =10 HIJACK
                             </motion.div>
                           )}
                           {flipPreviewType === 'outflank' && (
                             <motion.div
-                              initial={{ scale: 0.8, opacity: 0 }}
+                              initial={{ scale: 0.85, opacity: 0 }}
                               animate={{ scale: 1, opacity: 1 }}
-                              className="absolute bottom-1 inset-x-1 rounded-md bg-cyan-400 text-black px-1 py-0.5 text-[8px] font-mono font-black tracking-tight text-center shadow-lg"
+                              className={`absolute bottom-1 inset-x-1 rounded-md px-1 py-0.5 text-[8px] font-mono font-bold tracking-tight text-center ${
+                                meIdx === 1 ? 'bg-rose-400 text-zinc-950' : 'bg-indigo-400 text-zinc-950'
+                              }`}
                             >
                               FLIP
                             </motion.div>
@@ -841,12 +831,12 @@ export function QuantumMatrixArena({
                           {/* Subtle Last-Move Indicator */}
                           {!flipPreviewType && (wasLastPlaced || wasLastFlipped) && (
                             <span
-                              className={`absolute bottom-1 right-1.5 text-[8px] font-mono font-bold uppercase ${
+                              className={`absolute bottom-1 right-1.5 text-[8px] font-mono font-semibold uppercase ${
                                 wasLastHijacked
-                                  ? 'text-amber-300'
+                                  ? 'text-amber-400'
                                   : wasLastPlaced
-                                    ? 'text-white/75'
-                                    : 'text-cyan-300/80'
+                                    ? 'text-zinc-300'
+                                    : 'text-indigo-300'
                               }`}
                             >
                               {wasLastPlaced ? 'NEW' : wasLastHijacked ? 'HIJACK' : 'FLIP'}
@@ -858,26 +848,26 @@ export function QuantumMatrixArena({
 
                     {/* Live Row Control Pill */}
                     <div
-                      className={`rounded-xl border px-1 py-1 flex flex-col items-center justify-center text-center font-mono transition ${
+                      className={`rounded-xl border px-1 py-1 flex flex-col items-center justify-center text-center font-mono transition-colors ${
                         rowScore.leader === 0
-                          ? 'border-cyan-400/50 bg-cyan-950/45 text-cyan-200'
+                          ? 'border-indigo-500/45 bg-indigo-950/30 text-indigo-300'
                           : rowScore.leader === 1
-                            ? 'border-amber-400/50 bg-amber-950/45 text-amber-200'
-                            : 'border-white/10 bg-white/[0.03] text-zinc-500'
+                            ? 'border-rose-500/45 bg-rose-950/30 text-rose-300'
+                            : 'border-zinc-800/80 bg-[#111113] text-zinc-500'
                       }`}
                     >
-                      <span className="text-[8px] uppercase opacity-60">R{rowIdx + 1}</span>
-                      <div className="text-[11px] font-black leading-tight">
-                        <span className="text-cyan-300">{rowScore.p0}</span>
+                      <span className="text-[8px] uppercase text-zinc-500">R{rowIdx + 1}</span>
+                      <div className="text-[11px] font-semibold leading-tight">
+                        <span className="text-indigo-400">{rowScore.p0}</span>
                         <span className="text-zinc-600 mx-0.5">:</span>
-                        <span className="text-amber-300">{rowScore.p1}</span>
+                        <span className="text-rose-400">{rowScore.p1}</span>
                       </div>
                       <span
-                        className={`text-[8px] font-black ${
+                        className={`text-[8px] font-semibold ${
                           rowScore.leader === 0
-                            ? 'text-cyan-300'
+                            ? 'text-indigo-400'
                             : rowScore.leader === 1
-                              ? 'text-amber-300'
+                              ? 'text-rose-400'
                               : 'text-zinc-600'
                         }`}
                       >
@@ -892,29 +882,29 @@ export function QuantumMatrixArena({
               {scores.cols.map((colScore, colIdx) => (
                 <div
                   key={`col-${colIdx}`}
-                  className={`rounded-xl border px-1.5 py-1 flex items-center justify-between font-mono text-[10px] transition ${
+                  className={`rounded-xl border px-1.5 py-1 flex items-center justify-between font-mono text-[10px] transition-colors ${
                     colScore.leader === 0
-                      ? 'border-cyan-400/50 bg-cyan-950/45 text-cyan-200'
+                      ? 'border-indigo-500/45 bg-indigo-950/30 text-indigo-300'
                       : colScore.leader === 1
-                        ? 'border-amber-400/50 bg-amber-950/45 text-amber-200'
-                        : 'border-white/10 bg-white/[0.03] text-zinc-500'
+                        ? 'border-rose-500/45 bg-rose-950/30 text-rose-300'
+                        : 'border-zinc-800/80 bg-[#111113] text-zinc-500'
                   }`}
                 >
-                  <span className="text-[9px] font-bold opacity-60">
+                  <span className="text-[9px] font-medium text-zinc-500">
                     {['A', 'B', 'C', 'D'][colIdx]}
                   </span>
-                  <span className="font-black">
-                    <span className="text-cyan-300">{colScore.p0}</span>
+                  <span className="font-semibold">
+                    <span className="text-indigo-400">{colScore.p0}</span>
                     <span className="text-zinc-600 mx-0.5">:</span>
-                    <span className="text-amber-300">{colScore.p1}</span>
+                    <span className="text-rose-400">{colScore.p1}</span>
                   </span>
-                  <span className="text-[8px] font-black">
+                  <span className="text-[8px] font-semibold">
                     {colScore.leader === null ? '—' : `+${LINE_CONTROL_BONUS}`}
                   </span>
                 </div>
               ))}
 
-              <div className="rounded-xl border border-indigo-500/25 bg-indigo-950/35 flex flex-col items-center justify-center text-[8px] font-mono font-bold uppercase text-indigo-300 leading-tight py-1">
+              <div className="rounded-xl border border-zinc-800/90 bg-[#111113] flex flex-col items-center justify-center text-[8px] font-mono font-semibold uppercase text-zinc-400 leading-tight py-1">
                 <span>LINE</span>
                 <span>+{LINE_CONTROL_BONUS}</span>
               </div>
@@ -922,7 +912,7 @@ export function QuantumMatrixArena({
           </div>
 
           {/* Bottom Power Core Hand & Polarity Invert Dock */}
-          <div className="w-full max-w-[560px] rounded-2xl border border-white/10 bg-[#090d1b]/95 backdrop-blur-xl p-2.5 flex flex-col sm:flex-row items-center gap-2.5 shrink-0">
+          <div className="w-full max-w-[560px] rounded-2xl border border-zinc-800/90 bg-[#111113] p-2.5 flex flex-col sm:flex-row items-center gap-2.5 shrink-0">
             {/* Polarity Invert Toggle */}
             <button
               type="button"
@@ -934,23 +924,23 @@ export function QuantumMatrixArena({
                   return next;
                 });
               }}
-              className={`w-full sm:w-auto shrink-0 rounded-xl border px-3 py-2 flex sm:flex-col items-center justify-center gap-1.5 sm:gap-0.5 transition-all ${
+              className={`w-full sm:w-auto shrink-0 rounded-xl border px-3 py-2 flex sm:flex-col items-center justify-center gap-1.5 sm:gap-0.5 transition-colors ${
                 invertArmed
-                  ? 'border-fuchsia-300 bg-fuchsia-500/25 text-fuchsia-100 shadow-[0_0_20px_rgba(232,121,249,0.45)]'
+                  ? 'border-amber-400 bg-amber-400 text-zinc-950'
                   : mePlayer && mePlayer.invertLeft > 0 && isMyTurn
-                    ? 'border-fuchsia-500/40 bg-fuchsia-950/40 text-fuchsia-200 hover:bg-fuchsia-900/50 cursor-pointer'
-                    : 'border-white/10 bg-white/[0.03] text-zinc-600 cursor-not-allowed'
+                    ? 'border-zinc-700 bg-zinc-900 text-zinc-200 hover:bg-zinc-800 cursor-pointer'
+                    : 'border-zinc-800/80 bg-zinc-950 text-zinc-600 cursor-not-allowed'
               }`}
             >
-              <div className="flex items-center gap-1 text-[10px] font-mono font-black uppercase tracking-wider">
+              <div className="flex items-center gap-1 text-[10px] font-mono font-semibold uppercase tracking-wider">
                 <RefreshCw size={12} className={invertArmed ? 'animate-spin' : ''} />
-                <span>INVERT</span>
+                <span>Invert</span>
               </div>
               <span className="text-[9px] font-mono opacity-80">
                 {!mePlayer
                   ? 'SPEC'
                   : mePlayer.invertLeft <= 0
-                    ? 'DEPLETED'
+                    ? 'USED'
                     : invertArmed
                       ? 'ARMED (>V)'
                       : '1 USE [I]'}
@@ -965,14 +955,14 @@ export function QuantumMatrixArena({
                 const canPick = isMyTurn && available;
                 const myColor =
                   meIdx === 1
-                    ? 'border-amber-400/45 bg-amber-950/45 text-amber-200 hover:border-amber-300'
-                    : 'border-cyan-400/45 bg-cyan-950/45 text-cyan-200 hover:border-cyan-300';
+                    ? 'border-zinc-800 bg-zinc-950 text-rose-300 hover:border-rose-400/60'
+                    : 'border-zinc-800 bg-zinc-950 text-indigo-300 hover:border-indigo-400/60';
                 const selectedColor =
                   invertArmed
-                    ? 'border-fuchsia-300 bg-fuchsia-500 text-black shadow-[0_0_18px_rgba(232,121,249,0.65)] -translate-y-1'
+                    ? 'border-amber-400 bg-amber-400 text-zinc-950 -translate-y-0.5'
                     : meIdx === 1
-                      ? 'border-amber-200 bg-amber-400 text-black shadow-[0_0_18px_rgba(251,191,36,0.65)] -translate-y-1'
-                      : 'border-cyan-200 bg-cyan-400 text-black shadow-[0_0_18px_rgba(34,211,238,0.65)] -translate-y-1';
+                      ? 'border-rose-400 bg-rose-400 text-zinc-950 -translate-y-0.5'
+                      : 'border-indigo-400 bg-indigo-400 text-zinc-950 -translate-y-0.5';
 
                 return (
                   <button
@@ -984,19 +974,19 @@ export function QuantumMatrixArena({
                       setSelectedCore((prev) => (prev === val ? null : val));
                       if (soundEnabled) playSound('card_pick');
                     }}
-                    className={`relative h-12 rounded-xl border font-mono text-lg font-black transition-all flex flex-col items-center justify-center ${
+                    className={`relative h-12 rounded-xl border font-mono text-lg font-semibold transition-all flex flex-col items-center justify-center ${
                       !available
-                        ? 'border-white/5 bg-white/[0.02] text-zinc-700 cursor-not-allowed'
+                        ? 'border-zinc-900 bg-zinc-950/60 text-zinc-700 cursor-not-allowed'
                         : isSelected
                           ? selectedColor
                           : canPick
                             ? `${myColor} cursor-pointer`
-                            : 'border-white/10 bg-white/5 text-zinc-400 cursor-not-allowed opacity-70'
+                            : 'border-zinc-800/80 bg-zinc-950 text-zinc-500 cursor-not-allowed opacity-70'
                     }`}
                   >
                     <span>{val}</span>
                     {!available && (
-                      <span className="text-[7px] uppercase tracking-wider text-zinc-600">
+                      <span className="text-[7px] uppercase tracking-wider text-zinc-700">
                         USED
                       </span>
                     )}
@@ -1010,33 +1000,33 @@ export function QuantumMatrixArena({
         {/* RIGHT COLUMN: Live Tug-of-War & Tactical Feed */}
         <section className="flex flex-col gap-2.5 min-h-0 order-3">
           {/* Score Tug-of-War */}
-          <div className="rounded-2xl border border-white/10 bg-[#090d1b]/90 p-3 space-y-2 shrink-0">
-            <div className="flex items-center justify-between text-[10px] font-mono uppercase tracking-widest">
-              <span className="text-cyan-300 font-bold">
+          <div className="rounded-2xl border border-zinc-800/90 bg-[#111113] p-3.5 space-y-2 shrink-0">
+            <div className="flex items-center justify-between text-[10px] font-mono uppercase tracking-wider">
+              <span className="text-indigo-400 font-semibold">
                 {p0?.nickname || 'P1'} · {scores.p0.total}
               </span>
-              <span className="text-zinc-500">DELTA {Math.abs(scores.p0.total - scores.p1.total)}</span>
-              <span className="text-amber-300 font-bold">
+              <span className="text-zinc-500">Δ {Math.abs(scores.p0.total - scores.p1.total)}</span>
+              <span className="text-rose-400 font-semibold">
                 {scores.p1.total} · {p1?.nickname || 'P2'}
               </span>
             </div>
-            <div className="h-2.5 w-full rounded-full bg-amber-500/35 overflow-hidden border border-white/10 flex">
+            <div className="h-2 w-full rounded-full bg-rose-500/35 overflow-hidden flex">
               <motion.div
-                className="h-full bg-gradient-to-r from-cyan-400 to-indigo-400"
+                className="h-full bg-indigo-400"
                 animate={{ width: `${p0BarPct}%` }}
                 transition={{ type: 'spring', stiffness: 220, damping: 26 }}
               />
             </div>
-            <div className="flex items-center justify-between text-[10px] font-mono text-zinc-400">
+            <div className="flex items-center justify-between text-[10px] font-mono text-zinc-500">
               <span>2× Amps: {game.ampCells.map(coordLabel).join(', ')}</span>
-              <span>{TOTAL_CELLS - game.turnCount} cells left</span>
+              <span>{TOTAL_CELLS - game.turnCount} left</span>
             </div>
           </div>
 
           {/* Tactical Feed */}
-          <div className="flex-1 min-h-[180px] lg:min-h-0 rounded-2xl border border-white/10 bg-[#090d1b]/90 p-3 flex flex-col">
+          <div className="flex-1 min-h-[180px] lg:min-h-0 rounded-2xl border border-zinc-800/90 bg-[#111113] p-3.5 flex flex-col">
             <div className="flex items-center justify-between mb-2 shrink-0">
-              <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-indigo-300">
+              <span className="text-[10px] font-mono font-semibold uppercase tracking-wider text-zinc-300">
                 Tactical Feed
               </span>
               <span className="text-[10px] font-mono text-zinc-500">{game.logs.length} ops</span>
@@ -1045,7 +1035,7 @@ export function QuantumMatrixArena({
             <div className="flex-1 overflow-y-auto space-y-1.5 pr-1">
               {game.logs.length === 0 ? (
                 <div className="h-full flex flex-col items-center justify-center text-center text-xs text-zinc-500 px-4 gap-1.5">
-                  <ShieldAlert size={18} className="text-indigo-400/60" />
+                  <ShieldAlert size={18} className="text-zinc-600" />
                   <p>Select a Power Core (1–8) and hover any cell to preview live captures &amp; Exact-10 Hijacks.</p>
                 </div>
               ) : (
@@ -1056,16 +1046,14 @@ export function QuantumMatrixArena({
                     animate={{ opacity: 1, x: 0 }}
                     className={`rounded-xl border px-2.5 py-2 text-[11px] ${
                       entry.hijacked.length > 0
-                        ? 'border-amber-400/40 bg-amber-950/30'
-                        : entry.actor === 0
-                          ? 'border-cyan-500/20 bg-cyan-950/20'
-                          : 'border-amber-500/20 bg-rose-950/20'
+                        ? 'border-amber-500/35 bg-amber-950/20'
+                        : 'border-zinc-800/80 bg-zinc-950'
                     }`}
                   >
                     <div className="flex items-center justify-between gap-1 mb-0.5 font-mono text-[10px]">
                       <span
-                        className={`font-black ${
-                          entry.actor === 0 ? 'text-cyan-300' : 'text-amber-300'
+                        className={`font-semibold ${
+                          entry.actor === 0 ? 'text-indigo-400' : 'text-rose-400'
                         }`}
                       >
                         #{String(entry.turn).padStart(2, '0')} {entry.actorName}
@@ -1077,17 +1065,17 @@ export function QuantumMatrixArena({
                     </div>
                     <div className="flex flex-wrap items-center gap-1 mt-1">
                       {entry.usedInvert && (
-                        <span className="rounded bg-fuchsia-500/25 border border-fuchsia-400/40 px-1.5 py-0.5 text-[9px] font-mono font-bold text-fuchsia-200">
+                        <span className="rounded bg-zinc-900 border border-zinc-700 px-1.5 py-0.5 text-[9px] font-mono font-medium text-zinc-200">
                           INVERT
                         </span>
                       )}
                       {entry.hijacked.length > 0 && (
-                        <span className="rounded bg-amber-400/25 border border-amber-300/50 px-1.5 py-0.5 text-[9px] font-mono font-black text-amber-200">
+                        <span className="rounded bg-amber-500/15 border border-amber-400/40 px-1.5 py-0.5 text-[9px] font-mono font-semibold text-amber-400">
                           =10 HIJACK ×{entry.hijacked.length}
                         </span>
                       )}
                       {entry.outflanked.length > 0 && (
-                        <span className="rounded bg-cyan-500/25 border border-cyan-400/40 px-1.5 py-0.5 text-[9px] font-mono font-bold text-cyan-200">
+                        <span className="rounded bg-indigo-500/15 border border-indigo-400/40 px-1.5 py-0.5 text-[9px] font-mono font-medium text-indigo-300">
                           FLIP ×{entry.outflanked.length}
                         </span>
                       )}
@@ -1110,52 +1098,52 @@ export function QuantumMatrixArena({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4"
+            className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4"
             onClick={() => setShowRules(false)}
           >
             <motion.div
-              initial={{ scale: 0.94, opacity: 0 }}
+              initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.94, opacity: 0 }}
+              exit={{ scale: 0.95, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-md rounded-3xl border border-indigo-400/30 bg-[#090e1e] p-6 shadow-2xl space-y-4"
+              className="w-full max-w-md rounded-2xl border border-zinc-800 bg-[#111113] p-6 space-y-4"
             >
               <div className="flex items-center justify-between">
-                <h2 className="text-lg font-black uppercase tracking-tight text-cyan-300">
+                <h2 className="text-lg font-semibold tracking-tight text-zinc-50">
                   Quantum Matrix Manual
                 </h2>
                 <button
                   type="button"
                   onClick={() => setShowRules(false)}
-                  className="rounded-lg p-1 text-zinc-400 hover:bg-white/10 hover:text-white"
+                  className="rounded-lg p-1 text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100 transition-colors cursor-pointer"
                 >
                   <X size={18} />
                 </button>
               </div>
               <ul className="space-y-2.5 text-xs text-zinc-300 leading-relaxed">
                 <li>
-                  <strong className="text-white">8 Unique Power Cores (1–8):</strong> Both players
+                  <strong className="text-zinc-100">8 Unique Power Cores (1–8):</strong> Both players
                   share the exact same hand and alternate placing 1 core per turn until all 16 cells
                   are filled.
                 </li>
                 <li>
-                  <strong className="text-cyan-300">Outflank Capture:</strong> Placing value{' '}
+                  <strong className="text-indigo-400">Outflank Capture:</strong> Placing value{' '}
                   <code>V</code> flips any orthogonally adjacent enemy core with value{' '}
                   <code>&lt; V</code>.
                 </li>
                 <li>
-                  <strong className="text-amber-300">Exact-10 Hijack:</strong> If{' '}
-                  <code>V + Adjacent Enemy = 10</code> (like 2+8, 3+7, 4+6, 5+5), you HIJACK that
-                  enemy even if you are weaker — AND your placed core gets a{' '}
-                  <strong>+1 Overload Boost</strong> (max 9)!
+                  <strong className="text-amber-400">Exact-10 Hijack:</strong> If{' '}
+                  <code>V + Adjacent Enemy = 10</code> (like 2+8, 3+7, 4+6, 5+5), you hijack that
+                  enemy even if you are weaker — and your placed core gets a{' '}
+                  <strong>+1 Overload Boost</strong> (max 9).
                 </li>
                 <li>
-                  <strong className="text-fuchsia-300">1-Use Polarity Invert:</strong> Arm before
+                  <strong className="text-zinc-100">1-Use Polarity Invert:</strong> Arm before
                   placing to invert Outflank to <code>&gt; V</code> for one turn (so a 1 can flip an
-                  adjacent 8!).
+                  adjacent 8).
                 </li>
                 <li>
-                  <strong className="text-indigo-300">Amplifiers &amp; Line Control:</strong> Two
+                  <strong className="text-zinc-100">Amplifiers &amp; Line Control:</strong> Two
                   tiles grant <strong>2× cell points</strong>. Strictly leading any row or column
                   (by sum of core values) awards <strong>+{LINE_CONTROL_BONUS} bonus points</strong>.
                 </li>
@@ -1172,26 +1160,26 @@ export function QuantumMatrixArena({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4"
+            className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4"
           >
             <motion.div
-              initial={{ scale: 0.9, y: 16, opacity: 0 }}
+              initial={{ scale: 0.94, y: 12, opacity: 0 }}
               animate={{ scale: 1, y: 0, opacity: 1 }}
-              exit={{ scale: 0.94, opacity: 0 }}
-              className="w-full max-w-md rounded-3xl border border-indigo-400/35 bg-[#0a0f20] p-6 shadow-2xl space-y-5 text-center"
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="w-full max-w-md rounded-2xl border border-zinc-800 bg-[#111113] p-6 space-y-5 text-center"
             >
               <div className="space-y-1.5">
-                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl border border-amber-400/45 bg-amber-500/15">
-                  <Crown className="text-amber-300" size={28} />
+                <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl border border-zinc-800 bg-zinc-950">
+                  <Crown className="text-amber-400" size={24} />
                 </div>
-                <p className="text-[10px] font-mono uppercase tracking-[0.35em] text-indigo-300">
+                <p className="text-[11px] font-mono text-zinc-500">
                   Matrix Complete · 16/16 Cores Locked
                 </p>
-                <h2 className="text-2xl font-black uppercase tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-white to-amber-300">
+                <h2 className="text-2xl font-semibold tracking-tight text-zinc-50">
                   {game.winnerIdx === 'tie'
-                    ? 'Quantum Equilibrium (Tie!)'
+                    ? 'Quantum Equilibrium (Tie)'
                     : meIdx !== -1 && game.winnerIdx === meIdx
-                      ? 'Victory Secured!'
+                      ? 'Victory Secured'
                       : `${game.players[game.winnerIdx as PlayerIndex]?.nickname} Wins`}
                 </h2>
               </div>
@@ -1206,39 +1194,39 @@ export function QuantumMatrixArena({
                   return (
                     <div
                       key={pIdx}
-                      className={`rounded-2xl border p-3.5 space-y-1.5 ${
+                      className={`rounded-xl border p-3.5 space-y-1.5 bg-zinc-950 ${
                         isWinner
                           ? pIdx === 0
-                            ? 'border-cyan-400/70 bg-cyan-950/35'
-                            : 'border-amber-400/70 bg-amber-950/35'
-                          : 'border-white/10 bg-black/40'
+                            ? 'border-indigo-400/60'
+                            : 'border-rose-400/60'
+                          : 'border-zinc-800'
                       }`}
                     >
                       <div className="flex items-center justify-between">
-                        <span className="text-xs font-black uppercase truncate">
+                        <span className="text-xs font-semibold text-zinc-100 truncate">
                           {player?.nickname}
                         </span>
-                        {isWinner && <Crown size={13} className="text-amber-300 shrink-0" />}
+                        {isWinner && <Crown size={13} className="text-amber-400 shrink-0" />}
                       </div>
                       <div
-                        className={`text-3xl font-black font-mono ${
-                          pIdx === 0 ? 'text-cyan-300' : 'text-amber-300'
+                        className={`text-3xl font-semibold font-mono ${
+                          pIdx === 0 ? 'text-indigo-400' : 'text-rose-400'
                         }`}
                       >
                         {detail.total}
                       </div>
-                      <div className="text-[10px] font-mono text-zinc-400 space-y-0.5 pt-1 border-t border-white/10">
+                      <div className="text-[10px] font-mono text-zinc-400 space-y-0.5 pt-1.5 border-t border-zinc-800">
                         <div className="flex justify-between">
                           <span>Core Values</span>
-                          <span className="text-white">{detail.basePoints}</span>
+                          <span className="text-zinc-100">{detail.basePoints}</span>
                         </div>
                         <div className="flex justify-between">
                           <span>2× Amp Bonus</span>
-                          <span className="text-amber-300">+{detail.ampBonus}</span>
+                          <span className="text-amber-400">+{detail.ampBonus}</span>
                         </div>
                         <div className="flex justify-between">
                           <span>Lines ({detail.linesWon}×5)</span>
-                          <span className="text-indigo-300">+{detail.lineBonus}</span>
+                          <span className="text-zinc-200">+{detail.lineBonus}</span>
                         </div>
                       </div>
                     </div>
@@ -1252,7 +1240,7 @@ export function QuantumMatrixArena({
                     type="button"
                     disabled={busy}
                     onClick={onRematch}
-                    className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-400 via-indigo-400 to-amber-400 py-3 text-xs font-black uppercase tracking-widest text-black hover:brightness-110 transition disabled:opacity-50"
+                    className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-zinc-50 hover:bg-white py-3 text-xs font-semibold text-zinc-950 transition-colors cursor-pointer disabled:opacity-50"
                   >
                     <RotateCcw size={14} /> Rematch
                   </button>
@@ -1260,7 +1248,7 @@ export function QuantumMatrixArena({
                 <button
                   type="button"
                   onClick={onExit}
-                  className="flex-1 rounded-xl border border-white/15 bg-white/5 py-3 text-xs font-black uppercase tracking-widest text-zinc-200 hover:bg-white/10 transition"
+                  className="flex-1 rounded-xl border border-zinc-800 bg-zinc-900 hover:bg-zinc-800 py-3 text-xs font-medium text-zinc-200 transition-colors cursor-pointer"
                 >
                   Lobby
                 </button>

@@ -60,16 +60,16 @@ interface ChronosArenaProps {
 }
 
 const ACTION_STYLE: Record<Action, { cls: string; label: string }> = {
-  U: { cls: 'bg-cyan-500/15 text-cyan-300 border-cyan-500/40 hover:border-cyan-400', label: 'Move Up' },
-  D: { cls: 'bg-cyan-500/15 text-cyan-300 border-cyan-500/40 hover:border-cyan-400', label: 'Move Down' },
-  L: { cls: 'bg-cyan-500/15 text-cyan-300 border-cyan-500/40 hover:border-cyan-400', label: 'Move Left' },
-  R: { cls: 'bg-cyan-500/15 text-cyan-300 border-cyan-500/40 hover:border-cyan-400', label: 'Move Right' },
-  SU: { cls: 'bg-rose-500/15 text-rose-300 border-rose-500/40 hover:border-rose-400', label: 'Shoot Up' },
-  SD: { cls: 'bg-rose-500/15 text-rose-300 border-rose-500/40 hover:border-rose-400', label: 'Shoot Down' },
-  SL: { cls: 'bg-rose-500/15 text-rose-300 border-rose-500/40 hover:border-rose-400', label: 'Shoot Left' },
-  SR: { cls: 'bg-rose-500/15 text-rose-300 border-rose-500/40 hover:border-rose-400', label: 'Shoot Right' },
-  SH: { cls: 'bg-purple-500/15 text-purple-300 border-purple-500/40 hover:border-purple-400', label: 'Shield' },
-  W: { cls: 'bg-zinc-800/70 text-zinc-400 border-white/15 hover:border-white/30', label: 'Wait' },
+  U: { cls: 'bg-sky-400/10 text-sky-300 border-sky-400/30 hover:border-sky-400/60 hover:bg-sky-400/15', label: 'Move Up' },
+  D: { cls: 'bg-sky-400/10 text-sky-300 border-sky-400/30 hover:border-sky-400/60 hover:bg-sky-400/15', label: 'Move Down' },
+  L: { cls: 'bg-sky-400/10 text-sky-300 border-sky-400/30 hover:border-sky-400/60 hover:bg-sky-400/15', label: 'Move Left' },
+  R: { cls: 'bg-sky-400/10 text-sky-300 border-sky-400/30 hover:border-sky-400/60 hover:bg-sky-400/15', label: 'Move Right' },
+  SU: { cls: 'bg-rose-400/10 text-rose-300 border-rose-400/30 hover:border-rose-400/60 hover:bg-rose-400/15', label: 'Shoot Up' },
+  SD: { cls: 'bg-rose-400/10 text-rose-300 border-rose-400/30 hover:border-rose-400/60 hover:bg-rose-400/15', label: 'Shoot Down' },
+  SL: { cls: 'bg-rose-400/10 text-rose-300 border-rose-400/30 hover:border-rose-400/60 hover:bg-rose-400/15', label: 'Shoot Left' },
+  SR: { cls: 'bg-rose-400/10 text-rose-300 border-rose-400/30 hover:border-rose-400/60 hover:bg-rose-400/15', label: 'Shoot Right' },
+  SH: { cls: 'bg-amber-400/10 text-amber-300 border-amber-400/30 hover:border-amber-400/60 hover:bg-amber-400/15', label: 'Shield' },
+  W: { cls: 'bg-zinc-900 text-zinc-400 border-zinc-800 hover:border-zinc-700 hover:text-zinc-200', label: 'Wait' },
 };
 
 export function ActionIcon({
@@ -300,16 +300,9 @@ export function ChronosArena({
   const shootActions: Action[] = ['SU', 'SD', 'SL', 'SR'];
 
   return (
-    <div className="min-h-dvh lg:h-dvh lg:overflow-hidden bg-[#04060c] text-cyan-50 font-sans flex flex-col relative">
-      {/* Ambient Cyber Grid & Radial Glow */}
-      <div className="pointer-events-none fixed inset-0">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[450px] bg-cyan-500/[0.08] rounded-full blur-[130px]" />
-        <div className="absolute bottom-0 right-0 w-[500px] h-[350px] bg-rose-500/[0.06] rounded-full blur-[110px]" />
-        <div className="absolute inset-0 bg-grid-white opacity-25" />
-      </div>
-
+    <div className="min-h-dvh lg:h-dvh lg:overflow-hidden bg-[#09090b] text-zinc-50 font-sans flex flex-col relative">
       {/* COMPACT 48px TOP HUD */}
-      <header className="relative z-20 w-full border-b border-cyan-500/20 bg-black/75 backdrop-blur-xl shrink-0">
+      <header className="relative z-20 w-full border-b border-zinc-800/80 bg-[#09090b]/90 backdrop-blur-md shrink-0">
         <div className="max-w-[1380px] mx-auto px-3 sm:px-5 h-12 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
             <button
@@ -318,18 +311,18 @@ export function ChronosArena({
                 sfx('chip');
                 onExit();
               }}
-              className="inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-widest text-zinc-400 hover:text-white transition-colors whitespace-nowrap shrink-0"
+              className="inline-flex items-center gap-1.5 text-xs font-medium text-zinc-400 hover:text-zinc-100 transition-colors whitespace-nowrap shrink-0"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
               <span>Lobby</span>
             </button>
-            <span className="text-white/15 hidden sm:inline">|</span>
+            <span className="text-zinc-800 hidden sm:inline">|</span>
             <div className="flex items-center gap-2 text-xs truncate">
-              <Clock className="w-3.5 h-3.5 text-cyan-400 shrink-0 hidden sm:inline" />
-              <span className="font-black uppercase tracking-tight text-white whitespace-nowrap">
+              <Clock className="w-3.5 h-3.5 text-sky-400 shrink-0 hidden sm:inline" />
+              <span className="font-semibold tracking-tight text-zinc-50 whitespace-nowrap">
                 Chronos Assassin
               </span>
-              <span className="hidden md:inline-flex items-center rounded-full border border-cyan-500/30 bg-cyan-500/10 px-2 py-0.5 font-mono text-[10px] text-cyan-300 font-bold">
+              <span className="hidden md:inline-flex items-center rounded-full border border-zinc-800 bg-zinc-900 px-2.5 py-0.5 font-mono text-[10px] text-zinc-300 font-medium">
                 R{game.round} · Loop {game.turn}
               </span>
             </div>
@@ -339,7 +332,7 @@ export function ChronosArena({
           {game.players.length === 2 && (
             <div className="flex items-center gap-3 sm:gap-5">
               <div className="flex items-center gap-2">
-                <span className="text-xs font-bold text-cyan-300 hidden sm:inline truncate max-w-[90px]">
+                <span className="text-xs font-semibold text-sky-400 hidden sm:inline truncate max-w-[90px]">
                   {meIdx === 0 ? p0.nickname : meIdx === 1 ? p1.nickname : p0.nickname}
                 </span>
                 <div className="flex gap-1">
@@ -348,10 +341,10 @@ export function ChronosArena({
                     return (
                       <span
                         key={i}
-                        className={`w-2.5 h-2.5 rounded-full border transition-all ${
+                        className={`w-2.5 h-2.5 rounded-full border transition-colors ${
                           i < myScore
-                            ? 'bg-cyan-400 border-cyan-300 shadow-[0_0_8px_rgba(34,211,238,0.8)]'
-                            : 'bg-zinc-900 border-white/20'
+                            ? 'bg-sky-400 border-sky-300'
+                            : 'bg-zinc-900 border-zinc-700'
                         }`}
                       />
                     );
@@ -359,7 +352,7 @@ export function ChronosArena({
                 </div>
               </div>
 
-              <span className="font-mono text-[10px] font-black text-zinc-500">VS</span>
+              <span className="font-mono text-[10px] font-semibold text-zinc-500">VS</span>
 
               <div className="flex items-center gap-2">
                 <div className="flex gap-1">
@@ -368,16 +361,16 @@ export function ChronosArena({
                     return (
                       <span
                         key={i}
-                        className={`w-2.5 h-2.5 rounded-full border transition-all ${
+                        className={`w-2.5 h-2.5 rounded-full border transition-colors ${
                           i < oppScore
-                            ? 'bg-rose-500 border-rose-300 shadow-[0_0_8px_rgba(244,63,94,0.8)]'
-                            : 'bg-zinc-900 border-white/20'
+                            ? 'bg-rose-400 border-rose-300'
+                            : 'bg-zinc-900 border-zinc-700'
                         }`}
                       />
                     );
                   })}
                 </div>
-                <span className="text-xs font-bold text-rose-300 hidden sm:inline truncate max-w-[90px]">
+                <span className="text-xs font-semibold text-rose-400 hidden sm:inline truncate max-w-[90px]">
                   {meIdx === 1 ? p0.nickname : p1.nickname}
                 </span>
               </div>
@@ -386,7 +379,7 @@ export function ChronosArena({
 
           {/* Right Controls */}
           <div className="flex items-center gap-1.5 shrink-0">
-            <span className="hidden lg:inline-flex items-center px-2 py-0.5 rounded-md border border-white/10 bg-zinc-950 font-mono text-[10px] text-zinc-400">
+            <span className="hidden lg:inline-flex items-center px-2.5 py-0.5 rounded-md border border-zinc-800 bg-zinc-900 font-mono text-[10px] text-zinc-400">
               {mapInfo.name}
             </span>
             <button
@@ -395,19 +388,19 @@ export function ChronosArena({
                 sfx('rule_check');
                 setShowHowTo(true);
               }}
-              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 text-[11px] font-bold uppercase tracking-wider text-zinc-200 transition-colors"
+              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-zinc-800 bg-zinc-900 hover:bg-zinc-800 text-xs font-medium text-zinc-200 transition-colors"
             >
-              <Info className="w-3.5 h-3.5 text-cyan-400" />
+              <Info className="w-3.5 h-3.5 text-zinc-400" />
               <span className="hidden sm:inline">Rules</span>
             </button>
             <button
               type="button"
               onClick={onToggleSound}
               aria-label={soundEnabled ? 'Mute sound' : 'Unmute sound'}
-              className="p-1.5 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 text-zinc-200"
+              className="p-1.5 rounded-lg border border-zinc-800 bg-zinc-900 hover:bg-zinc-800 text-zinc-200 transition-colors"
             >
               {soundEnabled ? (
-                <Volume2 className="w-3.5 h-3.5 text-cyan-400" />
+                <Volume2 className="w-3.5 h-3.5 text-zinc-300" />
               ) : (
                 <VolumeX className="w-3.5 h-3.5 text-zinc-500" />
               )}
@@ -423,15 +416,15 @@ export function ChronosArena({
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            className="max-w-md w-full mx-auto bg-black/75 backdrop-blur-xl border border-cyan-500/25 rounded-2xl p-6 shadow-2xl space-y-4 text-center"
+            className="max-w-md w-full mx-auto bg-[#111113] border border-zinc-800/90 rounded-2xl p-6 space-y-4 text-center"
           >
-            <div className="mx-auto w-11 h-11 rounded-xl border border-cyan-500/30 bg-cyan-950/50 flex items-center justify-center">
-              <Clock className="w-5 h-5 text-cyan-400 animate-pulse" />
+            <div className="mx-auto w-12 h-12 rounded-2xl border border-zinc-800 bg-zinc-950 flex items-center justify-center">
+              <Clock className="w-5 h-5 text-sky-400 animate-pulse" />
             </div>
 
             {meIdx === -1 && onJoinRoom ? (
               <>
-                <h1 className="text-xl font-black uppercase tracking-tight text-white">
+                <h1 className="text-xl font-semibold tracking-tight text-zinc-50">
                   Sync Into Timeline
                 </h1>
                 <p className="text-xs text-zinc-400">
@@ -445,13 +438,13 @@ export function ChronosArena({
                     onKeyDown={(e) => e.key === 'Enter' && joinNickname.trim() && onJoinRoom(joinNickname.trim())}
                     placeholder="CODENAME"
                     maxLength={14}
-                    className="flex-1 bg-zinc-950 border border-cyan-500/30 rounded-xl px-3.5 py-2.5 text-sm font-mono uppercase text-white focus:outline-none focus:border-cyan-400"
+                    className="flex-1 bg-zinc-950 border border-zinc-800 rounded-xl px-3.5 py-2.5 text-sm font-mono uppercase text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:border-zinc-400 transition-colors"
                   />
                   <button
                     type="button"
                     disabled={busy || !joinNickname.trim()}
                     onClick={() => onJoinRoom(joinNickname.trim())}
-                    className="px-5 py-2.5 rounded-xl bg-cyan-400 hover:bg-cyan-300 text-black font-black uppercase tracking-wider text-xs disabled:opacity-50"
+                    className="px-5 py-2.5 rounded-xl bg-zinc-50 hover:bg-white text-zinc-950 font-semibold text-xs disabled:opacity-50 transition-colors"
                   >
                     Sync
                   </button>
@@ -459,26 +452,26 @@ export function ChronosArena({
               </>
             ) : (
               <>
-                <h1 className="text-xl font-black uppercase tracking-tight text-white">
+                <h1 className="text-xl font-semibold tracking-tight text-zinc-50">
                   Waiting for Rival Assassin
                 </h1>
                 <p className="text-xs text-zinc-400">
                   Share this Timeline Code so your opponent can sync in.
                 </p>
                 {game.gameId && (
-                  <div className="flex items-center justify-between gap-3 bg-zinc-950 border border-cyan-500/25 rounded-xl px-4 py-3 text-left">
+                  <div className="flex items-center justify-between gap-3 bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-left">
                     <div>
-                      <div className="text-[9px] font-mono uppercase tracking-widest text-zinc-500">
+                      <div className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">
                         Timeline Code
                       </div>
-                      <div className="font-mono text-2xl font-black tracking-[0.22em] text-cyan-300">
+                      <div className="font-mono text-2xl font-semibold tracking-[0.2em] text-zinc-50">
                         {game.gameId}
                       </div>
                     </div>
                     <button
                       type="button"
                       onClick={handleCopyCode}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-500/30 text-xs font-bold uppercase text-cyan-200"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-xs font-medium text-zinc-200 transition-colors"
                     >
                       {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
                       <span>{copied ? 'Copied' : 'Copy'}</span>
@@ -496,10 +489,10 @@ export function ChronosArena({
             {/* LEFT 6 COLS: 5x5 TACTICAL GRID + TICK SCRUBBER */}
             <section className="lg:col-span-6 flex flex-col items-center justify-center gap-3">
               {/* Arena Board */}
-              <div className="relative aspect-square w-full max-w-[390px] sm:max-w-[420px] rounded-2xl border-2 border-cyan-500/30 bg-black/85 shadow-[0_0_50px_rgba(6,182,212,0.12)] overflow-hidden p-1.5">
+              <div className="relative aspect-square w-full max-w-[390px] sm:max-w-[420px] rounded-2xl border border-zinc-800 bg-[#111113] overflow-hidden p-2">
                 <div className="relative w-full h-full">
                   {/* 5x5 Grid Cells + Pillars */}
-                  <div className="absolute inset-0 grid grid-cols-5 grid-rows-5 gap-1">
+                  <div className="absolute inset-0 grid grid-cols-5 grid-rows-5 gap-1.5">
                     {Array.from({ length: 25 }).map((_, i) => {
                       const gx = i % BOARD_SIZE;
                       const gy = Math.floor(i / BOARD_SIZE);
@@ -511,12 +504,12 @@ export function ChronosArena({
                           key={i}
                           className={`rounded-lg border transition-colors flex items-center justify-center ${
                             blocked
-                              ? 'bg-zinc-900/95 border-cyan-500/30 shadow-inner'
-                              : 'bg-cyan-950/[0.12] border-cyan-500/15'
+                              ? 'bg-zinc-900 border-zinc-700'
+                              : 'bg-[#18181b] border-zinc-800/80'
                           }`}
                         >
                           {blocked && (
-                            <div className="w-3/5 h-3/5 rounded border border-cyan-400/25 bg-[repeating-linear-gradient(45deg,rgba(34,211,238,0.1)_0px,rgba(34,211,238,0.1)_2px,transparent_2px,transparent_6px)]" />
+                            <div className="w-3/5 h-3/5 rounded border border-zinc-700/80 bg-[repeating-linear-gradient(45deg,rgba(161,161,170,0.12)_0px,rgba(161,161,170,0.12)_2px,transparent_2px,transparent_6px)]" />
                           )}
                         </div>
                       );
@@ -536,12 +529,12 @@ export function ChronosArena({
 
               {/* Execution Tick Bar OR Programming Timeline Scrubber */}
               {game.state === 'executing' && game.executionResults ? (
-                <div className="w-full max-w-[420px] bg-black/70 border border-cyan-500/25 rounded-xl p-2.5">
-                  <div className="flex items-center justify-between text-[10px] font-mono uppercase tracking-widest text-cyan-400 mb-2">
+                <div className="w-full max-w-[420px] bg-[#111113] border border-zinc-800/90 rounded-xl p-2.5">
+                  <div className="flex items-center justify-between text-[10px] font-mono uppercase tracking-wider text-sky-400 mb-2">
                     <span className="inline-flex items-center gap-1.5">
-                      <Play className="w-3 h-3 fill-cyan-400" /> Timeline Playback
+                      <Play className="w-3 h-3 fill-sky-400" /> Timeline Playback
                     </span>
-                    <span>
+                    <span className="text-zinc-400">
                       Tick {Math.max(1, currentTick + 1)} / {game.executionResults.length}
                     </span>
                   </div>
@@ -559,21 +552,21 @@ export function ChronosArena({
                           className={`flex-1 rounded-lg border py-1.5 px-1 flex flex-col items-center justify-center gap-1 transition-all ${
                             active
                               ? hasHit
-                                ? 'border-rose-400 bg-rose-500/25 scale-105 shadow-[0_0_16px_rgba(244,63,94,0.4)]'
-                                : 'border-cyan-400 bg-cyan-500/20 scale-105 shadow-[0_0_14px_rgba(34,211,238,0.35)]'
+                                ? 'border-rose-400 bg-rose-500/15 scale-[1.03]'
+                                : 'border-sky-400 bg-sky-400/15 scale-[1.03]'
                               : tickData
-                              ? 'border-white/10 bg-zinc-950/70 opacity-60'
-                              : 'border-white/5 bg-black/40 opacity-25'
+                              ? 'border-zinc-800 bg-zinc-950 opacity-75'
+                              : 'border-zinc-900 bg-zinc-950/50 opacity-35'
                           }`}
                         >
-                          <span className="font-mono text-[9px] font-bold text-zinc-400">T{i + 1}</span>
+                          <span className="font-mono text-[9px] font-semibold text-zinc-400">T{i + 1}</span>
                           {myAct && oppAct ? (
                             <div className="flex items-center gap-1 text-xs">
-                              <span className="text-cyan-300">
+                              <span className="text-sky-400">
                                 <ActionIcon a={myAct} size={12} flipHorizontal={isFlipped} />
                               </span>
                               <span className="text-zinc-600 text-[9px]">/</span>
-                              <span className="text-rose-300">
+                              <span className="text-rose-400">
                                 <ActionIcon a={oppAct} size={12} flipHorizontal={isFlipped} />
                               </span>
                             </div>
@@ -586,7 +579,7 @@ export function ChronosArena({
                   </div>
                 </div>
               ) : game.state === 'programming' ? (
-                <div className="w-full max-w-[420px] bg-black/65 border border-white/10 rounded-xl px-3 py-2 flex items-center justify-between gap-2">
+                <div className="w-full max-w-[420px] bg-[#111113] border border-zinc-800/90 rounded-xl px-3 py-2 flex items-center justify-between gap-2">
                   <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-400 whitespace-nowrap">
                     Sim Preview:
                   </span>
@@ -599,10 +592,10 @@ export function ChronosArena({
                           sfx('chip');
                           setPreviewTick(i);
                         }}
-                        className={`flex-1 py-1 rounded-md font-mono text-[10px] font-bold transition-all ${
+                        className={`flex-1 py-1 rounded-md font-mono text-[10px] font-semibold border transition-colors ${
                           previewTick === i
-                            ? 'bg-cyan-400 text-black'
-                            : 'bg-zinc-950 text-zinc-400 border border-white/10 hover:text-white'
+                            ? 'bg-zinc-50 text-zinc-950 border-zinc-50'
+                            : 'bg-zinc-950 text-zinc-400 border-zinc-800 hover:text-zinc-200 hover:border-zinc-700'
                         }`}
                       >
                         T{i + 1}
@@ -617,11 +610,11 @@ export function ChronosArena({
             <aside className="lg:col-span-6 w-full max-w-xl mx-auto">
               {/* PROGRAMMING PANEL */}
               {game.state === 'programming' && me && (
-                <div className="bg-black/65 backdrop-blur-xl border border-cyan-500/25 rounded-2xl p-4 sm:p-5 shadow-2xl space-y-3.5">
+                <div className="bg-[#111113] border border-zinc-800/90 rounded-2xl p-4 sm:p-5 space-y-3.5">
                   {me.ready ? (
                     <div className="py-12 text-center space-y-3">
-                      <Watch className="w-10 h-10 mx-auto text-cyan-400 animate-spin" style={{ animationDuration: '4s' }} />
-                      <div className="text-sm font-black uppercase tracking-widest text-cyan-300">
+                      <Watch className="w-9 h-9 mx-auto text-sky-400 animate-spin" style={{ animationDuration: '4s' }} />
+                      <div className="text-sm font-semibold tracking-tight text-zinc-100">
                         Timeline Locked
                       </div>
                       <p className="text-xs text-zinc-400">
@@ -633,11 +626,11 @@ export function ChronosArena({
                       {/* Header & Paradox Status */}
                       <div className="flex flex-wrap items-center justify-between gap-2">
                         <div>
-                          <h2 className="text-sm font-black uppercase tracking-wider text-white flex items-center gap-2">
-                            <Sparkles className="w-4 h-4 text-cyan-400" />
+                          <h2 className="text-sm font-semibold tracking-tight text-zinc-50 flex items-center gap-2">
+                            <Sparkles className="w-4 h-4 text-sky-400" />
                             <span>Program 5-Tick Timeline</span>
                           </h2>
-                          <p className="text-[11px] text-zinc-400">
+                          <p className="text-[11px] text-zinc-400 mt-0.5">
                             {isLoopRewind
                               ? 'Time-Loop Rewind: You may alter at most 1 tick from your last loop!'
                               : 'Loop 1: Program all 5 moves freely. Keys: WASD move · IJKL shoot · E shield.'}
@@ -647,13 +640,13 @@ export function ChronosArena({
                         <div className="flex items-center gap-1.5">
                           {isLoopRewind && (
                             <span
-                              className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full border text-[10px] font-mono font-bold ${
+                              className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full border text-[10px] font-mono font-semibold ${
                                 paradoxDiffs === 1
-                                  ? 'border-amber-400/50 bg-amber-500/15 text-amber-300'
-                                  : 'border-cyan-400/40 bg-cyan-500/10 text-cyan-300'
+                                  ? 'border-amber-400/50 bg-amber-400/15 text-amber-300'
+                                  : 'border-zinc-700 bg-zinc-900 text-zinc-300'
                               }`}
                             >
-                              <Ghost className="w-3 h-3" />
+                              <Ghost className="w-3 h-3 text-amber-400" />
                               {paradoxDiffs}/1 Edit
                             </span>
                           )}
@@ -664,7 +657,7 @@ export function ChronosArena({
                                 sfx('paradox');
                                 setMyActions([...me.pastActions]);
                               }}
-                              className="px-2 py-1 rounded-lg border border-white/15 bg-white/5 hover:bg-white/10 text-[10px] font-mono text-zinc-300"
+                              className="px-2.5 py-1 rounded-lg border border-zinc-800 bg-zinc-900 hover:bg-zinc-800 text-[10px] font-mono text-zinc-300 transition-colors"
                             >
                               Revert
                             </button>
@@ -673,19 +666,19 @@ export function ChronosArena({
                       </div>
 
                       {paradoxNotice && (
-                        <div className="rounded-lg border border-amber-400/40 bg-amber-500/15 px-3 py-1.5 text-[11px] font-mono text-amber-200 text-center">
+                        <div className="rounded-lg border border-amber-400/40 bg-amber-400/10 px-3 py-1.5 text-[11px] font-mono text-amber-300 text-center">
                           {paradoxNotice}
                         </div>
                       )}
 
                       {/* Opponent's Previous Loop Ghost Strip */}
                       {isLoopRewind && opp && opp.pastActions.length === MAX_TICKS && (
-                        <div className="rounded-xl border border-rose-500/25 bg-rose-950/20 px-3 py-2">
-                          <div className="flex items-center justify-between text-[10px] font-mono uppercase tracking-wider text-rose-300/80 mb-1.5">
+                        <div className="rounded-xl border border-amber-400/25 bg-zinc-950 px-3 py-2.5">
+                          <div className="flex items-center justify-between text-[10px] font-mono uppercase tracking-wider text-amber-400/90 mb-1.5">
                             <span className="inline-flex items-center gap-1">
                               <Ghost className="w-3 h-3" /> {opp.nickname}&apos;s Last Loop (Ghost)
                             </span>
-                            <span className="text-rose-400/60">Can change 1 tick</span>
+                            <span className="text-zinc-500">Can change 1 tick</span>
                           </div>
                           <div className="grid grid-cols-5 gap-2">
                             {opp.pastActions.map((a, i) => (
@@ -697,7 +690,7 @@ export function ChronosArena({
                                   setActiveSlot(i);
                                   setPreviewTick(i);
                                 }}
-                                className="h-9 rounded-lg border border-rose-500/25 bg-black/40 flex items-center justify-center text-rose-300/80 hover:border-rose-400/50 transition-colors"
+                                className="h-9 rounded-lg border border-zinc-800 bg-[#111113] flex items-center justify-center text-rose-400/85 hover:border-amber-400/40 transition-colors"
                               >
                                 <ActionIcon a={a} size={14} flipHorizontal={isFlipped} />
                               </button>
@@ -710,7 +703,7 @@ export function ChronosArena({
                       <div>
                         <div className="flex items-center justify-between text-[10px] font-mono uppercase tracking-wider text-zinc-400 mb-1.5">
                           <span>Your Sequence (Click slot or press 1–5)</span>
-                          <span className="text-purple-300">
+                          <span className="text-amber-400">
                             Shields: {shieldsUsed}/{MAX_SHIELDS_PER_LOOP}
                           </span>
                         </div>
@@ -729,32 +722,32 @@ export function ChronosArena({
                                   setActiveSlot(i);
                                   setPreviewTick(i);
                                 }}
-                                className={`relative h-14 sm:h-16 rounded-xl border-2 flex flex-col items-center justify-center gap-0.5 transition-all ${
+                                className={`relative h-14 sm:h-16 rounded-xl border-2 flex flex-col items-center justify-center gap-0.5 transition-colors ${
                                   isTarget
-                                    ? 'border-cyan-400 bg-cyan-500/15 shadow-[0_0_16px_rgba(34,211,238,0.28)] scale-[1.03]'
+                                    ? 'border-sky-400 bg-sky-400/10'
                                     : isChangedFromPast
-                                    ? 'border-amber-400 bg-amber-500/15'
-                                    : 'border-white/15 bg-zinc-950/90 hover:border-white/30'
+                                    ? 'border-amber-400/80 bg-amber-400/10'
+                                    : 'border-zinc-800 bg-zinc-950 hover:border-zinc-700'
                                 }`}
                               >
-                                <span className="font-mono text-[9px] font-bold text-zinc-400">
+                                <span className="font-mono text-[9px] font-semibold text-zinc-400">
                                   T{i + 1}
                                 </span>
                                 <span
                                   className={
                                     a.startsWith('S') && a !== 'SH'
-                                      ? 'text-rose-300'
+                                      ? 'text-rose-400'
                                       : a === 'SH'
-                                      ? 'text-purple-300'
+                                      ? 'text-amber-400'
                                       : a === 'W'
                                       ? 'text-zinc-400'
-                                      : 'text-cyan-300'
+                                      : 'text-sky-400'
                                   }
                                 >
                                   <ActionIcon a={a} size={18} flipHorizontal={isFlipped} />
                                 </span>
                                 {isChangedFromPast && (
-                                  <span className="absolute -top-1.5 -right-1.5 px-1 rounded bg-amber-400 text-black font-mono text-[8px] font-black">
+                                  <span className="absolute -top-1.5 -right-1.5 px-1 rounded bg-amber-400 text-zinc-950 font-mono text-[8px] font-bold">
                                     EDIT
                                   </span>
                                 )}
@@ -767,8 +760,8 @@ export function ChronosArena({
                       {/* Grouped Action Palette */}
                       <div className="grid grid-cols-1 sm:grid-cols-12 gap-2.5 pt-1">
                         {/* MOVE */}
-                        <div className="sm:col-span-4 rounded-xl border border-cyan-500/20 bg-zinc-950/80 p-2.5">
-                          <div className="text-[9px] font-mono font-bold uppercase tracking-widest text-cyan-400 mb-2 text-center">
+                        <div className="sm:col-span-4 rounded-xl border border-zinc-800 bg-zinc-950 p-2.5">
+                          <div className="text-[10px] font-mono font-semibold uppercase tracking-wider text-sky-400 mb-2 text-center">
                             Move (WASD)
                           </div>
                           <div className="grid grid-cols-4 sm:grid-cols-2 gap-1.5">
@@ -778,7 +771,7 @@ export function ChronosArena({
                                 type="button"
                                 onClick={() => handleActionSelect(a)}
                                 title={ACTION_STYLE[a].label}
-                                className={`h-10 rounded-lg border flex items-center justify-center transition-all active:scale-95 ${ACTION_STYLE[a].cls}`}
+                                className={`h-10 rounded-lg border flex items-center justify-center transition-colors active:scale-95 ${ACTION_STYLE[a].cls}`}
                               >
                                 <ActionIcon a={a} size={16} />
                               </button>
@@ -787,8 +780,8 @@ export function ChronosArena({
                         </div>
 
                         {/* LASER */}
-                        <div className="sm:col-span-4 rounded-xl border border-rose-500/20 bg-zinc-950/80 p-2.5">
-                          <div className="text-[9px] font-mono font-bold uppercase tracking-widest text-rose-400 mb-2 text-center">
+                        <div className="sm:col-span-4 rounded-xl border border-zinc-800 bg-zinc-950 p-2.5">
+                          <div className="text-[10px] font-mono font-semibold uppercase tracking-wider text-rose-400 mb-2 text-center">
                             Laser (IJKL)
                           </div>
                           <div className="grid grid-cols-4 sm:grid-cols-2 gap-1.5">
@@ -798,7 +791,7 @@ export function ChronosArena({
                                 type="button"
                                 onClick={() => handleActionSelect(a)}
                                 title={ACTION_STYLE[a].label}
-                                className={`h-10 rounded-lg border flex items-center justify-center transition-all active:scale-95 ${ACTION_STYLE[a].cls}`}
+                                className={`h-10 rounded-lg border flex items-center justify-center transition-colors active:scale-95 ${ACTION_STYLE[a].cls}`}
                               >
                                 <ActionIcon a={a} size={16} />
                               </button>
@@ -807,15 +800,15 @@ export function ChronosArena({
                         </div>
 
                         {/* TACTICAL */}
-                        <div className="sm:col-span-4 rounded-xl border border-purple-500/20 bg-zinc-950/80 p-2.5 flex flex-col justify-between">
-                          <div className="text-[9px] font-mono font-bold uppercase tracking-widest text-purple-300 mb-2 text-center">
+                        <div className="sm:col-span-4 rounded-xl border border-zinc-800 bg-zinc-950 p-2.5 flex flex-col justify-between">
+                          <div className="text-[10px] font-mono font-semibold uppercase tracking-wider text-amber-400 mb-2 text-center">
                             Tactical
                           </div>
                           <div className="grid grid-cols-2 sm:grid-cols-1 gap-1.5 flex-1">
                             <button
                               type="button"
                               onClick={() => handleActionSelect('SH')}
-                              className={`h-10 rounded-lg border flex items-center justify-center gap-1.5 text-xs font-bold transition-all active:scale-95 ${ACTION_STYLE.SH.cls}`}
+                              className={`h-10 rounded-lg border flex items-center justify-center gap-1.5 text-xs font-semibold transition-colors active:scale-95 ${ACTION_STYLE.SH.cls}`}
                             >
                               <Shield size={14} />
                               <span>Shield (E)</span>
@@ -823,7 +816,7 @@ export function ChronosArena({
                             <button
                               type="button"
                               onClick={() => handleActionSelect('W')}
-                              className={`h-10 rounded-lg border flex items-center justify-center gap-1.5 text-xs font-bold transition-all active:scale-95 ${ACTION_STYLE.W.cls}`}
+                              className={`h-10 rounded-lg border flex items-center justify-center gap-1.5 text-xs font-medium transition-colors active:scale-95 ${ACTION_STYLE.W.cls}`}
                             >
                               <span>Wait (Q)</span>
                             </button>
@@ -838,7 +831,7 @@ export function ChronosArena({
                           sfx('reaction');
                           onLockIn(myActions);
                         }}
-                        className="w-full py-3 rounded-xl bg-gradient-to-r from-cyan-400 to-sky-500 hover:opacity-95 text-black font-black uppercase tracking-widest text-xs flex items-center justify-center gap-2 transition-opacity shadow-[0_0_25px_rgba(34,211,238,0.28)] disabled:opacity-45"
+                        className="w-full py-3 rounded-xl bg-zinc-50 hover:bg-white text-zinc-950 font-semibold text-sm flex items-center justify-center gap-2 transition-colors disabled:opacity-45"
                       >
                         <Lock className="w-4 h-4" />
                         <span>Lock Timeline (Enter)</span>
@@ -850,9 +843,9 @@ export function ChronosArena({
 
               {/* EXECUTION STATUS PANEL */}
               {game.state === 'executing' && (
-                <div className="bg-black/65 backdrop-blur-xl border border-cyan-500/25 rounded-2xl p-6 text-center space-y-3 shadow-2xl">
-                  <Zap className="w-8 h-8 text-cyan-400 mx-auto animate-pulse" />
-                  <h2 className="text-lg font-black uppercase tracking-tight text-white">
+                <div className="bg-[#111113] border border-zinc-800/90 rounded-2xl p-6 text-center space-y-3">
+                  <Zap className="w-8 h-8 text-sky-400 mx-auto animate-pulse" />
+                  <h2 className="text-lg font-semibold tracking-tight text-zinc-50">
                     Simulating Timeline...
                   </h2>
                   <p className="text-xs text-zinc-400">
@@ -866,41 +859,41 @@ export function ChronosArena({
                 <motion.div
                   initial={{ opacity: 0, scale: 0.96 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  className="bg-black/75 backdrop-blur-xl border border-cyan-500/30 rounded-2xl p-6 text-center space-y-4 shadow-2xl"
+                  className="bg-[#111113] border border-zinc-800/90 rounded-2xl p-6 text-center space-y-4"
                 >
                   {game.roundWinnerIdx === meIdx ? (
                     <>
-                      <div className="mx-auto w-12 h-12 rounded-2xl bg-cyan-500/15 border border-cyan-400/40 flex items-center justify-center">
-                        <Crosshair className="w-6 h-6 text-cyan-300" />
+                      <div className="mx-auto w-12 h-12 rounded-2xl bg-sky-400/10 border border-sky-400/30 flex items-center justify-center">
+                        <Crosshair className="w-6 h-6 text-sky-400" />
                       </div>
-                      <h2 className="text-2xl font-black uppercase text-cyan-300">
-                        Target Eliminated!
+                      <h2 className="text-2xl font-semibold tracking-tight text-zinc-50">
+                        Target Eliminated
                       </h2>
-                      <p className="text-xs text-zinc-300">
+                      <p className="text-xs text-zinc-400">
                         You neutralized {opp?.nickname} and secured Round {game.round}.
                       </p>
                     </>
                   ) : game.roundWinnerIdx === -1 ? (
                     <>
-                      <div className="mx-auto w-12 h-12 rounded-2xl bg-amber-500/15 border border-amber-400/40 flex items-center justify-center">
-                        <Zap className="w-6 h-6 text-amber-300" />
+                      <div className="mx-auto w-12 h-12 rounded-2xl bg-amber-400/10 border border-amber-400/30 flex items-center justify-center">
+                        <Zap className="w-6 h-6 text-amber-400" />
                       </div>
-                      <h2 className="text-2xl font-black uppercase text-amber-300">
-                        Mutual Paradox!
+                      <h2 className="text-2xl font-semibold tracking-tight text-amber-400">
+                        Mutual Paradox
                       </h2>
-                      <p className="text-xs text-zinc-300">
+                      <p className="text-xs text-zinc-400">
                         Both assassins eliminated each other on the same tick. Zero points awarded.
                       </p>
                     </>
                   ) : (
                     <>
-                      <div className="mx-auto w-12 h-12 rounded-2xl bg-rose-500/15 border border-rose-400/40 flex items-center justify-center">
+                      <div className="mx-auto w-12 h-12 rounded-2xl bg-rose-400/10 border border-rose-400/30 flex items-center justify-center">
                         <X className="w-6 h-6 text-rose-400" />
                       </div>
-                      <h2 className="text-2xl font-black uppercase text-rose-400">
-                        Assassinated!
+                      <h2 className="text-2xl font-semibold tracking-tight text-rose-400">
+                        Assassinated
                       </h2>
-                      <p className="text-xs text-zinc-300">
+                      <p className="text-xs text-zinc-400">
                         {opp?.nickname} caught you in their firing line.
                       </p>
                     </>
@@ -914,7 +907,7 @@ export function ChronosArena({
                         sfx('deal');
                         onNextRound();
                       }}
-                      className="w-full py-3 rounded-xl bg-cyan-400 hover:bg-cyan-300 text-black font-black uppercase tracking-widest text-xs transition-colors"
+                      className="w-full py-3 rounded-xl bg-zinc-50 hover:bg-white text-zinc-950 font-semibold text-xs transition-colors"
                     >
                       Continue to Round {game.round + 1}
                     </button>
@@ -933,24 +926,24 @@ export function ChronosArena({
       {/* MATCH OVER MODAL */}
       {game.state === 'finished' && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4"
           role="dialog"
           aria-modal="true"
         >
           <motion.div
             initial={{ scale: 0.94, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="w-full max-w-md bg-zinc-950 border border-cyan-500/30 rounded-2xl p-6 text-center shadow-2xl space-y-5"
+            className="w-full max-w-md bg-[#111113] border border-zinc-800 rounded-2xl p-6 text-center space-y-5"
           >
-            <div className="mx-auto w-14 h-14 rounded-2xl bg-cyan-400/15 border border-cyan-400/30 flex items-center justify-center">
-              <Trophy className="w-7 h-7 text-cyan-300" />
+            <div className="mx-auto w-14 h-14 rounded-2xl bg-zinc-900 border border-zinc-800 flex items-center justify-center">
+              <Trophy className="w-7 h-7 text-amber-400" />
             </div>
 
             <div>
-              <h2 className="text-3xl font-black uppercase tracking-tight text-white">
+              <h2 className="text-2xl font-semibold tracking-tight text-zinc-50">
                 {game.matchWinner === me?.uid ? 'Timeline Dominated' : 'Timeline Collapsed'}
               </h2>
-              <p className="text-xs font-mono text-zinc-400 mt-1">
+              <p className="text-xs font-mono text-zinc-400 mt-1.5">
                 Final Score: {p0?.nickname} {p0?.score} — {p1?.score} {p1?.nickname}
               </p>
             </div>
@@ -964,7 +957,7 @@ export function ChronosArena({
                     sfx('deal');
                     onPlayAgain();
                   }}
-                  className="flex-1 py-3 rounded-xl bg-cyan-400 hover:bg-cyan-300 text-black font-black uppercase tracking-wider text-xs inline-flex items-center justify-center gap-1.5"
+                  className="flex-1 py-3 rounded-xl bg-zinc-50 hover:bg-white text-zinc-950 font-semibold text-xs inline-flex items-center justify-center gap-1.5 transition-colors"
                 >
                   <RotateCcw className="w-3.5 h-3.5" />
                   <span>Play Again</span>
@@ -973,7 +966,7 @@ export function ChronosArena({
               <button
                 type="button"
                 onClick={onExit}
-                className="flex-1 py-3 rounded-xl border border-white/15 bg-white/5 hover:bg-white/10 text-white font-bold uppercase tracking-wider text-xs"
+                className="flex-1 py-3 rounded-xl border border-zinc-800 bg-zinc-900 hover:bg-zinc-800 text-zinc-200 font-medium text-xs transition-colors"
               >
                 Back to Lobby
               </button>
@@ -991,35 +984,35 @@ export function ChronosArena({
           onClick={() => setShowHowTo(false)}
         >
           <motion.div
-            initial={{ scale: 0.95, opacity: 0 }}
+            initial={{ scale: 0.96, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="w-full max-w-md bg-zinc-950 border border-cyan-500/30 rounded-2xl p-5 text-zinc-100 shadow-2xl space-y-3"
+            className="w-full max-w-md bg-[#111113] border border-zinc-800 rounded-2xl p-5 text-zinc-100 space-y-3.5"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between pb-2 border-b border-white/10">
-              <h2 className="text-base font-black uppercase tracking-tight text-cyan-300">
+            <div className="flex items-center justify-between pb-2.5 border-b border-zinc-800">
+              <h2 className="text-base font-semibold tracking-tight text-zinc-50">
                 Chronos Assassin Rules
               </h2>
               <button
                 type="button"
                 onClick={() => setShowHowTo(false)}
-                className="p-1 rounded-lg text-zinc-400 hover:text-white"
+                className="p-1 rounded-lg text-zinc-400 hover:text-zinc-100"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
-            <ul className="space-y-2 text-xs text-zinc-300 leading-relaxed">
+            <ul className="space-y-2.5 text-xs text-zinc-300 leading-relaxed">
               <li>
-                <strong className="text-white">5-Tick Programming:</strong> Each loop, program 5 simultaneous actions (Move, Laser, Shield, or Wait). Both assassins act at the same time.
+                <strong className="text-zinc-50">5-Tick Programming:</strong> Each loop, program 5 simultaneous actions (Move, Laser, Shield, or Wait). Both assassins act at the same time.
               </li>
               <li>
-                <strong className="text-white">Time-Loop Paradox:</strong> If both survive all 5 ticks, the loop rewinds! You see your rival&apos;s <span className="text-rose-300 font-bold">Ghost</span> from the previous loop, and each player may alter <strong className="text-amber-300">at most 1 tick</strong>.
+                <strong className="text-zinc-50">Time-Loop Paradox:</strong> If both survive all 5 ticks, the loop rewinds! You see your rival&apos;s <span className="text-rose-400 font-semibold">Ghost</span> from the previous loop, and each player may alter <strong className="text-amber-400">at most 1 tick</strong>.
               </li>
               <li>
-                <strong className="text-white">Shield Limit & Cover:</strong> You get <strong className="text-purple-300">1 Shield per loop</strong> (blocks lasers on that tick). Chrono-Pillars block both movement and lasers.
+                <strong className="text-zinc-50">Shield Limit &amp; Cover:</strong> You get <strong className="text-amber-400">1 Shield per loop</strong> (blocks lasers on that tick). Chrono-Pillars block both movement and lasers.
               </li>
               <li>
-                <strong className="text-white">Sim Preview:</strong> Use the <code className="text-cyan-300">T1–T5</code> scrubber under the board during programming to preview your path against your opponent&apos;s Ghost!
+                <strong className="text-zinc-50">Sim Preview:</strong> Use the <code className="text-sky-400">T1–T5</code> scrubber under the board during programming to preview your path against your opponent&apos;s Ghost!
               </li>
             </ul>
           </motion.div>
@@ -1102,7 +1095,7 @@ function BoardEntities({
             <motion.div
               key={`laser-${i}-${isExec ? currentTick : previewTick}`}
               initial={{ opacity: 0 }}
-              animate={{ opacity: isProgPreview ? 0.55 : 1 }}
+              animate={{ opacity: isProgPreview ? 0.55 : 0.95 }}
               exit={{ opacity: 0 }}
               className="absolute inset-0 pointer-events-none z-10"
             >
@@ -1114,21 +1107,21 @@ function BoardEntities({
                     key={j}
                     className={`absolute rounded-full ${
                       isMyLaser
-                        ? 'bg-cyan-400 shadow-[0_0_16px_#22d3ee]'
-                        : 'bg-rose-500 shadow-[0_0_16px_#f43f5e]'
+                        ? 'bg-sky-400'
+                        : 'bg-rose-400'
                     } ${isExec ? 'animate-pulse' : ''}`}
                     style={
                       isHorizontal
                         ? {
-                            top: `calc(${(pos.y / BOARD_SIZE) * 100}% + ${100 / BOARD_SIZE / 2}% - 4px)`,
+                            top: `calc(${(pos.y / BOARD_SIZE) * 100}% + ${100 / BOARD_SIZE / 2}% - 3px)`,
                             left: `${(vX / BOARD_SIZE) * 100}%`,
                             width: `${100 / BOARD_SIZE}%`,
-                            height: '8px',
+                            height: '6px',
                           }
                         : {
                             top: `${(pos.y / BOARD_SIZE) * 100}%`,
-                            left: `calc(${(vX / BOARD_SIZE) * 100}% + ${100 / BOARD_SIZE / 2}% - 4px)`,
-                            width: '8px',
+                            left: `calc(${(vX / BOARD_SIZE) * 100}% + ${100 / BOARD_SIZE / 2}% - 3px)`,
+                            width: '6px',
                             height: `${100 / BOARD_SIZE}%`,
                           }
                     }
@@ -1147,18 +1140,18 @@ function BoardEntities({
         className="absolute flex items-center justify-center p-2 z-20"
       >
         <div
-          className={`relative w-full h-full rounded-xl flex items-center justify-center transition-all ${
+          className={`relative w-full h-full rounded-xl flex items-center justify-center transition-colors ${
             meIdx === 0
-              ? 'bg-gradient-to-br from-cyan-300 to-cyan-500 shadow-[0_0_24px_rgba(34,211,238,0.55)] text-black'
+              ? 'bg-sky-400 text-zinc-950'
               : isProgPreview && !oppHasGhost
-              ? 'border-2 border-dashed border-rose-500/40 bg-rose-950/20 text-rose-400/50'
+              ? 'border-2 border-dashed border-rose-400/40 bg-rose-950/20 text-rose-400/60'
               : isProgPreview && oppHasGhost
-              ? 'border-2 border-dashed border-rose-400 bg-rose-500/25 text-rose-200 opacity-70'
-              : 'bg-gradient-to-br from-rose-400 to-rose-600 shadow-[0_0_24px_rgba(244,63,94,0.55)] text-black'
+              ? 'border-2 border-dashed border-amber-400/70 bg-amber-400/15 text-amber-300'
+              : 'bg-rose-500 text-zinc-50'
           } ${p0Hit ? '!bg-zinc-900 border-2 border-rose-500' : ''}`}
         >
           {p0Shield && (
-            <div className="absolute -inset-1.5 rounded-2xl border-2 border-purple-400 bg-purple-500/25 shadow-[0_0_18px_rgba(168,85,247,0.6)]" />
+            <div className="absolute -inset-1.5 rounded-2xl border-2 border-amber-400 bg-amber-400/15" />
           )}
           {p0Hit ? (
             <X className="text-rose-500 w-7 h-7 stroke-[3]" />
@@ -1179,18 +1172,18 @@ function BoardEntities({
         className="absolute flex items-center justify-center p-2 z-20"
       >
         <div
-          className={`relative w-full h-full rounded-xl flex items-center justify-center transition-all ${
+          className={`relative w-full h-full rounded-xl flex items-center justify-center transition-colors ${
             meIdx === 1
-              ? 'bg-gradient-to-br from-cyan-300 to-cyan-500 shadow-[0_0_24px_rgba(34,211,238,0.55)] text-black'
+              ? 'bg-sky-400 text-zinc-950'
               : isProgPreview && !oppHasGhost
-              ? 'border-2 border-dashed border-rose-500/40 bg-rose-950/20 text-rose-400/50'
+              ? 'border-2 border-dashed border-rose-400/40 bg-rose-950/20 text-rose-400/60'
               : isProgPreview && oppHasGhost
-              ? 'border-2 border-dashed border-rose-400 bg-rose-500/25 text-rose-200 opacity-70'
-              : 'bg-gradient-to-br from-rose-400 to-rose-600 shadow-[0_0_24px_rgba(244,63,94,0.55)] text-black'
+              ? 'border-2 border-dashed border-amber-400/70 bg-amber-400/15 text-amber-300'
+              : 'bg-rose-500 text-zinc-50'
           } ${p1Hit ? '!bg-zinc-900 border-2 border-rose-500' : ''}`}
         >
           {p1Shield && (
-            <div className="absolute -inset-1.5 rounded-2xl border-2 border-purple-400 bg-purple-500/25 shadow-[0_0_18px_rgba(168,85,247,0.6)]" />
+            <div className="absolute -inset-1.5 rounded-2xl border-2 border-amber-400 bg-amber-400/15" />
           )}
           {p1Hit ? (
             <X className="text-rose-500 w-7 h-7 stroke-[3]" />

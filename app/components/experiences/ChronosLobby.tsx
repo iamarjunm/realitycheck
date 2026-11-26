@@ -135,68 +135,62 @@ export function ChronosLobby() {
 
   if (loading) {
     return (
-      <div className="h-dvh bg-[#04060c] flex items-center justify-center">
-        <div className="h-10 w-10 rounded-full border-2 border-cyan-400 border-t-transparent animate-spin" />
+      <div className="h-dvh bg-[#09090b] flex items-center justify-center">
+        <div className="h-9 w-9 rounded-full border-2 border-zinc-700 border-t-zinc-200 animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-dvh lg:h-dvh lg:overflow-hidden bg-[#04060c] text-white flex flex-col items-center justify-center p-4 relative">
-      <div className="pointer-events-none fixed inset-0">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[450px] bg-cyan-500/10 rounded-full blur-[130px]" />
-        <div className="absolute bottom-0 right-0 w-[450px] h-[350px] bg-rose-500/10 rounded-full blur-[110px]" />
-        <div className="absolute inset-0 bg-grid-white opacity-30" />
-      </div>
-
+    <div className="min-h-dvh lg:h-dvh lg:overflow-hidden bg-[#09090b] text-zinc-50 flex flex-col items-center justify-center p-4 relative">
       <Link
         href="/tactical-games"
         onClick={() => playSound('chip')}
-        className="absolute top-4 left-4 z-20 inline-flex items-center gap-2 rounded-full border border-white/10 bg-black/50 backdrop-blur-md px-3.5 py-1.5 text-[11px] font-mono uppercase tracking-widest text-zinc-400 hover:text-white transition-colors"
+        className="absolute top-4 left-4 z-20 inline-flex items-center gap-2 rounded-xl border border-zinc-800 bg-zinc-900/90 px-3.5 py-2 text-xs font-medium text-zinc-400 hover:text-zinc-100 hover:border-zinc-700 transition-colors"
       >
-        <ArrowLeft size={13} /> Tactical Arenas
+        <ArrowLeft size={14} /> Tactical Arenas
       </Link>
 
       <motion.div
-        initial={{ opacity: 0, y: 14 }}
+        initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         className="relative z-10 w-full max-w-md"
       >
-        <div className="text-center mb-4">
-          <div className="mx-auto mb-2.5 flex h-12 w-12 items-center justify-center rounded-2xl border border-cyan-500/30 bg-cyan-950/50 shadow-[0_0_28px_rgba(6,182,212,0.22)]">
-            <Clock className="text-cyan-400" size={22} />
+        <div className="text-center mb-5">
+          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl border border-zinc-800 bg-[#111113]">
+            <Clock className="text-sky-400" size={22} />
           </div>
-          <p className="text-[9px] font-mono uppercase tracking-[0.35em] text-cyan-400 mb-1">
+          <p className="text-[11px] font-mono uppercase tracking-[0.2em] text-sky-400/90 mb-1.5">
             Time-Loop Grid Deathmatch
           </p>
-          <h1 className="text-3xl font-black uppercase tracking-tighter text-transparent bg-clip-text bg-gradient-to-br from-cyan-200 via-cyan-400 to-sky-500">
+          <h1 className="text-3xl font-semibold tracking-tight text-zinc-50">
             Chronos Assassin
           </h1>
-          <p className="mt-1 text-xs text-zinc-400 max-w-xs mx-auto">
+          <p className="mt-1.5 text-xs text-zinc-400 max-w-xs mx-auto leading-relaxed">
             Program 5 simultaneous ticks. Survive a loop, rewind time, and outsmart your rival&apos;s Ghost with 1 paradox edit.
           </p>
         </div>
 
         {error && (
-          <div className="mb-3 rounded-xl border border-rose-500/30 bg-rose-950/40 px-3 py-2 text-xs text-rose-200 text-center">
+          <div className="mb-3 rounded-xl border border-rose-500/30 bg-rose-950/30 px-3.5 py-2.5 text-xs text-rose-200 text-center">
             {error}
           </div>
         )}
 
         <div className="space-y-3">
-          <div className="rounded-2xl border border-cyan-500/20 bg-black/65 backdrop-blur-xl p-4 sm:p-5 shadow-2xl space-y-3.5">
+          <div className="rounded-2xl border border-zinc-800/90 bg-[#111113] p-5 space-y-4">
             {/* Mode Switch */}
-            <div className="grid grid-cols-2 gap-1 p-1 rounded-xl bg-zinc-950 border border-white/10">
+            <div className="grid grid-cols-2 gap-1 p-1 rounded-xl bg-zinc-950 border border-zinc-800">
               <button
                 type="button"
                 onClick={() => {
                   playSound('chip');
                   setMode('solo');
                 }}
-                className={`py-2 rounded-lg text-xs font-black uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all ${
+                className={`py-2 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors ${
                   mode === 'solo'
-                    ? 'bg-cyan-400 text-black shadow'
-                    : 'text-zinc-400 hover:text-white'
+                    ? 'bg-zinc-50 text-zinc-950'
+                    : 'text-zinc-400 hover:text-zinc-200'
                 }`}
               >
                 <Bot className="w-3.5 h-3.5" />
@@ -208,10 +202,10 @@ export function ChronosLobby() {
                   playSound('chip');
                   setMode('multi');
                 }}
-                className={`py-2 rounded-lg text-xs font-black uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all ${
+                className={`py-2 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors ${
                   mode === 'multi'
-                    ? 'bg-cyan-400 text-black shadow'
-                    : 'text-zinc-400 hover:text-white'
+                    ? 'bg-zinc-50 text-zinc-950'
+                    : 'text-zinc-400 hover:text-zinc-200'
                 }`}
               >
                 <Users className="w-3.5 h-3.5" />
@@ -222,7 +216,7 @@ export function ChronosLobby() {
             {/* Codename + First-to-N */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="block text-[9px] font-mono uppercase text-zinc-400 font-bold tracking-widest mb-1">
+                <label className="block text-[11px] font-medium text-zinc-400 mb-1.5">
                   Operative
                 </label>
                 <input
@@ -231,13 +225,13 @@ export function ChronosLobby() {
                   onChange={(e) => setNickname(e.target.value)}
                   placeholder="Codename..."
                   maxLength={14}
-                  className="w-full bg-zinc-950 border border-white/10 rounded-xl px-3 py-2 text-xs font-bold text-white focus:outline-none focus:border-cyan-400"
+                  className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-xs font-medium text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:border-zinc-400 transition-colors"
                 />
               </div>
 
               <div>
-                <label className="flex items-center gap-1 text-[9px] font-mono uppercase text-zinc-400 font-bold tracking-widest mb-1">
-                  <Sparkles size={10} className="text-cyan-400" /> First To
+                <label className="flex items-center gap-1 text-[11px] font-medium text-zinc-400 mb-1.5">
+                  <Sparkles size={11} className="text-sky-400" /> First To
                 </label>
                 <div className="flex gap-1.5">
                   {([3, 5] as const).map((num) => (
@@ -248,10 +242,10 @@ export function ChronosLobby() {
                         playSound('chip');
                         setWinScore(num);
                       }}
-                      className={`flex-1 py-2 rounded-xl font-mono font-bold text-xs transition-all ${
+                      className={`flex-1 py-2 rounded-xl font-mono font-semibold text-xs border transition-colors ${
                         winScore === num
-                          ? 'bg-cyan-400 text-black'
-                          : 'bg-zinc-950 text-zinc-400 border border-white/10 hover:border-white/25'
+                          ? 'border-sky-400/50 bg-sky-400/10 text-sky-300'
+                          : 'bg-zinc-950 text-zinc-400 border-zinc-800 hover:border-zinc-700 hover:text-zinc-200'
                       }`}
                     >
                       {num} Kills
@@ -263,20 +257,20 @@ export function ChronosLobby() {
 
             {/* Map Selector */}
             <div>
-              <label className="flex items-center gap-1 text-[9px] font-mono uppercase text-zinc-400 font-bold tracking-widest mb-1">
-                <MapPin size={10} className="text-cyan-400" /> Arena Layout
+              <label className="flex items-center gap-1 text-[11px] font-medium text-zinc-400 mb-1.5">
+                <MapPin size={11} className="text-sky-400" /> Arena Layout
               </label>
-              <div className="grid grid-cols-5 gap-1">
+              <div className="grid grid-cols-5 gap-1.5">
                 <button
                   type="button"
                   onClick={() => {
                     playSound('chip');
                     setMapChoice('random');
                   }}
-                  className={`py-1.5 px-1 rounded-lg border text-[10px] font-bold transition-all ${
+                  className={`py-1.5 px-1 rounded-lg border text-[11px] font-medium transition-colors ${
                     mapChoice === 'random'
-                      ? 'border-cyan-400 bg-cyan-400/15 text-white'
-                      : 'border-white/10 bg-zinc-950 text-zinc-400 hover:border-white/25'
+                      ? 'border-sky-400/50 bg-sky-400/10 text-sky-300'
+                      : 'border-zinc-800 bg-zinc-950 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200'
                   }`}
                 >
                   Random
@@ -290,10 +284,10 @@ export function ChronosLobby() {
                       setMapChoice(id);
                     }}
                     title={ARENA_MAPS[id].tagline}
-                    className={`py-1.5 px-1 rounded-lg border text-[10px] font-bold truncate transition-all ${
+                    className={`py-1.5 px-1 rounded-lg border text-[11px] font-medium truncate transition-colors ${
                       mapChoice === id
-                        ? 'border-cyan-400 bg-cyan-400/15 text-white'
-                        : 'border-white/10 bg-zinc-950 text-zinc-400 hover:border-white/25'
+                        ? 'border-sky-400/50 bg-sky-400/10 text-sky-300'
+                        : 'border-zinc-800 bg-zinc-950 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200'
                     }`}
                   >
                     {ARENA_MAPS[id].name.split(' ')[1] || ARENA_MAPS[id].name}
@@ -304,8 +298,8 @@ export function ChronosLobby() {
 
             {mode === 'solo' && (
               <div>
-                <label className="flex items-center gap-1.5 text-[9px] font-mono uppercase text-zinc-400 font-bold tracking-widest mb-1.5">
-                  <ShieldCheck size={11} className="text-cyan-400" /> AI Difficulty
+                <label className="flex items-center gap-1.5 text-[11px] font-medium text-zinc-400 mb-1.5">
+                  <ShieldCheck size={12} className="text-sky-400" /> AI Difficulty
                 </label>
                 <div className="grid grid-cols-3 gap-2">
                   {(
@@ -322,14 +316,14 @@ export function ChronosLobby() {
                         playSound('chip');
                         setDifficulty(d.id);
                       }}
-                      className={`py-2 px-2 rounded-xl border text-center transition-all ${
+                      className={`py-2 px-2 rounded-xl border text-center transition-colors ${
                         difficulty === d.id
-                          ? 'border-cyan-400 bg-cyan-400/15 text-white'
-                          : 'border-white/10 bg-zinc-950 text-zinc-400 hover:border-white/25'
+                          ? 'border-sky-400/50 bg-sky-400/10 text-zinc-100'
+                          : 'border-zinc-800 bg-zinc-950 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200'
                       }`}
                     >
-                      <div className="text-[11px] font-black uppercase">{d.label}</div>
-                      <div className="text-[9px] font-mono text-zinc-500">{d.sub}</div>
+                      <div className="text-xs font-semibold">{d.label}</div>
+                      <div className="text-[10px] font-mono text-zinc-500">{d.sub}</div>
                     </button>
                   ))}
                 </div>
@@ -340,7 +334,7 @@ export function ChronosLobby() {
               <button
                 type="button"
                 onClick={handleStartSolo}
-                className="w-full bg-gradient-to-r from-cyan-400 to-sky-500 text-black font-black py-3 rounded-xl uppercase tracking-widest text-xs hover:opacity-95 transition-opacity shadow-[0_0_24px_rgba(34,211,238,0.3)]"
+                className="w-full bg-zinc-50 hover:bg-white text-zinc-950 font-semibold py-3 rounded-xl text-sm transition-colors"
               >
                 Initiate Solo Loop
               </button>
@@ -349,7 +343,7 @@ export function ChronosLobby() {
                 type="button"
                 disabled={busy}
                 onClick={handleCreateGame}
-                className="w-full bg-gradient-to-r from-cyan-400 to-sky-500 text-black font-black py-3 rounded-xl uppercase tracking-widest text-xs hover:opacity-95 transition-opacity shadow-[0_0_24px_rgba(34,211,238,0.3)] disabled:opacity-50"
+                className="w-full bg-zinc-50 hover:bg-white text-zinc-950 font-semibold py-3 rounded-xl text-sm transition-colors disabled:opacity-50"
               >
                 {busy ? 'Initializing...' : 'Create Timeline Room'}
               </button>
@@ -363,13 +357,13 @@ export function ChronosLobby() {
                 placeholder="TIMELINE ID"
                 value={joinCode}
                 onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
-                className="flex-1 bg-zinc-950 border border-white/10 rounded-xl px-3 py-2.5 text-center font-mono text-xs uppercase tracking-[0.25em] text-cyan-100 focus:outline-none focus:border-cyan-400"
+                className="flex-1 bg-zinc-950 border border-zinc-800 rounded-xl px-3.5 py-2.5 text-center font-mono text-xs uppercase tracking-[0.22em] text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:border-zinc-400 transition-colors"
                 maxLength={20}
               />
               <button
                 type="submit"
                 disabled={!joinCode.trim() || busy}
-                className="bg-white text-black font-black px-5 py-2.5 rounded-xl uppercase tracking-widest text-xs hover:bg-zinc-200 disabled:opacity-40 transition-colors"
+                className="bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-200 font-medium px-5 py-2.5 rounded-xl text-xs disabled:opacity-40 transition-colors"
               >
                 Sync
               </button>

@@ -113,68 +113,62 @@ export function GlitchRouletteLobby() {
 
   if (loading) {
     return (
-      <div className="h-dvh bg-[#06040a] flex items-center justify-center">
-        <div className="h-10 w-10 rounded-full border-2 border-rose-500 border-t-transparent animate-spin" />
+      <div className="h-dvh bg-[#09090b] flex items-center justify-center">
+        <div className="h-9 w-9 rounded-full border-2 border-zinc-700 border-t-zinc-200 animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-dvh lg:h-dvh lg:overflow-hidden bg-[#06040a] text-white flex flex-col items-center justify-center p-4 relative">
-      <div className="pointer-events-none fixed inset-0">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[450px] bg-rose-600/12 rounded-full blur-[130px]" />
-        <div className="absolute bottom-0 right-0 w-[450px] h-[350px] bg-amber-500/10 rounded-full blur-[110px]" />
-        <div className="absolute inset-0 bg-grid-white opacity-30" />
-      </div>
-
+    <div className="min-h-dvh lg:h-dvh lg:overflow-hidden bg-[#09090b] text-zinc-50 flex flex-col items-center justify-center p-4 relative">
       <Link
         href="/tactical-games"
         onClick={() => playSound('chip')}
-        className="absolute top-4 left-4 z-20 inline-flex items-center gap-2 rounded-full border border-white/10 bg-black/50 backdrop-blur-md px-3.5 py-1.5 text-[11px] font-mono uppercase tracking-widest text-zinc-400 hover:text-white transition-colors"
+        className="absolute top-4 left-4 z-20 inline-flex items-center gap-2 rounded-xl border border-zinc-800 bg-zinc-900/90 px-3.5 py-2 text-xs font-medium text-zinc-400 hover:text-zinc-100 hover:border-zinc-700 transition-colors"
       >
-        <ArrowLeft size={13} /> Tactical Arenas
+        <ArrowLeft size={14} /> Tactical Arenas
       </Link>
 
       <motion.div
-        initial={{ opacity: 0, y: 14 }}
+        initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         className="relative z-10 w-full max-w-md"
       >
-        <div className="text-center mb-4">
-          <div className="mx-auto mb-2.5 flex h-12 w-12 items-center justify-center rounded-2xl border border-rose-500/35 bg-rose-950/50 shadow-[0_0_28px_rgba(244,63,94,0.25)]">
-            <Skull className="text-rose-400" size={22} />
+        <div className="text-center mb-5">
+          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl border border-zinc-800 bg-[#111113]">
+            <Skull className="text-rose-500" size={22} />
           </div>
-          <p className="text-[9px] font-mono uppercase tracking-[0.35em] text-rose-400 mb-1">
+          <p className="text-[11px] font-mono uppercase tracking-[0.2em] text-rose-400/90 mb-1.5">
             Mod-Chip Buckshot Duel
           </p>
-          <h1 className="text-3xl font-black uppercase tracking-tighter text-transparent bg-clip-text bg-gradient-to-br from-rose-300 via-rose-500 to-amber-400">
+          <h1 className="text-3xl font-semibold tracking-tight text-zinc-50">
             Glitch Roulette
           </h1>
-          <p className="mt-1 text-xs text-zinc-400 max-w-xs mx-auto">
+          <p className="mt-1.5 text-xs text-zinc-400 max-w-xs mx-auto leading-relaxed">
             X-Ray shells, flip polarity, overclock 2× damage, or shoot yourself on a blank for an extra turn.
           </p>
         </div>
 
         {error && (
-          <div className="mb-3 rounded-xl border border-rose-500/30 bg-rose-950/40 px-3 py-2 text-xs text-rose-200 text-center">
+          <div className="mb-3 rounded-xl border border-rose-500/30 bg-rose-950/30 px-3.5 py-2.5 text-xs text-rose-200 text-center">
             {error}
           </div>
         )}
 
         <div className="space-y-3">
-          <div className="rounded-2xl border border-rose-500/20 bg-black/65 backdrop-blur-xl p-4 sm:p-5 shadow-2xl space-y-3.5">
+          <div className="rounded-2xl border border-zinc-800/90 bg-[#111113] p-5 space-y-4">
             {/* Mode Switch */}
-            <div className="grid grid-cols-2 gap-1 p-1 rounded-xl bg-zinc-950 border border-white/10">
+            <div className="grid grid-cols-2 gap-1 p-1 rounded-xl bg-zinc-950 border border-zinc-800">
               <button
                 type="button"
                 onClick={() => {
                   playSound('chip');
                   setMode('multi');
                 }}
-                className={`py-2 rounded-lg text-xs font-black uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all ${
+                className={`py-2 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors ${
                   mode === 'multi'
-                    ? 'bg-rose-500 text-white shadow'
-                    : 'text-zinc-400 hover:text-white'
+                    ? 'bg-zinc-50 text-zinc-950'
+                    : 'text-zinc-400 hover:text-zinc-200'
                 }`}
               >
                 <Users className="w-3.5 h-3.5" />
@@ -186,10 +180,10 @@ export function GlitchRouletteLobby() {
                   playSound('chip');
                   setMode('solo');
                 }}
-                className={`py-2 rounded-lg text-xs font-black uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all ${
+                className={`py-2 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors ${
                   mode === 'solo'
-                    ? 'bg-rose-500 text-white shadow'
-                    : 'text-zinc-400 hover:text-white'
+                    ? 'bg-zinc-50 text-zinc-950'
+                    : 'text-zinc-400 hover:text-zinc-200'
                 }`}
               >
                 <Bot className="w-3.5 h-3.5" />
@@ -201,7 +195,7 @@ export function GlitchRouletteLobby() {
               <>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-[9px] font-mono uppercase text-zinc-400 font-bold tracking-widest mb-1">
+                    <label className="block text-[11px] font-medium text-zinc-400 mb-1.5">
                       Your Codename
                     </label>
                     <input
@@ -210,14 +204,14 @@ export function GlitchRouletteLobby() {
                       onChange={(e) => setNickname(e.target.value)}
                       placeholder="Operative..."
                       maxLength={14}
-                      className="w-full bg-zinc-950 border border-white/10 rounded-xl px-3 py-2 text-xs font-bold text-white focus:outline-none focus:border-rose-400"
+                      className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-xs font-medium text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:border-zinc-400 transition-colors"
                     />
                   </div>
                   <div>
-                    <label className="flex items-center gap-1 text-[9px] font-mono uppercase text-zinc-400 font-bold tracking-widest mb-1">
-                      <Heart size={10} className="text-rose-400" /> Starting HP
+                    <label className="flex items-center gap-1 text-[11px] font-medium text-zinc-400 mb-1.5">
+                      <Heart size={11} className="text-rose-500" /> Starting HP
                     </label>
-                    <div className="flex gap-1">
+                    <div className="flex gap-1.5">
                       {([3, 4, 5] as const).map((hp) => (
                         <button
                           key={hp}
@@ -226,10 +220,10 @@ export function GlitchRouletteLobby() {
                             playSound('chip');
                             setMaxHp(hp);
                           }}
-                          className={`flex-1 py-2 rounded-xl font-mono font-bold text-xs transition-all ${
+                          className={`flex-1 py-2 rounded-xl font-mono font-semibold text-xs border transition-colors ${
                             maxHp === hp
-                              ? 'bg-rose-500 text-white'
-                              : 'bg-zinc-950 text-zinc-400 border border-white/10 hover:border-white/25'
+                              ? 'border-rose-500/60 bg-rose-500/15 text-rose-300'
+                              : 'bg-zinc-950 text-zinc-400 border-zinc-800 hover:border-zinc-700 hover:text-zinc-200'
                           }`}
                         >
                           {hp} HP
@@ -243,18 +237,18 @@ export function GlitchRouletteLobby() {
                   type="button"
                   disabled={busy}
                   onClick={handleCreatePvP}
-                  className="w-full bg-gradient-to-r from-rose-500 to-amber-500 text-black font-black py-3 rounded-xl uppercase tracking-widest text-xs hover:opacity-95 transition-opacity shadow-[0_0_24px_rgba(244,63,94,0.3)] disabled:opacity-50"
+                  className="w-full bg-zinc-50 hover:bg-white text-zinc-950 font-semibold py-3 rounded-xl text-sm transition-colors disabled:opacity-50"
                 >
                   {busy ? 'Loading Chamber...' : 'Create 1v1 Chamber'}
                 </button>
               </>
             ) : (
               <div className="space-y-3">
-                <div className="rounded-xl border border-white/10 bg-zinc-950/80 p-3 text-xs text-zinc-300 space-y-1">
-                  <div className="font-bold text-amber-300 flex items-center gap-1.5">
+                <div className="rounded-xl border border-zinc-800 bg-zinc-950 p-3.5 text-xs text-zinc-300 space-y-1">
+                  <div className="font-semibold text-amber-400 flex items-center gap-1.5">
                     <Zap className="w-3.5 h-3.5" /> 3 Escalating AI Bosses
                   </div>
-                  <p className="text-[11px] text-zinc-400">
+                  <p className="text-xs text-zinc-400 leading-relaxed">
                     Defeat Script Kiddie (3 HP), Sys-Admin (4 HP), and The Architect (5 HP) in a single run.
                   </p>
                 </div>
@@ -264,7 +258,7 @@ export function GlitchRouletteLobby() {
                     playSound('chamber_spin');
                     router.push('/glitch-roulette/solo');
                   }}
-                  className="w-full bg-gradient-to-r from-rose-500 to-amber-500 text-black font-black py-3 rounded-xl uppercase tracking-widest text-xs hover:opacity-95 transition-opacity shadow-[0_0_24px_rgba(244,63,94,0.3)]"
+                  className="w-full bg-zinc-50 hover:bg-white text-zinc-950 font-semibold py-3 rounded-xl text-sm transition-colors"
                 >
                   Start Boss Gauntlet
                 </button>
@@ -280,12 +274,12 @@ export function GlitchRouletteLobby() {
                 value={joinCode}
                 onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
                 maxLength={8}
-                className="flex-1 bg-zinc-950 border border-white/10 rounded-xl px-3 py-2.5 text-center font-mono text-xs uppercase tracking-[0.25em] text-rose-100 focus:outline-none focus:border-rose-400"
+                className="flex-1 bg-zinc-950 border border-zinc-800 rounded-xl px-3.5 py-2.5 text-center font-mono text-xs uppercase tracking-[0.22em] text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:border-zinc-400 transition-colors"
               />
               <button
                 type="submit"
                 disabled={!joinCode.trim() || busy}
-                className="bg-white text-black font-black px-5 py-2.5 rounded-xl uppercase tracking-widest text-xs hover:bg-zinc-200 disabled:opacity-40 transition-colors"
+                className="bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-200 font-medium px-5 py-2.5 rounded-xl text-xs disabled:opacity-40 transition-colors"
               >
                 Join
               </button>

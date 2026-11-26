@@ -71,29 +71,23 @@ export function BlindVaultArena({
   const latestLog = game.history[game.history.length - 1] ?? null;
 
   return (
-    <div className="min-h-dvh lg:h-dvh lg:overflow-hidden bg-[#06050b] text-white flex flex-col relative">
-      <div className="pointer-events-none fixed inset-0">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[850px] h-[450px] bg-amber-500/[0.08] rounded-full blur-[130px]" />
-        <div className="absolute bottom-0 right-0 w-[500px] h-[350px] bg-fuchsia-600/[0.08] rounded-full blur-[110px]" />
-        <div className="absolute inset-0 bg-grid-white opacity-30" />
-      </div>
-
+    <div className="min-h-dvh lg:h-dvh lg:overflow-hidden bg-[#09090b] text-zinc-100 flex flex-col relative">
       {/* 48px HUD */}
-      <header className="relative z-20 w-full border-b border-amber-500/20 bg-black/75 backdrop-blur-xl shrink-0">
+      <header className="relative z-20 w-full border-b border-zinc-800/80 bg-[#09090b]/90 backdrop-blur-md shrink-0">
         <div className="max-w-[1340px] mx-auto px-3 sm:px-5 h-12 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <button
               type="button"
               onClick={() => { sfx('chip'); onExit(); }}
-              className="inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-widest text-zinc-400 hover:text-white"
+              className="inline-flex items-center gap-1.5 rounded-xl border border-zinc-800 bg-zinc-900 hover:bg-zinc-800 px-2.5 py-1 text-xs font-medium text-zinc-300 hover:text-zinc-50 transition-colors cursor-pointer"
             >
               <ArrowLeft className="w-3.5 h-3.5" /> Lobby
             </button>
-            <span className="text-white/15">|</span>
-            <span className="font-black uppercase tracking-tight text-xs sm:text-sm text-white">
+            <span className="text-zinc-800">|</span>
+            <span className="font-semibold tracking-tight text-sm text-zinc-50">
               Blind Vault
             </span>
-            <span className="px-2 py-0.5 rounded-full border border-amber-400/30 bg-amber-500/10 font-mono text-[10px] font-bold text-amber-300">
+            <span className="px-2.5 py-0.5 rounded-full border border-zinc-800 bg-zinc-900 font-mono text-[11px] font-medium text-amber-400">
               Vault {Math.min(7, game.round)} / 7
             </span>
           </div>
@@ -101,7 +95,7 @@ export function BlindVaultArena({
           <button
             type="button"
             onClick={onToggleSound}
-            className="p-1.5 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10"
+            className="p-1.5 rounded-xl border border-zinc-800 bg-zinc-900 hover:bg-zinc-800 transition-colors cursor-pointer"
           >
             {soundEnabled ? <Volume2 className="w-3.5 h-3.5 text-amber-400" /> : <VolumeX className="w-3.5 h-3.5 text-zinc-500" />}
           </button>
@@ -111,11 +105,13 @@ export function BlindVaultArena({
       <main className="relative z-10 flex-1 min-h-0 w-full max-w-[1340px] mx-auto px-3 sm:px-5 py-3 flex flex-col justify-center gap-3">
         {/* WAITING */}
         {game.state === 'waiting' && (
-          <div className="max-w-md w-full mx-auto bg-black/75 border border-amber-500/25 rounded-2xl p-6 text-center space-y-4 shadow-2xl">
-            <Coins className="w-10 h-10 text-amber-400 mx-auto" />
+          <div className="max-w-md w-full mx-auto bg-[#111113] border border-zinc-800/90 rounded-2xl p-6 text-center space-y-4">
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl border border-zinc-800 bg-zinc-950">
+              <Coins className="w-6 h-6 text-amber-400" />
+            </div>
             {meIdx === -1 && onJoinRoom ? (
               <>
-                <h1 className="text-xl font-black uppercase">Enter Blind Vault</h1>
+                <h1 className="text-xl font-semibold tracking-tight text-zinc-50">Enter Blind Vault</h1>
                 <div className="flex gap-2">
                   <input
                     type="text"
@@ -123,13 +119,13 @@ export function BlindVaultArena({
                     onChange={(e) => setJoinName(e.target.value)}
                     placeholder="CODENAME"
                     maxLength={14}
-                    className="flex-1 bg-zinc-950 border border-amber-500/30 rounded-xl px-3 py-2 text-xs font-mono uppercase text-white"
+                    className="flex-1 bg-zinc-950 border border-zinc-800 focus:border-zinc-400 focus:outline-none rounded-xl px-3 py-2 text-xs font-mono uppercase text-zinc-100 placeholder:text-zinc-600"
                   />
                   <button
                     type="button"
                     disabled={busy || !joinName.trim()}
                     onClick={() => onJoinRoom(joinName.trim())}
-                    className="px-5 py-2 rounded-xl bg-amber-400 text-black font-black uppercase text-xs disabled:opacity-40"
+                    className="px-5 py-2 rounded-xl bg-zinc-50 hover:bg-white text-zinc-950 font-semibold text-xs transition-colors cursor-pointer disabled:opacity-40"
                   >
                     Join
                   </button>
@@ -137,12 +133,12 @@ export function BlindVaultArena({
               </>
             ) : (
               <>
-                <h1 className="text-xl font-black uppercase">Waiting for Rival Bidder</h1>
+                <h1 className="text-xl font-semibold tracking-tight text-zinc-50">Waiting for Rival Bidder</h1>
                 {game.gameId && (
-                  <div className="flex items-center justify-between bg-zinc-950 border border-amber-500/25 rounded-xl px-4 py-3 text-left">
+                  <div className="flex items-center justify-between bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-left">
                     <div>
-                      <div className="text-[9px] font-mono uppercase text-zinc-500">Vault Code</div>
-                      <div className="font-mono text-2xl font-black tracking-[0.22em] text-amber-300">{game.gameId}</div>
+                      <div className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">Vault Code</div>
+                      <div className="font-mono text-2xl font-semibold tracking-[0.22em] text-amber-400">{game.gameId}</div>
                     </div>
                     <button
                       type="button"
@@ -151,7 +147,7 @@ export function BlindVaultArena({
                         setCopied(true);
                         setTimeout(() => setCopied(false), 1600);
                       }}
-                      className="px-3 py-1.5 rounded-lg bg-white/10 text-xs font-bold flex items-center gap-1"
+                      className="px-3 py-1.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-200 text-xs font-medium flex items-center gap-1.5 transition-colors cursor-pointer"
                     >
                       {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
                       {copied ? 'Copied' : 'Copy'}
@@ -168,35 +164,35 @@ export function BlindVaultArena({
           <>
             {/* Player Score & Credits Strip */}
             <div className="grid grid-cols-2 gap-3 shrink-0">
-              <div className="rounded-2xl border border-amber-400/35 bg-amber-950/15 p-3.5 flex items-center justify-between">
+              <div className="rounded-2xl border border-amber-500/35 bg-[#111113] p-3.5 flex items-center justify-between">
                 <div>
-                  <div className="text-xs font-black uppercase text-amber-300">{me.nickname} (You)</div>
+                  <div className="text-xs font-semibold text-amber-400">{me.nickname} (You)</div>
                   <div className="flex items-center gap-2 mt-1 text-[11px] font-mono text-zinc-300">
-                    <span className="inline-flex items-center gap-1 text-amber-200"><Coins size={12} /> {me.credits} CR</span>
-                    <span className="text-zinc-600">|</span>
-                    <span className={me.hasDouble ? 'text-cyan-300' : 'text-zinc-600 line-through'}>2×</span>
-                    <span className={me.hasInvert ? 'text-fuchsia-300' : 'text-zinc-600 line-through'}>INV</span>
+                    <span className="inline-flex items-center gap-1 text-zinc-100"><Coins size={12} className="text-amber-400" /> {me.credits} CR</span>
+                    <span className="text-zinc-700">|</span>
+                    <span className={me.hasDouble ? 'text-sky-400' : 'text-zinc-600 line-through'}>2×</span>
+                    <span className={me.hasInvert ? 'text-rose-400' : 'text-zinc-600 line-through'}>INV</span>
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="text-[9px] font-mono uppercase text-zinc-400">Score</div>
-                  <div className="font-mono text-2xl font-black text-white">{me.score}</div>
+                  <div className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">Score</div>
+                  <div className="font-mono text-2xl font-semibold text-zinc-50">{me.score}</div>
                 </div>
               </div>
 
-              <div className="rounded-2xl border border-white/10 bg-black/55 p-3.5 flex items-center justify-between">
+              <div className="rounded-2xl border border-zinc-800/90 bg-[#111113] p-3.5 flex items-center justify-between">
                 <div>
-                  <div className="text-xs font-black uppercase text-fuchsia-300">{opp.nickname}</div>
+                  <div className="text-xs font-semibold text-zinc-200">{opp.nickname}</div>
                   <div className="flex items-center gap-2 mt-1 text-[11px] font-mono text-zinc-400">
-                    <span className="inline-flex items-center gap-1"><Coins size={12} /> {opp.credits} CR</span>
-                    <span className="text-zinc-600">|</span>
-                    <span className={opp.hasDouble ? 'text-cyan-300/70' : 'text-zinc-700 line-through'}>2×</span>
-                    <span className={opp.hasInvert ? 'text-fuchsia-300/70' : 'text-zinc-700 line-through'}>INV</span>
+                    <span className="inline-flex items-center gap-1"><Coins size={12} className="text-zinc-500" /> {opp.credits} CR</span>
+                    <span className="text-zinc-700">|</span>
+                    <span className={opp.hasDouble ? 'text-sky-400/80' : 'text-zinc-700 line-through'}>2×</span>
+                    <span className={opp.hasInvert ? 'text-rose-400/80' : 'text-zinc-700 line-through'}>INV</span>
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="text-[9px] font-mono uppercase text-zinc-400">Score</div>
-                  <div className="font-mono text-2xl font-black text-fuchsia-300">{opp.score}</div>
+                  <div className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">Score</div>
+                  <div className="font-mono text-2xl font-semibold text-zinc-300">{opp.score}</div>
                 </div>
               </div>
             </div>
@@ -204,41 +200,41 @@ export function BlindVaultArena({
             {/* Center Workspace */}
             <div className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
               {/* LEFT 5 COLS: CURRENT VAULT CARD + REMAINING DECK */}
-              <section className="lg:col-span-5 bg-black/60 border border-white/10 rounded-2xl p-4 sm:p-5 flex flex-col justify-between gap-3">
-                <div className="flex items-center justify-between text-[10px] font-mono uppercase tracking-widest text-zinc-400">
+              <section className="lg:col-span-5 bg-[#111113] border border-zinc-800/90 rounded-2xl p-4 sm:p-5 flex flex-col justify-between gap-3">
+                <div className="flex items-center justify-between text-[11px] font-mono uppercase tracking-wider text-zinc-500">
                   <span>Active Auction</span>
                   <span>All-Pay Blind Bid</span>
                 </div>
 
                 <motion.div
                   key={`vault-${game.round}`}
-                  initial={{ scale: 0.9, opacity: 0 }}
+                  initial={{ scale: 0.94, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
-                  className={`mx-auto w-full max-w-[260px] rounded-2xl border-2 p-6 text-center my-auto shadow-2xl ${
+                  className={`mx-auto w-full max-w-[260px] rounded-2xl border p-6 text-center my-auto ${
                     isTrap
-                      ? 'border-rose-500 bg-gradient-to-b from-rose-950/60 to-black shadow-[0_0_40px_rgba(244,63,94,0.25)]'
-                      : 'border-amber-400 bg-gradient-to-b from-amber-950/50 to-black shadow-[0_0_40px_rgba(245,158,11,0.22)]'
+                      ? 'border-rose-500/60 bg-rose-950/20'
+                      : 'border-amber-400/50 bg-zinc-950'
                   }`}
                 >
-                  <div className="mx-auto w-12 h-12 rounded-xl bg-black/50 border border-white/15 flex items-center justify-center mb-3">
-                    {isTrap ? <Skull className="w-6 h-6 text-rose-400" /> : <Sparkles className="w-6 h-6 text-amber-300" />}
+                  <div className="mx-auto w-11 h-11 rounded-xl bg-[#111113] border border-zinc-800 flex items-center justify-center mb-3">
+                    {isTrap ? <Skull className="w-5 h-5 text-rose-400" /> : <Sparkles className="w-5 h-5 text-amber-400" />}
                   </div>
-                  <div className="text-[10px] font-mono uppercase tracking-[0.25em] text-zinc-400">
-                    {isTrap ? 'CURSED TRAP VAULT' : 'HIGH-VALUE VAULT'}
+                  <div className={`text-[10px] font-mono uppercase tracking-[0.22em] ${isTrap ? 'text-rose-400' : 'text-zinc-400'}`}>
+                    {isTrap ? 'Cursed Trap Vault' : 'High-Value Vault'}
                   </div>
-                  <div className={`text-5xl font-black font-mono mt-1 ${isTrap ? 'text-rose-400' : 'text-amber-300'}`}>
+                  <div className={`text-5xl font-semibold font-mono mt-1.5 tracking-tight ${isTrap ? 'text-rose-400' : 'text-amber-400'}`}>
                     {currentVault > 0 ? `+${currentVault}` : currentVault}
                   </div>
-                  <p className="text-[11px] font-mono text-zinc-400 mt-2">
+                  <p className="text-xs text-zinc-400 mt-2.5 leading-relaxed">
                     {isTrap
-                      ? 'Lowest bid eats -3 pts (unless INVERTED!)'
-                      : 'Highest bid claims pts (unless INVERTED!)'}
+                      ? 'Lowest bid eats -3 pts (unless inverted)'
+                      : 'Highest bid claims pts (unless inverted)'}
                   </p>
                 </motion.div>
 
                 {/* Upcoming Vaults */}
                 <div className="space-y-1.5">
-                  <div className="text-[9px] font-mono uppercase tracking-widest text-zinc-500">
+                  <div className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">
                     Vault Schedule
                   </div>
                   <div className="grid grid-cols-7 gap-1.5">
@@ -248,14 +244,14 @@ export function BlindVaultArena({
                       return (
                         <div
                           key={i}
-                          className={`py-1.5 rounded-lg border text-center font-mono text-xs font-black ${
+                          className={`py-1.5 rounded-lg border text-center font-mono text-xs font-semibold ${
                             curr
                               ? v < 0
-                                ? 'border-rose-400 bg-rose-500/20 text-rose-300'
-                                : 'border-amber-400 bg-amber-400/20 text-amber-200'
+                                ? 'border-rose-400/70 bg-rose-500/15 text-rose-400'
+                                : 'border-amber-400/70 bg-amber-500/15 text-amber-400'
                               : done
-                              ? 'border-white/5 bg-zinc-950/50 text-zinc-600 line-through'
-                              : 'border-white/10 bg-zinc-950 text-zinc-400'
+                              ? 'border-zinc-900 bg-zinc-950/60 text-zinc-700 line-through'
+                              : 'border-zinc-800 bg-zinc-950 text-zinc-400'
                           }`}
                         >
                           {v > 0 ? `+${v}` : v}
@@ -267,12 +263,12 @@ export function BlindVaultArena({
               </section>
 
               {/* RIGHT 7 COLS: BID CONSOLE OR REVEAL + HISTORY */}
-              <section className="lg:col-span-7 bg-black/60 border border-white/10 rounded-2xl p-4 sm:p-5 flex flex-col justify-between gap-3">
+              <section className="lg:col-span-7 bg-[#111113] border border-zinc-800/90 rounded-2xl p-4 sm:p-5 flex flex-col justify-between gap-3">
                 {game.state === 'bidding' && (
                   me.locked ? (
                     <div className="my-auto text-center space-y-2 py-10">
-                      <Lock className="w-9 h-9 text-amber-400 mx-auto animate-pulse" />
-                      <div className="text-sm font-black uppercase tracking-widest text-amber-300">
+                      <Lock className="w-8 h-8 text-amber-400 mx-auto animate-pulse" />
+                      <div className="text-sm font-semibold text-zinc-100">
                         Bid Sealed ({me.currentBid} CR)
                       </div>
                       <p className="text-xs text-zinc-400">
@@ -283,10 +279,10 @@ export function BlindVaultArena({
                     <div className="space-y-4">
                       <div>
                         <div className="flex items-center justify-between mb-2">
-                          <span className="text-xs font-black uppercase tracking-wider text-white">
+                          <span className="text-xs font-semibold text-zinc-200">
                             Secret Bid Amount
                           </span>
-                          <span className="font-mono text-xl font-black text-amber-300">
+                          <span className="font-mono text-xl font-semibold text-amber-400">
                             {bid} <span className="text-xs text-zinc-500">/ {me.credits} CR</span>
                           </span>
                         </div>
@@ -298,7 +294,7 @@ export function BlindVaultArena({
                           onChange={(e) => setBid(Number(e.target.value))}
                           className="w-full accent-amber-400 cursor-pointer"
                         />
-                        <div className="flex gap-1.5 mt-2">
+                        <div className="flex gap-1.5 mt-2.5">
                           {[0, 5, 10, 20, 35, me.credits].map((preset, idx) => {
                             const val = Math.min(me.credits, preset);
                             return (
@@ -306,7 +302,7 @@ export function BlindVaultArena({
                                 key={idx}
                                 type="button"
                                 onClick={() => { sfx('chip'); setBid(val); }}
-                                className="flex-1 py-1.5 rounded-lg border border-white/10 bg-zinc-950 hover:border-amber-400/50 font-mono text-[11px] font-bold text-zinc-300"
+                                className="flex-1 py-1.5 rounded-lg border border-zinc-800 bg-zinc-950 hover:bg-zinc-900 hover:border-zinc-600 font-mono text-[11px] font-medium text-zinc-300 transition-colors cursor-pointer"
                               >
                                 {idx === 5 ? 'ALL' : val}
                               </button>
@@ -317,49 +313,49 @@ export function BlindVaultArena({
 
                       {/* Protocol Sabotage Selector */}
                       <div>
-                        <div className="text-[10px] font-mono uppercase tracking-widest text-zinc-400 mb-2">
+                        <div className="text-[11px] font-medium text-zinc-400 mb-2">
                           Optional Protocol (1 use each per match)
                         </div>
                         <div className="grid grid-cols-3 gap-2">
                           <button
                             type="button"
                             onClick={() => { sfx('chip'); setProtocol('none'); }}
-                            className={`p-2.5 rounded-xl border text-left transition-all ${
+                            className={`p-2.5 rounded-xl border text-left transition-colors cursor-pointer ${
                               protocol === 'none'
-                                ? 'border-white/50 bg-white/10 text-white'
-                                : 'border-white/10 bg-zinc-950 text-zinc-400'
+                                ? 'border-zinc-400 bg-zinc-900 text-zinc-50'
+                                : 'border-zinc-800 bg-zinc-950 text-zinc-400 hover:border-zinc-700'
                             }`}
                           >
-                            <div className="text-xs font-black flex items-center gap-1"><ShieldCheck size={13} /> Standard</div>
-                            <div className="text-[10px] opacity-70 mt-0.5">No sabotage</div>
+                            <div className="text-xs font-semibold flex items-center gap-1.5"><ShieldCheck size={13} /> Standard</div>
+                            <div className="text-[11px] text-zinc-500 mt-0.5">No sabotage</div>
                           </button>
 
                           <button
                             type="button"
                             disabled={!me.hasDouble}
                             onClick={() => { sfx('laser'); setProtocol('double'); }}
-                            className={`p-2.5 rounded-xl border text-left transition-all disabled:opacity-30 ${
+                            className={`p-2.5 rounded-xl border text-left transition-colors cursor-pointer disabled:opacity-35 disabled:cursor-not-allowed ${
                               protocol === 'double'
-                                ? 'border-cyan-400 bg-cyan-500/20 text-cyan-200'
-                                : 'border-cyan-500/25 bg-zinc-950 text-cyan-300/80'
+                                ? 'border-sky-400 bg-sky-500/15 text-sky-300'
+                                : 'border-zinc-800 bg-zinc-950 text-zinc-300 hover:border-zinc-700'
                             }`}
                           >
-                            <div className="text-xs font-black flex items-center gap-1"><Zap size={13} /> 2× Surge</div>
-                            <div className="text-[10px] opacity-75 mt-0.5">Effective: {bid * 2}</div>
+                            <div className="text-xs font-semibold flex items-center gap-1.5 text-sky-400"><Zap size={13} /> 2× Surge</div>
+                            <div className="text-[11px] text-zinc-400 mt-0.5">Effective: {bid * 2}</div>
                           </button>
 
                           <button
                             type="button"
                             disabled={!me.hasInvert}
                             onClick={() => { sfx('paradox'); setProtocol('invert'); }}
-                            className={`p-2.5 rounded-xl border text-left transition-all disabled:opacity-30 ${
+                            className={`p-2.5 rounded-xl border text-left transition-colors cursor-pointer disabled:opacity-35 disabled:cursor-not-allowed ${
                               protocol === 'invert'
-                                ? 'border-fuchsia-400 bg-fuchsia-500/20 text-fuchsia-200'
-                                : 'border-fuchsia-500/25 bg-zinc-950 text-fuchsia-300/80'
+                                ? 'border-rose-400 bg-rose-500/15 text-rose-300'
+                                : 'border-zinc-800 bg-zinc-950 text-zinc-300 hover:border-zinc-700'
                             }`}
                           >
-                            <div className="text-xs font-black flex items-center gap-1"><RefreshCw size={13} /> Invert</div>
-                            <div className="text-[10px] opacity-75 mt-0.5">Lowest wins!</div>
+                            <div className="text-xs font-semibold flex items-center gap-1.5 text-rose-400"><RefreshCw size={13} /> Invert</div>
+                            <div className="text-[11px] text-zinc-400 mt-0.5">Lowest wins!</div>
                           </button>
                         </div>
                       </div>
@@ -371,7 +367,7 @@ export function BlindVaultArena({
                           sfx('reaction');
                           onLockBid(bid, protocol);
                         }}
-                        className="w-full py-3.5 rounded-xl bg-gradient-to-r from-amber-400 to-fuchsia-500 text-black font-black uppercase tracking-widest text-xs hover:opacity-95 transition-opacity shadow-[0_0_25px_rgba(245,158,11,0.28)]"
+                        className="w-full py-3 rounded-xl bg-zinc-50 hover:bg-white text-zinc-950 font-semibold text-sm transition-colors cursor-pointer disabled:opacity-50"
                       >
                         Seal Blind Bid ({bid} CR{protocol !== 'none' ? ` + ${protocol.toUpperCase()}` : ''})
                       </button>
@@ -380,28 +376,28 @@ export function BlindVaultArena({
                 )}
 
                 {game.state === 'reveal' && latestLog && (
-                  <div className="space-y-3 my-auto">
+                  <div className="space-y-3.5 my-auto">
                     <div className="text-center">
-                      <span className="px-3 py-1 rounded-full border border-amber-400/35 bg-amber-400/15 font-mono text-[10px] font-black uppercase text-amber-300">
+                      <span className="px-3 py-1 rounded-full border border-zinc-800 bg-zinc-900 font-mono text-[11px] font-medium text-amber-400">
                         Vault {latestLog.round} Showdown
                       </span>
-                      <h2 className="text-lg font-black uppercase text-white mt-2">
+                      <h2 className="text-lg font-semibold text-zinc-50 mt-2">
                         {latestLog.summary}
                       </h2>
                     </div>
 
                     <div className="grid grid-cols-2 gap-3">
-                      <div className="rounded-xl border border-amber-400/30 bg-zinc-950 p-3 text-center">
-                        <div className="text-[10px] font-mono text-zinc-400">{game.players[0].nickname}</div>
-                        <div className="font-mono text-2xl font-black text-amber-300">{latestLog.p0Eff}</div>
-                        <div className="text-[10px] font-mono text-zinc-500">
+                      <div className="rounded-xl border border-amber-500/35 bg-zinc-950 p-3.5 text-center">
+                        <div className="text-[11px] font-medium text-zinc-400">{game.players[0].nickname}</div>
+                        <div className="font-mono text-2xl font-semibold text-amber-400 mt-0.5">{latestLog.p0Eff}</div>
+                        <div className="text-[11px] font-mono text-zinc-500 mt-0.5">
                           Bid {latestLog.p0Bid} CR {latestLog.p0Proto !== 'none' ? `· ${latestLog.p0Proto.toUpperCase()}` : ''}
                         </div>
                       </div>
-                      <div className="rounded-xl border border-fuchsia-400/30 bg-zinc-950 p-3 text-center">
-                        <div className="text-[10px] font-mono text-zinc-400">{game.players[1].nickname}</div>
-                        <div className="font-mono text-2xl font-black text-fuchsia-300">{latestLog.p1Eff}</div>
-                        <div className="text-[10px] font-mono text-zinc-500">
+                      <div className="rounded-xl border border-zinc-800 bg-zinc-950 p-3.5 text-center">
+                        <div className="text-[11px] font-medium text-zinc-400">{game.players[1].nickname}</div>
+                        <div className="font-mono text-2xl font-semibold text-zinc-100 mt-0.5">{latestLog.p1Eff}</div>
+                        <div className="text-[11px] font-mono text-zinc-500 mt-0.5">
                           Bid {latestLog.p1Bid} CR {latestLog.p1Proto !== 'none' ? `· ${latestLog.p1Proto.toUpperCase()}` : ''}
                         </div>
                       </div>
@@ -412,7 +408,7 @@ export function BlindVaultArena({
                         type="button"
                         disabled={busy}
                         onClick={() => { sfx('deal'); onNextRound(); }}
-                        className="w-full py-3 rounded-xl bg-amber-400 hover:bg-amber-300 text-black font-black uppercase tracking-widest text-xs"
+                        className="w-full py-3 rounded-xl bg-zinc-50 hover:bg-white text-zinc-950 font-semibold text-sm transition-colors cursor-pointer disabled:opacity-50"
                       >
                         {game.round >= 7 ? 'View Final Results' : `Open Vault ${game.round + 1}`}
                       </button>
@@ -425,8 +421,8 @@ export function BlindVaultArena({
                 )}
 
                 {/* Compact Round History */}
-                <div className="pt-2 border-t border-white/10">
-                  <div className="text-[9px] font-mono uppercase tracking-widest text-zinc-500 mb-1.5">
+                <div className="pt-2.5 border-t border-zinc-800/80">
+                  <div className="text-[10px] font-mono uppercase tracking-wider text-zinc-500 mb-1.5">
                     Auction Ledger
                   </div>
                   <div className="space-y-1 max-h-24 overflow-y-auto text-[11px] font-mono">
@@ -434,7 +430,7 @@ export function BlindVaultArena({
                       <div className="text-zinc-600">No vaults resolved yet.</div>
                     ) : (
                       [...game.history].reverse().map((h) => (
-                        <div key={h.round} className="flex items-center justify-between text-zinc-300 bg-zinc-950/70 px-2.5 py-1 rounded-md">
+                        <div key={h.round} className="flex items-center justify-between text-zinc-300 bg-zinc-950 border border-zinc-800/60 px-2.5 py-1.5 rounded-lg">
                           <span className="truncate">{h.summary}</span>
                           <span className="text-zinc-500 shrink-0 ml-2">{h.p0Eff} vs {h.p1Eff}</span>
                         </div>
@@ -449,26 +445,28 @@ export function BlindVaultArena({
       </main>
 
       {game.state === 'finished' && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4">
-          <div className="w-full max-w-sm bg-zinc-950 border border-amber-400/30 rounded-2xl p-6 text-center space-y-4">
-            <Trophy className="w-10 h-10 text-amber-300 mx-auto" />
-            <h2 className="text-2xl font-black uppercase">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+          <div className="w-full max-w-sm bg-[#111113] border border-zinc-800 rounded-2xl p-6 text-center space-y-4">
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl border border-zinc-800 bg-zinc-950">
+              <Trophy className="w-6 h-6 text-amber-400" />
+            </div>
+            <h2 className="text-2xl font-semibold tracking-tight text-zinc-50">
               {game.winnerUid === 'TIE'
-                ? 'Auction Tied!'
+                ? 'Auction Tied'
                 : game.winnerUid === me?.uid
-                ? 'Vault Master!'
-                : 'Outbid!'}
+                ? 'Vault Master'
+                : 'Outbid'}
             </h2>
             <p className="text-xs font-mono text-zinc-400">
               {game.players[0]?.nickname}: {game.players[0]?.score} pts · {game.players[1]?.nickname}: {game.players[1]?.score} pts
             </p>
-            <div className="flex gap-2">
+            <div className="flex gap-2.5">
               {isHost && onPlayAgain && (
                 <button
                   type="button"
                   disabled={busy}
                   onClick={onPlayAgain}
-                  className="flex-1 py-2.5 rounded-xl bg-amber-400 text-black font-black uppercase text-xs flex items-center justify-center gap-1"
+                  className="flex-1 py-2.5 rounded-xl bg-zinc-50 hover:bg-white text-zinc-950 font-semibold text-xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer disabled:opacity-50"
                 >
                   <RotateCcw className="w-3.5 h-3.5" /> Play Again
                 </button>
@@ -476,7 +474,7 @@ export function BlindVaultArena({
               <button
                 type="button"
                 onClick={onExit}
-                className="flex-1 py-2.5 rounded-xl border border-white/15 bg-white/5 text-white font-bold uppercase text-xs"
+                className="flex-1 py-2.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-200 font-medium text-xs transition-colors cursor-pointer"
               >
                 Lobby
               </button>

@@ -95,6 +95,27 @@ interface AstralVaultSvgProps {
   onSelectTarget?: (chamber: ChamberId) => void;
 }
 
+const VAULT_CHAMBER_STROKE: Record<ChamberId, { hex: string; text: string; badgeBg: string; badgeBorder: string }> = {
+  ALPHA: {
+    hex: '#f43f5e',
+    text: 'text-rose-400',
+    badgeBg: 'bg-rose-500/10',
+    badgeBorder: 'border-rose-500/40',
+  },
+  BETA: {
+    hex: '#818cf8',
+    text: 'text-indigo-400',
+    badgeBg: 'bg-indigo-500/10',
+    badgeBorder: 'border-indigo-400/40',
+  },
+  OMEGA: {
+    hex: '#f59e0b',
+    text: 'text-amber-400',
+    badgeBg: 'bg-amber-500/10',
+    badgeBorder: 'border-amber-500/40',
+  },
+};
+
 function AstralMindVaultSvg({
   mode,
   plan,
@@ -128,38 +149,25 @@ function AstralMindVaultSvg({
           : { duration: 0.2 }
       }
     >
-      {/* Ambient Radial Aura */}
-      <div
-        className={`absolute inset-4 rounded-full blur-3xl transition-colors duration-700 ${
-          isClash
-            ? 'bg-gradient-to-tr from-rose-600/35 via-violet-600/30 to-amber-400/35'
-            : paranoiaActive
-            ? 'bg-gradient-to-tr from-rose-600/35 via-fuchsia-600/30 to-cyan-500/25'
-            : locked
-            ? 'bg-gradient-to-tr from-amber-500/30 via-violet-600/30 to-rose-500/25'
-            : 'bg-gradient-to-tr from-indigo-700/25 via-violet-600/20 to-rose-500/20'
-        }`}
-      />
-
       <svg viewBox="0 0 420 420" className="w-full h-full relative z-10 overflow-visible">
         <defs>
           <radialGradient id="mhCoreGlow" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#fbbf24" stopOpacity="0.85" />
-            <stop offset="45%" stopColor="#a855f7" stopOpacity="0.45" />
-            <stop offset="100%" stopColor="#05030d" stopOpacity="0" />
+            <stop offset="0%" stopColor="#f59e0b" stopOpacity="0.28" />
+            <stop offset="55%" stopColor="#818cf8" stopOpacity="0.1" />
+            <stop offset="100%" stopColor="#09090b" stopOpacity="0" />
           </radialGradient>
           <linearGradient id="mhRingGold" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor="#fbbf24" />
             <stop offset="50%" stopColor="#f43f5e" />
-            <stop offset="100%" stopColor="#a855f7" />
+            <stop offset="100%" stopColor="#818cf8" />
           </linearGradient>
-          <linearGradient id="mhRingViolet" x1="0%" y1="100%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#8b5cf6" />
-            <stop offset="50%" stopColor="#22d3ee" />
-            <stop offset="100%" stopColor="#f43f5e" />
+          <linearGradient id="mhRingSlate" x1="0%" y1="100%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="#818cf8" />
+            <stop offset="50%" stopColor="#d4d4d8" />
+            <stop offset="100%" stopColor="#f59e0b" />
           </linearGradient>
-          <filter id="mhNeon" x="-30%" y="-30%" width="160%" height="160%">
-            <feGaussianBlur stdDeviation="3.5" result="blur" />
+          <filter id="mhVaultEdge" x="-20%" y="-20%" width="140%" height="140%">
+            <feGaussianBlur stdDeviation="1.4" result="blur" />
             <feMerge>
               <feMergeNode in="blur" />
               <feMergeNode in="SourceGraphic" />
@@ -167,7 +175,7 @@ function AstralMindVaultSvg({
           </filter>
         </defs>
 
-        {/* Outer Astral Ring (Ring 1) */}
+        {/* Outer Precision Horology Ring (Ring 1) */}
         <motion.g
           style={{ originX: '210px', originY: '210px' }}
           animate={{ rotate: 360 }}
@@ -179,8 +187,8 @@ function AstralMindVaultSvg({
             r="186"
             fill="none"
             stroke="url(#mhRingGold)"
-            strokeWidth="1.5"
-            strokeOpacity="0.55"
+            strokeWidth="1.4"
+            strokeOpacity="0.6"
             strokeDasharray="18 10 4 10"
           />
           <circle
@@ -188,9 +196,9 @@ function AstralMindVaultSvg({
             cy="210"
             r="174"
             fill="none"
-            stroke="#a855f7"
+            stroke="#52525b"
             strokeWidth="0.9"
-            strokeOpacity="0.35"
+            strokeOpacity="0.5"
             strokeDasharray="2 8"
           />
           {Array.from({ length: 12 }).map((_, idx) => {
@@ -206,9 +214,9 @@ function AstralMindVaultSvg({
                 y1={y1}
                 x2={x2}
                 y2={y2}
-                stroke={idx % 3 === 0 ? '#fbbf24' : '#f43f5e'}
-                strokeWidth={idx % 3 === 0 ? '2.2' : '1'}
-                strokeOpacity="0.7"
+                stroke={idx % 3 === 0 ? '#fbbf24' : '#71717a'}
+                strokeWidth={idx % 3 === 0 ? '2' : '1'}
+                strokeOpacity="0.75"
               />
             );
           })}
@@ -225,9 +233,9 @@ function AstralMindVaultSvg({
             cy="210"
             r="138"
             fill="none"
-            stroke="url(#mhRingViolet)"
-            strokeWidth="2"
-            strokeOpacity="0.65"
+            stroke="url(#mhRingSlate)"
+            strokeWidth="1.6"
+            strokeOpacity="0.55"
             strokeDasharray="46 16 12 16"
           />
           {/* Hexagram / Astral Diamond Shards */}
@@ -235,15 +243,15 @@ function AstralMindVaultSvg({
             points="210,74 328,282 92,282"
             fill="none"
             stroke="#fbbf24"
-            strokeOpacity="0.24"
-            strokeWidth="1.2"
+            strokeOpacity="0.22"
+            strokeWidth="1.1"
           />
           <polygon
             points="210,346 92,138 328,138"
             fill="none"
             stroke="#f43f5e"
-            strokeOpacity="0.22"
-            strokeWidth="1.2"
+            strokeOpacity="0.2"
+            strokeWidth="1.1"
           />
         </motion.g>
 
@@ -259,8 +267,8 @@ function AstralMindVaultSvg({
             r="74"
             fill="none"
             stroke="#fbbf24"
-            strokeWidth="1.6"
-            strokeOpacity="0.55"
+            strokeWidth="1.4"
+            strokeOpacity="0.5"
             strokeDasharray="8 6"
           />
           <circle
@@ -268,9 +276,9 @@ function AstralMindVaultSvg({
             cy="210"
             r="58"
             fill="none"
-            stroke="#e879f9"
-            strokeWidth="1.2"
-            strokeOpacity="0.45"
+            stroke="#818cf8"
+            strokeWidth="1.1"
+            strokeOpacity="0.4"
             strokeDasharray="20 8"
           />
         </motion.g>
@@ -283,7 +291,7 @@ function AstralMindVaultSvg({
             r="142"
             fill="none"
             stroke="#f43f5e"
-            strokeWidth="2"
+            strokeWidth="1.8"
             strokeDasharray="14 24"
             animate={{ opacity: [0.15, 0.75, 0.1, 0.6], rotate: [0, 8, -6, 0] }}
             transition={{ duration: 1.4, repeat: Infinity }}
@@ -299,8 +307,8 @@ function AstralMindVaultSvg({
               r="40"
               fill="none"
               stroke="#fbbf24"
-              strokeWidth="3"
-              initial={{ r: 32, opacity: 0.95 }}
+              strokeWidth="2.4"
+              initial={{ r: 32, opacity: 0.9 }}
               animate={{ r: 196, opacity: 0 }}
               transition={{ duration: 1.4, repeat: Infinity, ease: 'easeOut' }}
             />
@@ -310,8 +318,8 @@ function AstralMindVaultSvg({
               r="40"
               fill="none"
               stroke="#f43f5e"
-              strokeWidth="2"
-              initial={{ r: 24, opacity: 0.85 }}
+              strokeWidth="1.8"
+              initial={{ r: 24, opacity: 0.8 }}
               animate={{ r: 185, opacity: 0 }}
               transition={{ duration: 1.4, delay: 0.45, repeat: Infinity, ease: 'easeOut' }}
             />
@@ -319,9 +327,9 @@ function AstralMindVaultSvg({
         )}
 
         {/* Neural Energy Conduit Lines between Chambers */}
-        <line x1="210" y1="74" x2="92" y2="282" stroke="#8b5cf6" strokeOpacity="0.28" strokeWidth="1.5" />
-        <line x1="92" y1="282" x2="328" y2="282" stroke="#8b5cf6" strokeOpacity="0.28" strokeWidth="1.5" />
-        <line x1="328" y1="282" x2="210" y2="74" stroke="#8b5cf6" strokeOpacity="0.28" strokeWidth="1.5" />
+        <line x1="210" y1="74" x2="92" y2="282" stroke="#3f3f46" strokeOpacity="0.65" strokeWidth="1.2" />
+        <line x1="92" y1="282" x2="328" y2="282" stroke="#3f3f46" strokeOpacity="0.65" strokeWidth="1.2" />
+        <line x1="328" y1="282" x2="210" y2="74" stroke="#3f3f46" strokeOpacity="0.65" strokeWidth="1.2" />
 
         {/* Active Targeting Laser in Planning Mode */}
         {mode === 'planning' && (
@@ -331,10 +339,10 @@ function AstralMindVaultSvg({
             x2={CHAMBER_META[plan.targetChamber].svgX}
             y2={CHAMBER_META[plan.targetChamber].svgY}
             stroke="#f43f5e"
-            strokeWidth="3"
+            strokeWidth="2.6"
             strokeLinecap="round"
             strokeDasharray="10 6"
-            filter="url(#mhNeon)"
+            filter="url(#mhVaultEdge)"
             animate={{ strokeDashoffset: [0, -32], opacity: [0.65, 1, 0.65] }}
             transition={{ duration: 0.9, repeat: Infinity, ease: 'linear' }}
           />
@@ -345,10 +353,10 @@ function AstralMindVaultSvg({
           <motion.path
             d={`M 210 210 Q ${(210 + myHitMeta.svgX) / 2 + 24} ${(210 + myHitMeta.svgY) / 2 - 22} ${myHitMeta.svgX} ${myHitMeta.svgY}`}
             fill="none"
-            stroke={myBreakdown.breached ? '#fbbf24' : '#94a3b8'}
-            strokeWidth={myBreakdown.breached ? '4.5' : '2.5'}
+            stroke={myBreakdown.breached ? '#fbbf24' : '#71717a'}
+            strokeWidth={myBreakdown.breached ? '3.8' : '2'}
             strokeLinecap="round"
-            filter="url(#mhNeon)"
+            filter="url(#mhVaultEdge)"
             initial={{ pathLength: 0, opacity: 0 }}
             animate={{ pathLength: 1, opacity: 1 }}
             transition={{ duration: 0.55, ease: 'easeOut' }}
@@ -358,11 +366,11 @@ function AstralMindVaultSvg({
           <motion.path
             d={`M 210 210 Q ${(210 + oppHitMeta.svgX) / 2 - 26} ${(210 + oppHitMeta.svgY) / 2 + 24} ${oppHitMeta.svgX} ${oppHitMeta.svgY}`}
             fill="none"
-            stroke={oppBreakdown.breached ? '#f43f5e' : '#64748b'}
-            strokeWidth={oppBreakdown.breached ? '4' : '2'}
+            stroke={oppBreakdown.breached ? '#f43f5e' : '#52525b'}
+            strokeWidth={oppBreakdown.breached ? '3.4' : '1.8'}
             strokeDasharray="8 5"
             strokeLinecap="round"
-            filter="url(#mhNeon)"
+            filter="url(#mhVaultEdge)"
             initial={{ pathLength: 0, opacity: 0 }}
             animate={{ pathLength: 1, opacity: 0.95 }}
             transition={{ duration: 0.6, delay: 0.15, ease: 'easeOut' }}
@@ -375,11 +383,10 @@ function AstralMindVaultSvg({
           cx="210"
           cy="210"
           r="34"
-          fill="#0b0618"
-          stroke={isClash ? '#fbbf24' : locked ? '#a855f7' : '#f43f5e'}
-          strokeWidth="2.5"
-          filter="url(#mhNeon)"
-          animate={{ scale: [1, 1.05, 1] }}
+          fill="#111113"
+          stroke={isClash ? '#fbbf24' : locked ? '#818cf8' : '#f43f5e'}
+          strokeWidth="2.2"
+          animate={{ scale: [1, 1.04, 1] }}
           transition={{ duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}
         />
         <text
@@ -388,7 +395,7 @@ function AstralMindVaultSvg({
           textAnchor="middle"
           fill="#fbbf24"
           fontSize="9"
-          fontWeight="900"
+          fontWeight="700"
           letterSpacing="2"
         >
           {isClash ? 'CLASH' : locked ? 'LOCKED' : 'STRIKE'}
@@ -397,9 +404,9 @@ function AstralMindVaultSvg({
           x="210"
           y="224"
           textAnchor="middle"
-          fill="#ffffff"
+          fill="#fafafa"
           fontSize="20"
-          fontWeight="900"
+          fontWeight="800"
           fontFamily="monospace"
         >
           {isClash && myBreakdown
@@ -412,6 +419,7 @@ function AstralMindVaultSvg({
         {/* 3 Chamber Nodes: ALPHA, BETA, OMEGA */}
         {CHAMBERS.map((chamber) => {
           const meta = CHAMBER_META[chamber];
+          const strokeMeta = VAULT_CHAMBER_STROKE[chamber];
           const isTarget = mode === 'planning' && plan.targetChamber === chamber;
           const isTrap = mode === 'planning' && plan.trapChamber === chamber;
           const isRead = mode === 'planning' && plan.mindReadCall === chamber;
@@ -439,9 +447,9 @@ function AstralMindVaultSvg({
                   r="42"
                   fill="none"
                   stroke={myHitHere ? '#fbbf24' : '#f43f5e'}
-                  strokeWidth="2.2"
+                  strokeWidth="1.8"
                   strokeDasharray="6 4"
-                  animate={{ r: [38, 46, 38], opacity: [0.95, 0.35, 0.95] }}
+                  animate={{ r: [38, 45, 38], opacity: [0.9, 0.3, 0.9] }}
                   transition={{ duration: 1.5, repeat: Infinity }}
                 />
               )}
@@ -451,10 +459,9 @@ function AstralMindVaultSvg({
                 cx={meta.svgX}
                 cy={meta.svgY}
                 r="34"
-                fill="#0a0617"
-                stroke={isTarget || myHitHere ? '#fbbf24' : meta.hex}
-                strokeWidth={isTarget || myHitHere ? '3' : '2'}
-                filter="url(#mhNeon)"
+                fill="#111113"
+                stroke={isTarget || myHitHere ? '#fbbf24' : strokeMeta.hex}
+                strokeWidth={isTarget || myHitHere ? '2.6' : '1.8'}
               />
 
               {/* Inner subtle ring */}
@@ -462,8 +469,8 @@ function AstralMindVaultSvg({
                 cx={meta.svgX}
                 cy={meta.svgY}
                 r="26"
-                fill={meta.hex}
-                fillOpacity={isTarget ? '0.24' : '0.12'}
+                fill={strokeMeta.hex}
+                fillOpacity={isTarget ? '0.16' : '0.07'}
               />
 
               {/* Chamber Name */}
@@ -471,9 +478,9 @@ function AstralMindVaultSvg({
                 x={meta.svgX}
                 y={meta.svgY - 6}
                 textAnchor="middle"
-                fill={meta.hex}
+                fill={strokeMeta.hex}
                 fontSize="10"
-                fontWeight="900"
+                fontWeight="700"
                 letterSpacing="1.2"
               >
                 {paranoiaActive && mode === 'planning' ? meta.glitchLabel : meta.label}
@@ -484,9 +491,9 @@ function AstralMindVaultSvg({
                 x={meta.svgX}
                 y={meta.svgY + 12}
                 textAnchor="middle"
-                fill="#ffffff"
+                fill="#fafafa"
                 fontSize="13"
-                fontWeight="900"
+                fontWeight="700"
                 fontFamily="monospace"
               >
                 {isClash && myBreakdown && oppBreakdown
@@ -497,8 +504,8 @@ function AstralMindVaultSvg({
               {/* Trap Badge (top-left of orb in planning) */}
               {isTrap && (
                 <g transform={`translate(${meta.svgX - 30}, ${meta.svgY - 26})`}>
-                  <rect width="26" height="15" rx="4" fill="#e11d48" stroke="#fda4af" strokeWidth="1" />
-                  <text x="13" y="10.5" textAnchor="middle" fill="#fff" fontSize="7.5" fontWeight="900">
+                  <rect width="26" height="15" rx="4" fill="#be123c" stroke="#fda4af" strokeWidth="0.8" />
+                  <text x="13" y="10.5" textAnchor="middle" fill="#fff" fontSize="7.5" fontWeight="800">
                     TRAP
                   </text>
                 </g>
@@ -507,8 +514,8 @@ function AstralMindVaultSvg({
               {/* Mind-Read Badge (top-right of orb in planning) */}
               {isRead && (
                 <g transform={`translate(${meta.svgX + 6}, ${meta.svgY - 26})`}>
-                  <rect width="28" height="15" rx="4" fill="#7c3aed" stroke="#ddd6fe" strokeWidth="1" />
-                  <text x="14" y="10.5" textAnchor="middle" fill="#fff" fontSize="7.5" fontWeight="900">
+                  <rect width="28" height="15" rx="4" fill="#4f46e5" stroke="#c7d2fe" strokeWidth="0.8" />
+                  <text x="14" y="10.5" textAnchor="middle" fill="#fff" fontSize="7.5" fontWeight="800">
                     READ
                   </text>
                 </g>
@@ -518,7 +525,7 @@ function AstralMindVaultSvg({
               {isTarget && (
                 <g transform={`translate(${meta.svgX - 26}, ${meta.svgY + 25})`}>
                   <rect width="52" height="15" rx="4" fill="#fbbf24" />
-                  <text x="26" y="10.5" textAnchor="middle" fill="#090514" fontSize="7.5" fontWeight="900">
+                  <text x="26" y="10.5" textAnchor="middle" fill="#09090b" fontSize="7.5" fontWeight="800">
                     TARGET
                   </text>
                 </g>
@@ -531,11 +538,11 @@ function AstralMindVaultSvg({
                     width="64"
                     height="16"
                     rx="4"
-                    fill={myCounterHere ? '#10b981' : '#e11d48'}
-                    stroke="#ffffff"
-                    strokeWidth="0.8"
+                    fill={myCounterHere ? '#059669' : '#be123c'}
+                    stroke="#fafafa"
+                    strokeWidth="0.6"
                   />
-                  <text x="32" y="11" textAnchor="middle" fill="#fff" fontSize="7.5" fontWeight="900">
+                  <text x="32" y="11" textAnchor="middle" fill="#fff" fontSize="7.5" fontWeight="800">
                     {myCounterHere ? 'SHATTERED!' : 'RIVAL TRAP'}
                   </text>
                 </g>
@@ -563,33 +570,33 @@ function ClashBreakdownCard({
   defenderTrap: ChamberId;
   isMe: boolean;
 }) {
-  const borderColor = accent === 'gold' ? 'border-amber-400/40' : 'border-rose-500/40';
+  const borderColor = accent === 'gold' ? 'border-amber-500/35' : 'border-rose-500/35';
   const badgeBg =
     accent === 'gold'
-      ? 'bg-amber-500/15 text-amber-300 border-amber-400/35'
-      : 'bg-rose-500/15 text-rose-300 border-rose-400/35';
+      ? 'bg-amber-500/10 text-amber-300 border-amber-500/30'
+      : 'bg-rose-500/10 text-rose-300 border-rose-500/30';
 
   return (
     <div
-      className={`rounded-2xl bg-[#0b0718]/90 border ${borderColor} p-3.5 flex flex-col gap-2.5 shadow-xl backdrop-blur-md`}
+      className={`rounded-2xl bg-[#111113] border ${borderColor} p-3.5 flex flex-col gap-2.5`}
     >
       {/* Header */}
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2 min-w-0">
-          <span className={`text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md border ${badgeBg}`}>
+          <span className={`text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-md border ${badgeBg}`}>
             {isMe ? 'YOUR ASSAULT' : 'RIVAL ASSAULT'}
           </span>
-          <span className="text-xs font-black text-white truncate">{title}</span>
+          <span className="text-xs font-semibold text-zinc-100 truncate">{title}</span>
         </div>
         <div className="flex items-center gap-1.5 shrink-0">
-          <span className="text-sm font-black font-mono text-amber-300">
+          <span className="text-sm font-bold font-mono text-amber-300 tabular-nums">
             {breakdown.totalDamageDealt} DMG
           </span>
           <span
-            className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded ${
+            className={`text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded tabular-nums ${
               breakdown.netSanityChange >= 0
-                ? 'bg-emerald-500/20 text-emerald-300'
-                : 'bg-rose-500/20 text-rose-300'
+                ? 'bg-emerald-500/15 text-emerald-300'
+                : 'bg-rose-500/15 text-rose-300'
             }`}
           >
             {breakdown.netSanityChange >= 0 ? `+${breakdown.netSanityChange}` : breakdown.netSanityChange} HP
@@ -599,35 +606,35 @@ function ClashBreakdownCard({
 
       {/* Tactical Grid */}
       <div className="grid grid-cols-3 gap-1.5 text-[10px]">
-        <div className="rounded-lg bg-black/50 border border-white/10 p-2">
-          <div className="text-slate-400 uppercase font-bold tracking-wider">Target</div>
-          <div className={`font-black text-xs mt-0.5 ${CHAMBER_META[breakdown.hitChamber].textClass}`}>
+        <div className="rounded-xl bg-zinc-950 border border-zinc-800/90 p-2">
+          <div className="text-zinc-500 uppercase font-mono tracking-wider">Target</div>
+          <div className={`font-semibold text-xs mt-0.5 ${VAULT_CHAMBER_STROKE[breakdown.hitChamber].text}`}>
             {breakdown.hitChamber}
-            {breakdown.mirageSplashUsed && <span className="text-[9px] text-fuchsia-300 ml-1">(SPLASH)</span>}
+            {breakdown.mirageSplashUsed && <span className="text-[9px] text-indigo-300 ml-1">(SPLASH)</span>}
           </div>
-          <div className="text-[10px] font-mono text-slate-300 mt-0.5">
+          <div className="text-[10px] font-mono text-zinc-400 mt-0.5 tabular-nums">
             STR {breakdown.effectiveStrike} vs SH {breakdown.effectiveShield}
           </div>
         </div>
 
-        <div className="rounded-lg bg-black/50 border border-white/10 p-2">
-          <div className="text-slate-400 uppercase font-bold tracking-wider">Mind-Read</div>
-          <div className="font-black text-xs mt-0.5 text-violet-300">{breakdown.plan.mindReadCall}</div>
+        <div className="rounded-xl bg-zinc-950 border border-zinc-800/90 p-2">
+          <div className="text-zinc-500 uppercase font-mono tracking-wider">Mind-Read</div>
+          <div className="font-semibold text-xs mt-0.5 text-indigo-300">{breakdown.plan.mindReadCall}</div>
           <div
-            className={`text-[10px] font-bold mt-0.5 ${
-              breakdown.counterReadHit ? 'text-emerald-400' : 'text-slate-500'
+            className={`text-[10px] font-mono font-semibold mt-0.5 ${
+              breakdown.counterReadHit ? 'text-emerald-400' : 'text-zinc-500'
             }`}
           >
             {breakdown.counterReadHit ? `✓ READ! +${breakdown.counterReadDamage}` : `✗ Trap: ${defenderTrap}`}
           </div>
         </div>
 
-        <div className="rounded-lg bg-black/50 border border-white/10 p-2">
-          <div className="text-slate-400 uppercase font-bold tracking-wider">Shield Split</div>
-          <div className="font-mono text-[11px] font-bold text-white mt-0.5">
+        <div className="rounded-xl bg-zinc-950 border border-zinc-800/90 p-2">
+          <div className="text-zinc-500 uppercase font-mono tracking-wider">Shield Split</div>
+          <div className="font-mono text-[11px] font-semibold text-zinc-100 mt-0.5 tabular-nums">
             {breakdown.plan.shields.ALPHA}/{breakdown.plan.shields.BETA}/{breakdown.plan.shields.OMEGA}
           </div>
-          <div className="text-[10px] text-rose-300 font-bold mt-0.5">
+          <div className="text-[10px] text-rose-400 font-medium mt-0.5">
             Trap: {breakdown.plan.trapChamber}
           </div>
         </div>
@@ -635,16 +642,12 @@ function ClashBreakdownCard({
 
       {/* Armed Relic Banner */}
       {breakdown.armedRelic && (
-        <div
-          className={`flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg bg-gradient-to-r ${
-            RELIC_DEFS[breakdown.armedRelic].gradientClass
-          } border ${RELIC_DEFS[breakdown.armedRelic].borderClass}`}
-        >
-          <div className="flex items-center gap-1.5 text-[11px] font-black text-white">
-            <RelicIcon relic={breakdown.armedRelic} className="w-3.5 h-3.5 text-amber-300" />
+        <div className="flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-xl bg-zinc-950 border border-amber-500/35">
+          <div className="flex items-center gap-1.5 text-[11px] font-semibold text-zinc-100">
+            <RelicIcon relic={breakdown.armedRelic} className="w-3.5 h-3.5 text-amber-400" />
             <span>{RELIC_DEFS[breakdown.armedRelic].name}</span>
           </div>
-          <span className="text-[10px] font-mono text-amber-200">
+          <span className="text-[10px] font-mono text-amber-300">
             {breakdown.doppelgangerCopied
               ? `Copied ${RELIC_DEFS[breakdown.doppelgangerCopied].name}`
               : breakdown.doppelgangerFallbackBonus
@@ -663,12 +666,12 @@ function ClashBreakdownCard({
           return (
             <span
               key={i}
-              className={`text-[9.5px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full border ${
+              className={`text-[9.5px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-md border ${
                 isBad
-                  ? 'bg-rose-500/15 border-rose-500/40 text-rose-300'
+                  ? 'bg-rose-500/10 border-rose-500/35 text-rose-300'
                   : isGood
-                  ? 'bg-amber-500/15 border-amber-400/40 text-amber-200'
-                  : 'bg-violet-500/15 border-violet-400/35 text-violet-200'
+                  ? 'bg-amber-500/10 border-amber-500/35 text-amber-300'
+                  : 'bg-indigo-500/10 border-indigo-400/35 text-indigo-300'
               }`}
             >
               {tag}
@@ -678,12 +681,12 @@ function ClashBreakdownCard({
       </div>
 
       {/* Defender Shield Reference */}
-      <div className="text-[10px] font-mono text-slate-500 flex items-center justify-between border-t border-white/5 pt-1.5">
+      <div className="text-[10px] font-mono text-zinc-500 flex items-center justify-between border-t border-zinc-800/80 pt-1.5 tabular-nums">
         <span>
           Target Shields: A:{defenderShields.ALPHA} · B:{defenderShields.BETA} · O:{defenderShields.OMEGA}
         </span>
         {breakdown.trapRecoilTaken > 0 && (
-          <span className="text-rose-400 font-bold">-{breakdown.trapRecoilTaken} TRAP RECOIL</span>
+          <span className="text-rose-400 font-semibold">-{breakdown.trapRecoilTaken} TRAP RECOIL</span>
         )}
       </div>
     </div>
@@ -925,31 +928,23 @@ export default function MindHeistArena({
           : { x: 0, y: 0 }
       }
       transition={{ duration: 0.42 }}
-      className="min-h-dvh lg:h-dvh lg:overflow-hidden bg-[#05030d] text-slate-100 flex flex-col relative selection:bg-rose-500/30"
+      className="min-h-dvh lg:h-dvh lg:overflow-hidden bg-[#09090b] text-zinc-100 flex flex-col relative selection:bg-amber-500/20"
     >
-      {/* Surreal Astral Dreamscape Background */}
-      <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div className="absolute -top-32 left-1/4 w-[620px] h-[420px] rounded-full bg-violet-700/15 blur-[140px]" />
-        <div className="absolute -bottom-32 right-1/6 w-[560px] h-[380px] rounded-full bg-rose-600/15 blur-[130px]" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[520px] h-[520px] rounded-full bg-amber-500/[0.06] blur-[120px]" />
-        <div className="absolute inset-0 bg-grid-white opacity-25" />
-      </div>
-
       {/* Clash Flash Burst */}
       <AnimatePresence>
         {flashBurst && (
           <motion.div
-            initial={{ opacity: 0.65 }}
+            initial={{ opacity: 0.3 }}
             animate={{ opacity: 0 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.42 }}
-            className="pointer-events-none fixed inset-0 z-50 bg-gradient-to-tr from-rose-500/40 via-amber-300/35 to-violet-500/40"
+            transition={{ duration: 0.4 }}
+            className="pointer-events-none fixed inset-0 z-50 bg-amber-400/20"
           />
         )}
       </AnimatePresence>
 
       {/* Top HUD Bar */}
-      <header className="relative z-20 shrink-0 border-b border-violet-500/25 bg-[#070414]/85 backdrop-blur-xl">
+      <header className="relative z-20 shrink-0 border-b border-zinc-800/80 bg-[#09090b]/95 backdrop-blur-md">
         <div className="max-w-[1440px] mx-auto px-3 sm:px-5 py-2 flex flex-wrap items-center justify-between gap-2">
           {/* Left: Nav & Title */}
           <div className="flex items-center gap-2.5">
@@ -959,30 +954,30 @@ export default function MindHeistArena({
                 sfx('chip');
                 onBack();
               }}
-              className="inline-flex items-center gap-1.5 text-[11px] font-black uppercase tracking-widest text-slate-400 hover:text-amber-300 transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1.5 text-xs font-medium tracking-wide text-zinc-400 hover:text-zinc-100 transition-colors cursor-pointer"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">Lobby</span>
             </button>
-            <span className="text-white/15">|</span>
+            <span className="text-zinc-800">|</span>
             <div className="flex items-center gap-1.5">
-              <Brain className="w-4 h-4 text-rose-400" />
-              <span className="font-black uppercase tracking-tight text-xs sm:text-sm bg-gradient-to-r from-amber-300 via-rose-400 to-violet-400 bg-clip-text text-transparent">
-                MIND HEIST
+              <Brain className="w-4 h-4 text-amber-400" />
+              <span className="font-semibold tracking-tight text-xs sm:text-sm text-zinc-50">
+                Mind Heist
               </span>
             </div>
-            <span className="px-2 py-0.5 rounded-full border border-amber-400/35 bg-amber-500/10 font-mono text-[10px] font-black text-amber-300">
+            <span className="px-2 py-0.5 rounded-md border border-zinc-800 bg-[#111113] font-mono text-[10px] font-semibold text-amber-400 tabular-nums">
               R{String(state.round).padStart(2, '0')}
             </span>
             {roomCode && (
               <button
                 type="button"
                 onClick={handleCopyCode}
-                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full border border-violet-400/35 bg-violet-500/15 hover:bg-violet-500/25 font-mono text-[10px] font-bold text-violet-200 transition-colors cursor-pointer"
+                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md border border-zinc-800 bg-[#111113] hover:border-zinc-700 font-mono text-[10px] font-semibold text-zinc-200 transition-colors cursor-pointer"
                 title="Copy Room Code"
               >
                 {roomCode}
-                {copied ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+                {copied ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3 text-zinc-400" />}
               </button>
             )}
           </div>
@@ -993,28 +988,28 @@ export default function MindHeistArena({
               {/* YOU */}
               <div className="flex items-center gap-2 flex-1 lg:flex-initial lg:w-52">
                 <div className="min-w-0 flex-1">
-                  <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-wider mb-0.5">
-                    <span className="text-amber-300 truncate flex items-center gap-1">
+                  <div className="flex items-center justify-between text-[10px] font-mono uppercase tracking-wider mb-1">
+                    <span className="text-amber-300 font-semibold truncate flex items-center gap-1">
                       {me.nickname}
                       {me.readStreak > 0 && (
-                        <span className="inline-flex items-center gap-0.5 text-[9px] px-1 rounded bg-violet-500/30 text-violet-200">
+                        <span className="inline-flex items-center gap-0.5 text-[9px] px-1 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-400/30">
                           <Flame className="w-2.5 h-2.5 text-amber-400" />
                           {me.readStreak}×
                         </span>
                       )}
                       {me.paranoiaActive && (
-                        <span className="text-[9px] px-1 rounded bg-rose-600/40 text-rose-200 animate-pulse">
+                        <span className="text-[9px] px-1 rounded bg-rose-500/20 text-rose-300 border border-rose-500/40 animate-pulse">
                           GLITCH
                         </span>
                       )}
                     </span>
-                    <span className="font-mono text-white shrink-0">
+                    <span className="font-mono text-zinc-100 tabular-nums shrink-0">
                       {me.sanity}/{me.maxSanity}
                     </span>
                   </div>
-                  <div className="h-2 rounded-full bg-slate-900 border border-white/10 overflow-hidden">
+                  <div className="h-1.5 rounded-full bg-zinc-900 border border-zinc-800 overflow-hidden">
                     <motion.div
-                      className="h-full bg-gradient-to-r from-amber-400 via-yellow-300 to-emerald-400"
+                      className="h-full bg-amber-400"
                       initial={false}
                       animate={{ width: `${Math.max(0, (me.sanity / me.maxSanity) * 100)}%` }}
                       transition={{ duration: 0.55 }}
@@ -1023,23 +1018,23 @@ export default function MindHeistArena({
                 </div>
               </div>
 
-              <span className="text-[10px] font-black text-rose-500 italic tracking-widest">VS</span>
+              <span className="text-[10px] font-mono font-semibold text-zinc-500 tracking-widest">VS</span>
 
               {/* RIVAL */}
               <div className="flex items-center gap-2 flex-1 lg:flex-initial lg:w-52">
                 <div className="min-w-0 flex-1">
-                  <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-wider mb-0.5">
-                    <span className="font-mono text-white shrink-0">
+                  <div className="flex items-center justify-between text-[10px] font-mono uppercase tracking-wider mb-1">
+                    <span className="font-mono text-zinc-100 tabular-nums shrink-0">
                       {opp.sanity}/{opp.maxSanity}
                     </span>
-                    <span className="text-rose-300 truncate flex items-center gap-1">
+                    <span className="text-rose-400 font-semibold truncate flex items-center gap-1">
                       {opp.paranoiaActive && (
-                        <span className="text-[9px] px-1 rounded bg-rose-600/40 text-rose-200">
+                        <span className="text-[9px] px-1 rounded bg-rose-500/20 text-rose-300 border border-rose-500/40">
                           GLITCHED
                         </span>
                       )}
                       {opp.readStreak > 0 && (
-                        <span className="inline-flex items-center gap-0.5 text-[9px] px-1 rounded bg-rose-500/30 text-rose-200">
+                        <span className="inline-flex items-center gap-0.5 text-[9px] px-1 rounded bg-rose-500/15 text-rose-300 border border-rose-500/30">
                           <Flame className="w-2.5 h-2.5 text-amber-400" />
                           {opp.readStreak}×
                         </span>
@@ -1047,9 +1042,9 @@ export default function MindHeistArena({
                       {opp.nickname}
                     </span>
                   </div>
-                  <div className="h-2 rounded-full bg-slate-900 border border-white/10 overflow-hidden">
+                  <div className="h-1.5 rounded-full bg-zinc-900 border border-zinc-800 overflow-hidden">
                     <motion.div
-                      className="h-full bg-gradient-to-l from-rose-500 via-fuchsia-500 to-violet-500 ml-auto"
+                      className="h-full bg-rose-500 ml-auto"
                       initial={false}
                       animate={{ width: `${Math.max(0, (opp.sanity / opp.maxSanity) * 100)}%` }}
                       transition={{ duration: 0.55 }}
@@ -1069,9 +1064,9 @@ export default function MindHeistArena({
                   sfx('chip');
                   setShowHistory(true);
                 }}
-                className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 text-[10px] font-bold uppercase tracking-wider text-slate-300 cursor-pointer"
+                className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-zinc-800 bg-[#111113] hover:bg-zinc-900 text-[10px] font-mono uppercase tracking-wider text-zinc-300 transition-colors cursor-pointer"
               >
-                <History className="w-3.5 h-3.5 text-violet-400" />
+                <History className="w-3.5 h-3.5 text-indigo-400" />
                 <span className="hidden sm:inline">Log ({state.history.length})</span>
               </button>
             )}
@@ -1081,7 +1076,7 @@ export default function MindHeistArena({
                 sfx('chip');
                 setShowCodex(true);
               }}
-              className="p-1.5 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 text-amber-300 cursor-pointer"
+              className="p-1.5 rounded-lg border border-zinc-800 bg-[#111113] hover:bg-zinc-900 text-amber-400 transition-colors cursor-pointer"
               title="Tactical Codex"
             >
               <HelpCircle className="w-4 h-4" />
@@ -1089,13 +1084,13 @@ export default function MindHeistArena({
             <button
               type="button"
               onClick={() => setSoundEnabled((s) => !s)}
-              className="p-1.5 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 cursor-pointer"
+              className="p-1.5 rounded-lg border border-zinc-800 bg-[#111113] hover:bg-zinc-900 transition-colors cursor-pointer"
               title={soundEnabled ? 'Mute SFX' : 'Enable SFX'}
             >
               {soundEnabled ? (
-                <Volume2 className="w-4 h-4 text-amber-300" />
+                <Volume2 className="w-4 h-4 text-zinc-200" />
               ) : (
-                <VolumeX className="w-4 h-4 text-slate-500" />
+                <VolumeX className="w-4 h-4 text-zinc-600" />
               )}
             </button>
           </div>
@@ -1106,18 +1101,18 @@ export default function MindHeistArena({
       <main className="relative z-10 flex-1 min-h-0 w-full max-w-[1440px] mx-auto px-3 sm:px-5 py-2.5 flex flex-col justify-center">
         {/* ================= ROOM FULL FALLBACK ================= */}
         {state.status !== 'waiting' && meIdx === -1 && (
-          <div className="max-w-md w-full mx-auto bg-[#0b0718]/90 border border-rose-500/40 rounded-3xl p-6 text-center space-y-4 shadow-2xl">
-            <Lock className="w-9 h-9 text-rose-400 mx-auto" />
-            <h1 className="text-xl font-black uppercase tracking-tight text-white">
+          <div className="max-w-md w-full mx-auto bg-[#111113] border border-zinc-800 rounded-2xl p-6 text-center space-y-4">
+            <Lock className="w-8 h-8 text-rose-400 mx-auto" />
+            <h1 className="text-xl font-semibold tracking-tight text-zinc-50">
               Astral Vault Occupied
             </h1>
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-zinc-400">
               This 1v1 Mind Heist duel already has two active intruders locked in combat.
             </p>
             <button
               type="button"
               onClick={onBack}
-              className="w-full py-2.5 rounded-xl bg-gradient-to-r from-amber-400 to-rose-500 text-slate-950 font-black uppercase tracking-wider text-xs cursor-pointer"
+              className="w-full py-2.5 rounded-xl bg-zinc-50 hover:bg-white text-zinc-950 font-semibold text-xs uppercase tracking-wider transition-colors cursor-pointer"
             >
               Return to Mind Heist Lobby
             </button>
@@ -1126,7 +1121,7 @@ export default function MindHeistArena({
 
         {/* ================= WAITING ROOM ================= */}
         {state.status === 'waiting' && (
-          <div className="max-w-lg w-full mx-auto bg-[#0b0718]/90 border border-violet-500/35 rounded-3xl p-6 text-center space-y-5 shadow-[0_0_60px_rgba(139,92,246,0.2)]">
+          <div className="max-w-lg w-full mx-auto bg-[#111113] border border-zinc-800 rounded-2xl p-6 text-center space-y-5">
             <div className="w-44 mx-auto">
               <AstralMindVaultSvg
                 mode="waiting"
@@ -1140,12 +1135,12 @@ export default function MindHeistArena({
 
             {meIdx === -1 && onJoinRoom ? (
               <div className="space-y-3">
-                <h1 className="text-2xl font-black uppercase tracking-tight text-white">
+                <h1 className="text-2xl font-semibold tracking-tight text-zinc-50">
                   Infiltrate Mind Heist
                 </h1>
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-zinc-400">
                   Enter your Phantom Callsign to breach Room{' '}
-                  <span className="font-mono text-amber-300 font-bold">{roomCode}</span>.
+                  <span className="font-mono text-amber-400 font-semibold">{roomCode}</span>.
                 </p>
                 <form
                   onSubmit={(e) => {
@@ -1161,12 +1156,12 @@ export default function MindHeistArena({
                     onChange={(e) => setJoinName(e.target.value)}
                     maxLength={18}
                     placeholder="Your Callsign"
-                    className="flex-1 px-4 py-2.5 rounded-xl bg-black/60 border border-violet-500/40 focus:border-amber-400 focus:outline-none text-sm font-bold text-white"
+                    className="flex-1 px-3.5 py-2.5 rounded-xl bg-zinc-950 border border-zinc-800 focus:border-zinc-400 focus:outline-none text-sm font-medium text-zinc-100 placeholder:text-zinc-600"
                   />
                   <button
                     type="submit"
                     disabled={busy}
-                    className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-rose-500 to-amber-500 text-slate-950 font-black uppercase text-xs tracking-wider cursor-pointer disabled:opacity-50"
+                    className="px-5 py-2.5 rounded-xl bg-zinc-50 hover:bg-white text-zinc-950 font-semibold text-xs uppercase tracking-wider transition-colors cursor-pointer disabled:opacity-50"
                   >
                     Enter
                   </button>
@@ -1174,31 +1169,31 @@ export default function MindHeistArena({
               </div>
             ) : (
               <div className="space-y-4">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-violet-500/15 border border-violet-400/35 text-violet-200 text-[10px] font-black uppercase tracking-widest">
-                  <Sparkles className="w-3.5 h-3.5 text-amber-300 animate-pulse" />
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-950 border border-zinc-800 text-zinc-300 text-[10px] font-mono uppercase tracking-widest">
+                  <Sparkles className="w-3.5 h-3.5 text-amber-400 animate-pulse" />
                   Awaiting Rival Intruder
                 </div>
-                <h1 className="text-2xl font-black uppercase tracking-tight text-white">
+                <h1 className="text-2xl font-semibold tracking-tight text-zinc-50">
                   Share Your Vault Frequency
                 </h1>
                 {roomCode && (
                   <button
                     type="button"
                     onClick={handleCopyCode}
-                    className="w-full py-4 rounded-2xl bg-black/70 border-2 border-dashed border-amber-400/50 hover:border-amber-300 flex items-center justify-center gap-3 transition-colors cursor-pointer group"
+                    className="w-full py-4 rounded-xl bg-zinc-950 border border-dashed border-zinc-700 hover:border-amber-400/60 flex items-center justify-center gap-3 transition-colors cursor-pointer group"
                   >
-                    <span className="font-mono text-3xl font-black tracking-[0.28em] text-amber-300">
+                    <span className="font-mono text-3xl font-bold tracking-[0.28em] text-amber-400">
                       {roomCode}
                     </span>
                     {copied ? (
                       <Check className="w-5 h-5 text-emerald-400" />
                     ) : (
-                      <Copy className="w-5 h-5 text-slate-400 group-hover:text-white" />
+                      <Copy className="w-5 h-5 text-zinc-400 group-hover:text-zinc-100" />
                     )}
                   </button>
                 )}
-                <p className="text-xs text-slate-400">
-                  Max Sanity: <span className="text-amber-300 font-bold">{state.maxSanity} HP</span> · 3 Random Astral Relics Dealt on Entry
+                <p className="text-xs font-mono text-zinc-500">
+                  Max Sanity: <span className="text-amber-300 font-semibold">{state.maxSanity} HP</span> · 3 Random Astral Relics Dealt on Entry
                 </p>
               </div>
             )}
@@ -1209,16 +1204,16 @@ export default function MindHeistArena({
         {state.status === 'planning' && me && opp && (
           <div className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-[325px_1fr_340px] gap-3 items-stretch">
             {/* LEFT COLUMN: DEFENSE MATRIX */}
-            <section className="rounded-2xl bg-[#0a0617]/88 border border-violet-500/30 p-3.5 flex flex-col justify-between gap-2.5 shadow-2xl min-h-0 overflow-y-auto">
+            <section className="rounded-2xl bg-[#111113] border border-zinc-800 p-3.5 flex flex-col justify-between gap-2.5 min-h-0 overflow-y-auto">
               <div className="space-y-2.5">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1.5">
                     <Shield className="w-4 h-4 text-amber-400" />
-                    <h2 className="text-xs font-black uppercase tracking-widest text-white">
+                    <h2 className="text-xs font-semibold uppercase tracking-widest text-zinc-100">
                       Defense Matrix
                     </h2>
                   </div>
-                  <span className="text-[10px] font-mono font-black px-2 py-0.5 rounded-full bg-amber-500/15 border border-amber-400/35 text-amber-300">
+                  <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded-md bg-zinc-950 border border-zinc-800 text-amber-400 tabular-nums">
                     {spentEnergy}/{NEURAL_ENERGY} ENERGY
                   </span>
                 </div>
@@ -1228,7 +1223,7 @@ export default function MindHeistArena({
                   <motion.div
                     animate={{ opacity: [0.75, 1, 0.75] }}
                     transition={{ duration: 0.9, repeat: Infinity }}
-                    className="px-2.5 py-1.5 rounded-xl bg-rose-600/20 border border-rose-500/55 flex items-center gap-2 text-[10px] font-black text-rose-200 uppercase tracking-wider"
+                    className="px-2.5 py-1.5 rounded-xl bg-rose-500/10 border border-rose-500/40 flex items-center gap-2 text-[10px] font-mono font-semibold text-rose-300 uppercase tracking-wider"
                   >
                     <AlertTriangle className="w-3.5 h-3.5 text-rose-400 shrink-0" />
                     <span>PARANOIA GLITCH: Chamber telemetry destabilized!</span>
@@ -1237,8 +1232,8 @@ export default function MindHeistArena({
 
                 {/* 3 One-Click Tactical Presets */}
                 <div>
-                  <div className="text-[9.5px] font-black uppercase tracking-widest text-slate-400 mb-1.5">
-                    One-Click Tactical Presets
+                  <div className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 mb-1.5">
+                    Tactical Presets
                   </div>
                   <div className="grid grid-cols-3 gap-1.5">
                     {TACTICAL_PRESETS.map((preset) => (
@@ -1247,10 +1242,10 @@ export default function MindHeistArena({
                         type="button"
                         disabled={me.locked || busy}
                         onClick={() => applyPreset(preset)}
-                        className={`px-2 py-1.5 rounded-xl bg-black/50 border text-left transition-all cursor-pointer disabled:opacity-40 ${preset.accentClass}`}
+                        className="px-2 py-1.5 rounded-xl bg-zinc-950 border border-zinc-800 hover:border-zinc-600 text-left transition-colors cursor-pointer disabled:opacity-40"
                       >
-                        <div className="text-[10px] font-black leading-tight">{preset.name}</div>
-                        <div className="text-[8.5px] text-slate-400 leading-tight mt-0.5 truncate">
+                        <div className="text-[10px] font-semibold text-zinc-100 leading-tight">{preset.name}</div>
+                        <div className="text-[8.5px] text-zinc-500 leading-tight mt-0.5 truncate">
                           {preset.tagline}
                         </div>
                       </button>
@@ -1259,14 +1254,14 @@ export default function MindHeistArena({
                 </div>
 
                 {/* Neural Energy Bar */}
-                <div className="space-y-1">
-                  <div className="flex items-center justify-between text-[10px] font-mono">
-                    <span className="text-slate-400">
-                      Shields: <strong className="text-white">{totalShields}</strong> · Strike:{' '}
-                      <strong className="text-rose-300">{plan.strikePower}</strong>
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between text-[10px] font-mono tabular-nums">
+                    <span className="text-zinc-400">
+                      Shields: <strong className="text-amber-300">{totalShields}</strong> · Strike:{' '}
+                      <strong className="text-rose-400">{plan.strikePower}</strong>
                     </span>
                     {unspentEnergy > 0 && (
-                      <span className="text-amber-300 font-bold">+{unspentEnergy} Free</span>
+                      <span className="text-amber-400 font-semibold">+{unspentEnergy} Free</span>
                     )}
                   </div>
                   <div className="grid grid-cols-12 gap-1">
@@ -1276,12 +1271,12 @@ export default function MindHeistArena({
                       return (
                         <div
                           key={idx}
-                          className={`h-2 rounded-sm transition-all ${
+                          className={`h-1.5 rounded-sm transition-colors ${
                             isShieldPip
-                              ? 'bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.6)]'
+                              ? 'bg-amber-400'
                               : isStrikePip
-                              ? 'bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.65)]'
-                              : 'bg-slate-800'
+                              ? 'bg-rose-500'
+                              : 'bg-zinc-800'
                           }`}
                         />
                       );
@@ -1293,33 +1288,34 @@ export default function MindHeistArena({
                 <div className="space-y-2">
                   {CHAMBERS.map((chamber) => {
                     const meta = CHAMBER_META[chamber];
+                    const strokeMeta = VAULT_CHAMBER_STROKE[chamber];
                     const sh = plan.shields[chamber];
                     const hasTrap = plan.trapChamber === chamber;
                     return (
                       <div
                         key={chamber}
-                        className={`rounded-xl p-2.5 border transition-all ${
+                        className={`rounded-xl p-2.5 border transition-colors ${
                           hasTrap
-                            ? 'bg-rose-950/35 border-rose-500/55 shadow-[0_0_16px_rgba(244,63,94,0.18)]'
-                            : 'bg-black/45 border-white/10'
+                            ? 'bg-rose-500/[0.06] border-rose-500/45'
+                            : 'bg-zinc-950 border-zinc-800/90'
                         }`}
                       >
                         <div className="flex items-center justify-between gap-2 mb-1.5">
                           <div className="flex items-center gap-1.5 min-w-0">
                             <span
-                              className={`w-6 h-6 rounded-lg flex items-center justify-center font-black text-xs border ${meta.bgClass} ${meta.borderClass} ${meta.textClass}`}
+                              className={`w-6 h-6 rounded-lg flex items-center justify-center font-semibold text-xs border ${strokeMeta.badgeBg} ${strokeMeta.badgeBorder} ${strokeMeta.text}`}
                             >
                               {meta.greek}
                             </span>
                             <div className="min-w-0">
                               <div
-                                className={`text-xs font-black tracking-wider ${meta.textClass} ${
+                                className={`text-xs font-semibold tracking-wider ${strokeMeta.text} ${
                                   isParanoia ? 'animate-pulse' : ''
                                 }`}
                               >
                                 {isParanoia ? meta.glitchLabel : meta.label}
                               </div>
-                              <div className="text-[9.5px] text-slate-400 truncate">
+                              <div className="text-[9.5px] text-zinc-500 truncate">
                                 {isParanoia ? 'ERR::MEM_CORRUPT' : meta.codename}
                               </div>
                             </div>
@@ -1333,10 +1329,10 @@ export default function MindHeistArena({
                               sfx('card_pick');
                               setPlan((prev) => ({ ...prev, trapChamber: chamber }));
                             }}
-                            className={`px-2 py-1 rounded-lg text-[9.5px] font-black uppercase tracking-wider flex items-center gap-1 border transition-all cursor-pointer disabled:opacity-40 ${
+                            className={`px-2 py-1 rounded-lg text-[9.5px] font-mono font-semibold uppercase tracking-wider flex items-center gap-1 border transition-colors cursor-pointer disabled:opacity-40 ${
                               hasTrap
-                                ? 'bg-rose-500 text-white border-rose-300 shadow-[0_0_12px_rgba(244,63,94,0.6)]'
-                                : 'bg-white/5 text-slate-400 border-white/10 hover:text-rose-300 hover:border-rose-500/40'
+                                ? 'bg-rose-500 text-white border-rose-400'
+                                : 'bg-zinc-900 text-zinc-400 border-zinc-800 hover:text-rose-300 hover:border-rose-500/40'
                             }`}
                           >
                             <Skull className="w-3 h-3" />
@@ -1350,23 +1346,23 @@ export default function MindHeistArena({
                             type="button"
                             disabled={me.locked || busy || sh <= 0}
                             onClick={() => adjustShield(chamber, -1)}
-                            className="w-7 h-7 rounded-lg bg-slate-900 hover:bg-slate-800 border border-white/15 flex items-center justify-center text-slate-200 disabled:opacity-30 cursor-pointer"
+                            className="w-7 h-7 rounded-lg bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 flex items-center justify-center text-zinc-200 disabled:opacity-30 cursor-pointer transition-colors"
                             aria-label={`Decrease ${chamber} shield`}
                           >
                             <Minus className="w-3.5 h-3.5" />
                           </button>
                           <div className="flex-1">
-                            <div className="h-2 rounded-full bg-slate-900 overflow-hidden">
+                            <div className="h-1.5 rounded-full bg-zinc-900 overflow-hidden">
                               <div
                                 className="h-full transition-all duration-200 rounded-full"
                                 style={{
                                   width: `${(sh / MAX_CHAMBER_SHIELD) * 100}%`,
-                                  backgroundColor: meta.hex,
+                                  backgroundColor: strokeMeta.hex,
                                 }}
                               />
                             </div>
                           </div>
-                          <span className="w-12 text-center font-mono text-xs font-black text-white">
+                          <span className="w-12 text-center font-mono text-xs font-semibold text-zinc-100 tabular-nums">
                             SH {sh}
                           </span>
                           <button
@@ -1378,7 +1374,7 @@ export default function MindHeistArena({
                               (unspentEnergy <= 0 && plan.strikePower <= 0)
                             }
                             onClick={() => adjustShield(chamber, 1)}
-                            className="w-7 h-7 rounded-lg bg-slate-900 hover:bg-slate-800 border border-white/15 flex items-center justify-center text-slate-200 disabled:opacity-30 cursor-pointer"
+                            className="w-7 h-7 rounded-lg bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 flex items-center justify-center text-zinc-200 disabled:opacity-30 cursor-pointer transition-colors"
                             aria-label={`Increase ${chamber} shield`}
                           >
                             <Plus className="w-3.5 h-3.5" />
@@ -1391,24 +1387,24 @@ export default function MindHeistArena({
               </div>
 
               {/* Subtle Defense Tip */}
-              <div className="text-[10px] text-slate-400 bg-black/40 border border-white/5 rounded-xl px-2.5 py-2 leading-snug">
-                <strong className="text-rose-300">Phantom Trap:</strong> Un-read attackers deal half Strike &amp; suffer{' '}
-                <strong className="text-white">14 Recoil</strong>.
+              <div className="text-[10px] text-zinc-400 bg-zinc-950 border border-zinc-800/80 rounded-xl px-2.5 py-2 leading-snug">
+                <strong className="text-rose-400 font-semibold">Phantom Trap:</strong> Un-read attackers deal half Strike &amp; suffer{' '}
+                <strong className="text-zinc-100">14 Recoil</strong>.
               </div>
             </section>
 
             {/* CENTER COLUMN: ANIMATED 3-RING ASTRAL MIND VAULT + LOCK CONTROL */}
-            <section className="rounded-2xl bg-[#070413]/75 border border-amber-400/25 p-3.5 flex flex-col items-center justify-between gap-2 relative overflow-hidden shadow-2xl">
+            <section className="rounded-2xl bg-[#111113] border border-zinc-800 p-3.5 flex flex-col items-center justify-between gap-2 relative overflow-hidden">
               {/* Top Telemetry Pill */}
               <div className="w-full flex items-center justify-between gap-2 text-[10px]">
-                <span className="px-2.5 py-1 rounded-full bg-black/60 border border-white/10 font-mono text-slate-300">
+                <span className="px-2.5 py-1 rounded-md bg-zinc-950 border border-zinc-800 font-mono text-zinc-400">
                   CLICK AN ORB TO TARGET
                 </span>
                 <span
-                  className={`px-2.5 py-1 rounded-full font-black uppercase tracking-wider border ${
+                  className={`px-2.5 py-1 rounded-md font-mono font-semibold uppercase tracking-wider border ${
                     opp.locked
-                      ? 'bg-rose-500/20 border-rose-400/50 text-rose-300 animate-pulse'
-                      : 'bg-violet-500/15 border-violet-400/35 text-violet-300'
+                      ? 'bg-rose-500/10 border-rose-500/40 text-rose-300 animate-pulse'
+                      : 'bg-zinc-950 border-zinc-800 text-zinc-300'
                   }`}
                 >
                   {isSolo
@@ -1416,7 +1412,7 @@ export default function MindHeistArena({
                       ? 'PHANTOM-AI CALCULATING…'
                       : 'PHANTOM-AI WATCHING'
                     : opp.locked
-                    ? `${opp.nickname} LOCKED IN ⚡`
+                    ? `${opp.nickname} LOCKED IN`
                     : `${opp.nickname} THINKING…`}
                 </span>
               </div>
@@ -1439,34 +1435,34 @@ export default function MindHeistArena({
 
               {/* Live Strike Readout & Lock Button */}
               <div className="w-full max-w-md space-y-2">
-                <div className="flex items-center justify-between px-3 py-1.5 rounded-xl bg-black/60 border border-white/10 text-[11px]">
-                  <span className="text-slate-400">
+                <div className="flex items-center justify-between px-3 py-1.5 rounded-xl bg-zinc-950 border border-zinc-800 text-[11px]">
+                  <span className="text-zinc-400">
                     Targeting{' '}
-                    <strong className={CHAMBER_META[plan.targetChamber].textClass}>
+                    <strong className={VAULT_CHAMBER_STROKE[plan.targetChamber].text}>
                       {plan.targetChamber}
                     </strong>{' '}
                     · Call{' '}
-                    <strong className="text-violet-300">{plan.mindReadCall}</strong>
+                    <strong className="text-indigo-300">{plan.mindReadCall}</strong>
                   </span>
-                  <span className="font-mono font-black text-amber-300">
+                  <span className="font-mono font-semibold text-amber-400 tabular-nums">
                     MAX {previewMaxDmg} DMG
                     {plan.relic === 'time_freeze' ? ' (SH→0)' : ''}
                   </span>
                 </div>
 
                 {me.locked ? (
-                  <div className="w-full py-3.5 rounded-2xl bg-violet-600/25 border border-violet-400/50 text-violet-200 font-black uppercase tracking-widest text-xs flex items-center justify-center gap-2">
-                    <Lock className="w-4 h-4 animate-pulse text-amber-300" />
+                  <div className="w-full py-3 rounded-xl bg-zinc-900 border border-zinc-700 text-zinc-200 font-semibold uppercase tracking-widest text-xs flex items-center justify-center gap-2">
+                    <Lock className="w-4 h-4 animate-pulse text-amber-400" />
                     {isSolo ? 'Resolving Astral Clash…' : `Locked In — Waiting for ${opp.nickname}…`}
                   </div>
                 ) : (
                   <motion.button
                     type="button"
-                    whileHover={{ scale: 1.015 }}
-                    whileTap={{ scale: 0.985 }}
+                    whileHover={{ scale: 1.01 }}
+                    whileTap={{ scale: 0.99 }}
                     disabled={busy}
                     onClick={handleConfirmLock}
-                    className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-rose-600 via-amber-500 to-violet-600 hover:brightness-110 text-slate-950 font-black uppercase tracking-[0.16em] text-sm flex items-center justify-center gap-2 shadow-[0_0_32px_rgba(244,63,94,0.45)] transition-all cursor-pointer disabled:opacity-50"
+                    className="w-full py-3 rounded-xl bg-zinc-50 hover:bg-white text-zinc-950 font-semibold tracking-wide text-sm flex items-center justify-center gap-2 transition-colors cursor-pointer disabled:opacity-50"
                   >
                     <Swords className="w-4 h-4" />
                     Lock Neural Breach
@@ -1477,17 +1473,17 @@ export default function MindHeistArena({
             </section>
 
             {/* RIGHT COLUMN: OFFENSE, MIND-READ CALL & TAROT RELICS */}
-            <section className="rounded-2xl bg-[#0a0617]/88 border border-rose-500/30 p-3.5 flex flex-col justify-between gap-2.5 shadow-2xl min-h-0 overflow-y-auto">
+            <section className="rounded-2xl bg-[#111113] border border-zinc-800 p-3.5 flex flex-col justify-between gap-2.5 min-h-0 overflow-y-auto">
               {/* Target & Strike Power */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1.5">
                     <Crosshair className="w-4 h-4 text-rose-400" />
-                    <h2 className="text-xs font-black uppercase tracking-widest text-white">
+                    <h2 className="text-xs font-semibold uppercase tracking-widest text-zinc-100">
                       Offense &amp; Breach
                     </h2>
                   </div>
-                  <span className="text-[10px] font-mono text-rose-300 font-bold">
+                  <span className="text-[10px] font-mono text-rose-400 font-semibold tabular-nums">
                     {plan.relic === 'overdrive' ? `${plan.strikePower}×2 = ${previewStrike}` : `${plan.strikePower} PWR`}
                   </span>
                 </div>
@@ -1497,6 +1493,7 @@ export default function MindHeistArena({
                   {CHAMBERS.map((ch) => {
                     const active = plan.targetChamber === ch;
                     const meta = CHAMBER_META[ch];
+                    const strokeMeta = VAULT_CHAMBER_STROKE[ch];
                     return (
                       <button
                         key={ch}
@@ -1506,21 +1503,21 @@ export default function MindHeistArena({
                           sfx('card_pick');
                           setPlan((prev) => ({ ...prev, targetChamber: ch }));
                         }}
-                        className={`py-2 rounded-xl border text-xs font-black uppercase tracking-wider transition-all cursor-pointer disabled:opacity-40 ${
+                        className={`py-2 rounded-xl border text-xs font-mono font-semibold uppercase tracking-wider transition-colors cursor-pointer disabled:opacity-40 ${
                           active
-                            ? 'bg-rose-500/25 border-amber-400 text-white shadow-[0_0_14px_rgba(244,63,94,0.4)]'
-                            : 'bg-black/45 border-white/10 text-slate-400 hover:border-white/25 hover:text-white'
+                            ? 'bg-amber-500/12 border-amber-400/70 text-zinc-50'
+                            : 'bg-zinc-950 border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-zinc-100'
                         }`}
                       >
-                        <span className={meta.textClass}>{meta.greek}</span> {ch}
+                        <span className={strokeMeta.text}>{meta.greek}</span> {ch}
                       </button>
                     );
                   })}
                 </div>
 
                 {/* Strike Power Stepper */}
-                <div className="flex items-center justify-between gap-2 px-2.5 py-2 rounded-xl bg-black/50 border border-white/10">
-                  <span className="text-[10px] font-black uppercase tracking-wider text-slate-300">
+                <div className="flex items-center justify-between gap-2 px-2.5 py-2 rounded-xl bg-zinc-950 border border-zinc-800">
+                  <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-400">
                     Strike Power
                   </span>
                   <div className="flex items-center gap-2">
@@ -1528,18 +1525,18 @@ export default function MindHeistArena({
                       type="button"
                       disabled={me.locked || busy || plan.strikePower <= 0}
                       onClick={() => adjustStrike(-1)}
-                      className="w-7 h-7 rounded-lg bg-slate-900 hover:bg-slate-800 border border-white/15 flex items-center justify-center text-white disabled:opacity-30 cursor-pointer"
+                      className="w-7 h-7 rounded-lg bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 flex items-center justify-center text-zinc-100 disabled:opacity-30 cursor-pointer transition-colors"
                     >
                       <Minus className="w-3.5 h-3.5" />
                     </button>
-                    <span className="w-8 text-center font-mono text-base font-black text-rose-400">
+                    <span className="w-8 text-center font-mono text-base font-bold text-rose-400 tabular-nums">
                       {plan.strikePower}
                     </span>
                     <button
                       type="button"
                       disabled={me.locked || busy || plan.strikePower >= NEURAL_ENERGY}
                       onClick={() => adjustStrike(1)}
-                      className="w-7 h-7 rounded-lg bg-slate-900 hover:bg-slate-800 border border-white/15 flex items-center justify-center text-white disabled:opacity-30 cursor-pointer"
+                      className="w-7 h-7 rounded-lg bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 flex items-center justify-center text-zinc-100 disabled:opacity-30 cursor-pointer transition-colors"
                     >
                       <Plus className="w-3.5 h-3.5" />
                     </button>
@@ -1548,20 +1545,20 @@ export default function MindHeistArena({
               </div>
 
               {/* Mind-Read Call */}
-              <div className="space-y-1.5 pt-1 border-t border-white/10">
+              <div className="space-y-1.5 pt-2 border-t border-zinc-800/80">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1.5">
-                    <Eye className="w-4 h-4 text-violet-400" />
-                    <span className="text-xs font-black uppercase tracking-widest text-white">
+                    <Eye className="w-4 h-4 text-indigo-400" />
+                    <span className="text-xs font-semibold uppercase tracking-widest text-zinc-100">
                       Mind-Read Call
                     </span>
                   </div>
-                  <span className="text-[10px] font-mono font-black text-violet-300">
+                  <span className="text-[10px] font-mono font-semibold text-indigo-300 tabular-nums">
                     +{nextCounterReadDmg} PSYCHIC
                   </span>
                 </div>
-                <p className="text-[10px] text-slate-400 leading-tight">
-                  Where did <strong className="text-slate-200">{opp.nickname}</strong> hide their Phantom Trap?
+                <p className="text-[10px] text-zinc-400 leading-tight">
+                  Where did <strong className="text-zinc-200">{opp.nickname}</strong> hide their Phantom Trap?
                 </p>
                 <div className="grid grid-cols-3 gap-1.5">
                   {CHAMBERS.map((ch) => {
@@ -1575,10 +1572,10 @@ export default function MindHeistArena({
                           sfx('chip');
                           setPlan((prev) => ({ ...prev, mindReadCall: ch }));
                         }}
-                        className={`py-2 rounded-xl border text-[11px] font-black uppercase tracking-wider transition-all cursor-pointer disabled:opacity-40 ${
+                        className={`py-2 rounded-xl border text-[11px] font-mono font-semibold uppercase tracking-wider transition-colors cursor-pointer disabled:opacity-40 ${
                           active
-                            ? 'bg-violet-600/35 border-violet-300 text-white shadow-[0_0_14px_rgba(139,92,246,0.5)]'
-                            : 'bg-black/45 border-white/10 text-slate-400 hover:border-violet-400/40 hover:text-violet-200'
+                            ? 'bg-indigo-500/15 border-indigo-400/70 text-zinc-50'
+                            : 'bg-zinc-950 border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200'
                         }`}
                       >
                         {ch}
@@ -1588,16 +1585,16 @@ export default function MindHeistArena({
                 </div>
               </div>
 
-              {/* 3 Holographic Astral Tarot Relics */}
-              <div className="space-y-1.5 pt-1 border-t border-white/10">
+              {/* 3 Astral Relics */}
+              <div className="space-y-1.5 pt-2 border-t border-zinc-800/80">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1.5">
                     <Sparkles className="w-4 h-4 text-amber-400" />
-                    <span className="text-xs font-black uppercase tracking-widest text-white">
+                    <span className="text-xs font-semibold uppercase tracking-widest text-zinc-100">
                       Astral Relics
                     </span>
                   </div>
-                  <span className="text-[10px] font-mono text-slate-400">
+                  <span className="text-[10px] font-mono text-zinc-500 tabular-nums">
                     Rival: {opp.relics.length - opp.usedRelics.length}/{opp.relics.length} left
                   </span>
                 </div>
@@ -1611,52 +1608,49 @@ export default function MindHeistArena({
                       <motion.button
                         key={relicId}
                         type="button"
-                        whileHover={!spent && !me.locked ? { scale: 1.015 } : undefined}
-                        whileTap={!spent && !me.locked ? { scale: 0.985 } : undefined}
+                        whileHover={!spent && !me.locked ? { scale: 1.01 } : undefined}
+                        whileTap={!spent && !me.locked ? { scale: 0.99 } : undefined}
                         disabled={spent || me.locked || busy}
                         onClick={() => toggleRelic(relicId)}
-                        className={`relative overflow-hidden text-left p-2.5 rounded-xl border transition-all ${
+                        className={`relative overflow-hidden text-left p-2.5 rounded-xl border transition-colors ${
                           spent
-                            ? 'bg-slate-950/60 border-white/5 opacity-40 cursor-not-allowed'
+                            ? 'bg-zinc-950/60 border-zinc-900 opacity-40 cursor-not-allowed'
                             : armed
-                            ? `bg-gradient-to-r ${def.gradientClass} border-amber-300 shadow-[0_0_20px_rgba(251,191,36,0.35)] cursor-pointer`
-                            : `bg-gradient-to-r ${def.gradientClass} ${def.borderClass} hover:border-amber-300/70 cursor-pointer`
+                            ? 'bg-amber-500/[0.08] border-amber-400/75 cursor-pointer'
+                            : 'bg-zinc-950 border-zinc-800 hover:border-zinc-600 cursor-pointer'
                         }`}
                       >
-                        {/* Holographic foil overlay */}
-                        {!spent && <div className="absolute inset-0 epic-foil opacity-35" />}
-
                         <div className="relative z-10 flex items-center justify-between gap-2">
                           <div className="flex items-center gap-2 min-w-0">
                             <div
-                              className={`w-8 h-8 rounded-lg bg-black/55 border flex items-center justify-center shrink-0 ${
-                                armed ? 'border-amber-300 text-amber-300' : 'border-white/15 text-white'
+                              className={`w-8 h-8 rounded-lg bg-[#111113] border flex items-center justify-center shrink-0 ${
+                                armed ? 'border-amber-400/70 text-amber-400' : 'border-zinc-800 text-zinc-300'
                               }`}
                             >
                               <RelicIcon relic={relicId} className="w-4 h-4" />
                             </div>
                             <div className="min-w-0">
                               <div className="flex items-center gap-1.5">
-                                <span className="text-[8.5px] font-mono font-bold tracking-widest text-amber-300/80">
+                                <span className="text-[8.5px] font-mono tracking-widest text-amber-400/80">
                                   {def.arcana}
                                 </span>
                               </div>
-                              <div className="text-xs font-black text-white leading-tight">
+                              <div className="text-xs font-semibold text-zinc-100 leading-tight">
                                 {def.name}
                               </div>
-                              <div className="text-[10px] text-slate-300 leading-tight truncate">
+                              <div className="text-[10px] text-zinc-400 leading-tight truncate">
                                 {def.shortEffect}
                               </div>
                             </div>
                           </div>
 
                           <span
-                            className={`text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full shrink-0 border ${
+                            className={`text-[9px] font-mono font-semibold uppercase tracking-widest px-2 py-0.5 rounded-md shrink-0 border ${
                               spent
-                                ? 'bg-slate-900 border-slate-700 text-slate-500'
+                                ? 'bg-zinc-900 border-zinc-800 text-zinc-600'
                                 : armed
-                                ? 'bg-amber-400 text-slate-950 border-amber-200'
-                                : 'bg-black/45 border-white/15 text-slate-300'
+                                ? 'bg-amber-400 text-zinc-950 border-amber-300'
+                                : 'bg-[#111113] border-zinc-800 text-zinc-400'
                             }`}
                           >
                             {spent ? 'SPENT' : armed ? 'ARMED' : '1-USE'}
@@ -1676,14 +1670,14 @@ export default function MindHeistArena({
           <div className="flex-1 min-h-0 flex flex-col justify-between gap-3 py-1">
             {/* Headline Banner */}
             <motion.div
-              initial={{ opacity: 0, y: -12, scale: 0.97 }}
+              initial={{ opacity: 0, y: -10, scale: 0.98 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              className="text-center px-4 py-2.5 rounded-2xl bg-gradient-to-r from-rose-950/70 via-violet-950/80 to-amber-950/60 border border-amber-400/40 shadow-[0_0_30px_rgba(244,63,94,0.25)]"
+              className="text-center px-4 py-2.5 rounded-2xl bg-[#111113] border border-zinc-800"
             >
-              <div className="text-[10px] font-mono font-black uppercase tracking-[0.25em] text-amber-300">
+              <div className="text-[10px] font-mono uppercase tracking-[0.22em] text-amber-400">
                 ROUND {latestLog.round} CLASH RESOLUTION
               </div>
-              <h2 className="text-base sm:text-xl font-black uppercase tracking-tight text-white mt-0.5">
+              <h2 className="text-base sm:text-xl font-semibold tracking-tight text-zinc-50 mt-0.5">
                 {latestLog.headline}
               </h2>
             </motion.div>
@@ -1733,8 +1727,8 @@ export default function MindHeistArena({
             </div>
 
             {/* Next Round Sync Footer */}
-            <div className="shrink-0 flex flex-col sm:flex-row items-center justify-between gap-2.5 px-4 py-2.5 rounded-2xl bg-[#0a0617]/90 border border-violet-500/30">
-              <div className="text-xs text-slate-300 flex items-center gap-2">
+            <div className="shrink-0 flex flex-col sm:flex-row items-center justify-between gap-2.5 px-4 py-2.5 rounded-2xl bg-[#111113] border border-zinc-800">
+              <div className="text-xs text-zinc-300 flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-amber-400 shrink-0" />
                 <span>
                   {me.paranoiaActive
@@ -1746,21 +1740,21 @@ export default function MindHeistArena({
               </div>
 
               {me.nextReady && !isSolo ? (
-                <div className="px-5 py-2.5 rounded-xl bg-violet-600/25 border border-violet-400/50 text-violet-200 text-xs font-black uppercase tracking-widest flex items-center gap-2">
+                <div className="px-5 py-2.5 rounded-xl bg-zinc-900 border border-zinc-700 text-zinc-200 text-xs font-mono uppercase tracking-wider flex items-center gap-2">
                   <Check className="w-4 h-4 text-emerald-400" />
                   Synced — Waiting for {opp.nickname}…
                 </div>
               ) : (
                 <motion.button
                   type="button"
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+                  whileHover={{ scale: 1.01 }}
+                  whileTap={{ scale: 0.99 }}
                   disabled={busy}
                   onClick={() => {
                     sfx('deal');
                     onNextRound();
                   }}
-                  className="w-full sm:w-auto px-7 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 via-rose-500 to-violet-500 text-slate-950 font-black uppercase tracking-widest text-xs flex items-center justify-center gap-2 shadow-[0_0_24px_rgba(251,191,36,0.4)] cursor-pointer disabled:opacity-50"
+                  className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-zinc-50 hover:bg-white text-zinc-950 font-semibold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-colors cursor-pointer disabled:opacity-50"
                 >
                   Next Round (R{state.round + 1})
                   <ChevronRight className="w-4 h-4" />
@@ -1773,26 +1767,26 @@ export default function MindHeistArena({
         {/* ================= VICTORY / DEFEAT VERDICT ================= */}
         {state.status === 'finished' && me && opp && latestLog && myBreakdown && oppBreakdown && (
           <div className="flex-1 min-h-0 flex flex-col justify-between gap-3 py-1 overflow-y-auto">
-            {/* Dramatic Verdict Banner */}
+            {/* Verdict Banner */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.94 }}
+              initial={{ opacity: 0, scale: 0.96 }}
               animate={{ opacity: 1, scale: 1 }}
-              className={`rounded-3xl p-5 border text-center relative overflow-hidden shadow-2xl ${
+              className={`rounded-2xl p-5 border text-center relative overflow-hidden bg-[#111113] ${
                 state.winnerIdx === meIdx
-                  ? 'bg-gradient-to-r from-amber-950/75 via-violet-950/80 to-rose-950/70 border-amber-400/60'
+                  ? 'border-amber-400/50'
                   : state.winnerIdx === -1
-                  ? 'bg-gradient-to-r from-violet-950/80 via-slate-950/90 to-fuchsia-950/80 border-violet-400/60'
-                  : 'bg-gradient-to-r from-rose-950/80 via-slate-950/90 to-indigo-950/80 border-rose-500/60'
+                  ? 'border-indigo-400/50'
+                  : 'border-rose-500/50'
               }`}
             >
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-black/45 border border-white/15 text-[10px] font-black uppercase tracking-[0.25em] text-amber-300 mb-2">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-950 border border-zinc-800 text-[10px] font-mono uppercase tracking-[0.22em] text-amber-400 mb-2">
                 {state.winnerIdx === meIdx ? (
                   <>
-                    <Trophy className="w-3.5 h-3.5 text-amber-300" /> HEIST COMPLETE
+                    <Trophy className="w-3.5 h-3.5 text-amber-400" /> HEIST COMPLETE
                   </>
                 ) : state.winnerIdx === -1 ? (
                   <>
-                    <Brain className="w-3.5 h-3.5 text-violet-300" /> NEURAL SINGULARITY
+                    <Brain className="w-3.5 h-3.5 text-indigo-400" /> NEURAL SINGULARITY
                   </>
                 ) : (
                   <>
@@ -1801,21 +1795,21 @@ export default function MindHeistArena({
                 )}
               </div>
 
-              <h1 className="text-2xl sm:text-4xl font-black uppercase tracking-tight text-white">
+              <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-zinc-50">
                 {state.winnerIdx === meIdx
-                  ? `VICTORY — ${opp.nickname.toUpperCase()}’S VAULT COLLAPSED!`
+                  ? `Victory — ${opp.nickname}’s Vault Collapsed`
                   : state.winnerIdx === -1
-                  ? 'MUTUAL COLLAPSE — DOUBLE KNOCKOUT!'
-                  : `DEFEAT — ${opp.nickname.toUpperCase()} BREACHED YOUR MIND`}
+                  ? 'Mutual Collapse — Double Knockout'
+                  : `Defeat — ${opp.nickname} Breached Your Mind`}
               </h1>
 
-              <p className="text-xs text-slate-300 mt-1.5">
+              <p className="text-xs font-mono text-zinc-400 mt-1.5">
                 Decided on Round {latestLog.round} · Final Sanity: <strong className="text-amber-300">{me.sanity}</strong> vs{' '}
-                <strong className="text-rose-300">{opp.sanity}</strong> · Relics Spent:{' '}
-                <strong className="text-violet-300">{me.usedRelics.length}/3</strong>
+                <strong className="text-rose-400">{opp.sanity}</strong> · Relics Spent:{' '}
+                <strong className="text-indigo-300">{me.usedRelics.length}/3</strong>
               </p>
 
-              <div className="mt-4 flex flex-wrap items-center justify-center gap-3">
+              <div className="mt-4 flex flex-wrap items-center justify-center gap-2.5">
                 <button
                   type="button"
                   disabled={busy}
@@ -1823,7 +1817,7 @@ export default function MindHeistArena({
                     sfx('deal');
                     onRematch();
                   }}
-                  className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 to-rose-500 text-slate-950 font-black uppercase tracking-widest text-xs flex items-center gap-2 shadow-[0_0_24px_rgba(251,191,36,0.45)] cursor-pointer disabled:opacity-50"
+                  className="px-6 py-2.5 rounded-xl bg-zinc-50 hover:bg-white text-zinc-950 font-semibold text-xs uppercase tracking-wider flex items-center gap-2 transition-colors cursor-pointer disabled:opacity-50"
                 >
                   <RotateCcw className="w-4 h-4" />
                   Run Rematch
@@ -1834,7 +1828,7 @@ export default function MindHeistArena({
                     sfx('chip');
                     onBack();
                   }}
-                  className="px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 border border-white/15 text-white font-black uppercase tracking-widest text-xs cursor-pointer"
+                  className="px-5 py-2.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-100 font-medium text-xs uppercase tracking-wider transition-colors cursor-pointer"
                 >
                   Return to Lobby
                 </button>
@@ -1871,55 +1865,55 @@ export default function MindHeistArena({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4"
+            className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4"
             onClick={() => setShowCodex(false)}
           >
             <motion.div
-              initial={{ scale: 0.94, opacity: 0 }}
+              initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.94, opacity: 0 }}
+              exit={{ scale: 0.95, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
-              className="max-w-2xl w-full max-h-[85dvh] overflow-y-auto rounded-3xl bg-[#0b0718] border border-amber-400/40 p-5 space-y-4 shadow-2xl"
+              className="max-w-2xl w-full max-h-[85dvh] overflow-y-auto rounded-2xl bg-[#111113] border border-zinc-800 p-5 space-y-4"
             >
-              <div className="flex items-center justify-between border-b border-white/10 pb-3">
+              <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
                 <div className="flex items-center gap-2">
                   <Brain className="w-5 h-5 text-amber-400" />
-                  <h3 className="text-sm font-black uppercase tracking-widest text-white">
+                  <h3 className="text-sm font-semibold tracking-tight text-zinc-50">
                     Mind Heist — Tactical Codex
                   </h3>
                 </div>
                 <button
                   type="button"
                   onClick={() => setShowCodex(false)}
-                  className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white cursor-pointer"
+                  className="p-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-400 hover:text-zinc-100 cursor-pointer transition-colors"
                 >
                   <X className="w-4 h-4" />
                 </button>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs text-slate-300">
-                <div className="p-3 rounded-xl bg-black/50 border border-white/10 space-y-1">
-                  <div className="font-black text-amber-300 uppercase text-[11px]">1. Allocate 12 Energy</div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs text-zinc-300">
+                <div className="p-3 rounded-xl bg-zinc-950 border border-zinc-800 space-y-1">
+                  <div className="font-mono font-semibold text-amber-400 uppercase text-[11px]">1. Allocate 12 Energy</div>
                   <p>
                     Split 12 Neural Energy across 3 Chamber Shields (ALPHA, BETA, OMEGA, max 10 each) and your Strike Power.
                   </p>
                 </div>
-                <div className="p-3 rounded-xl bg-black/50 border border-white/10 space-y-1">
-                  <div className="font-black text-rose-300 uppercase text-[11px]">2. Breach Formula</div>
+                <div className="p-3 rounded-xl bg-zinc-950 border border-zinc-800 space-y-1">
+                  <div className="font-mono font-semibold text-rose-400 uppercase text-[11px]">2. Breach Formula</div>
                   <p>
                     If <strong>Strike &gt; Rival Shield</strong> on the targeted chamber, you deal{' '}
                     <code className="text-amber-300">(Strike − Shield) × 4 + 8</code> damage!
                   </p>
                 </div>
-                <div className="p-3 rounded-xl bg-black/50 border border-white/10 space-y-1">
-                  <div className="font-black text-rose-400 uppercase text-[11px]">3. Phantom Trap Ambush</div>
+                <div className="p-3 rounded-xl bg-zinc-950 border border-zinc-800 space-y-1">
+                  <div className="font-mono font-semibold text-rose-400 uppercase text-[11px]">3. Phantom Trap Ambush</div>
                   <p>
                     Attacking your rival’s trapped chamber (without calling it) <strong>halves your Strike</strong> and deals{' '}
                     <strong>14 Trap Recoil</strong> to you!
                   </p>
                 </div>
-                <div className="p-3 rounded-xl bg-black/50 border border-white/10 space-y-1">
-                  <div className="font-black text-violet-300 uppercase text-[11px]">4. Psychic Counter-Read</div>
+                <div className="p-3 rounded-xl bg-zinc-950 border border-zinc-800 space-y-1">
+                  <div className="font-mono font-semibold text-indigo-400 uppercase text-[11px]">4. Psychic Counter-Read</div>
                   <p>
                     Correctly calling your rival’s Trap shatters it, deals <strong>+14 Bonus Damage</strong>, and builds a{' '}
                     <strong>+4/streak</strong> Read Combo!
@@ -1928,19 +1922,19 @@ export default function MindHeistArena({
               </div>
 
               <div>
-                <div className="text-[11px] font-black uppercase tracking-widest text-amber-300 mb-2">
+                <div className="text-[11px] font-mono uppercase tracking-widest text-amber-400 mb-2">
                   The 6 Astral Relics (3 Random Dealt · 1-Use Each)
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   {(Object.keys(RELIC_DEFS) as RelicId[]).map((id) => {
                     const r = RELIC_DEFS[id];
                     return (
-                      <div key={id} className={`p-2.5 rounded-xl bg-gradient-to-r ${r.gradientClass} border ${r.borderClass}`}>
-                        <div className="flex items-center gap-1.5 text-xs font-black text-white">
-                          <RelicIcon relic={id} className="w-3.5 h-3.5 text-amber-300" />
+                      <div key={id} className="p-2.5 rounded-xl bg-zinc-950 border border-zinc-800">
+                        <div className="flex items-center gap-1.5 text-xs font-semibold text-zinc-100">
+                          <RelicIcon relic={id} className="w-3.5 h-3.5 text-amber-400" />
                           {r.name}
                         </div>
-                        <p className="text-[11px] text-slate-300 mt-0.5 leading-snug">{r.description}</p>
+                        <p className="text-[11px] text-zinc-400 mt-0.5 leading-snug">{r.description}</p>
                       </div>
                     );
                   })}
@@ -1958,27 +1952,27 @@ export default function MindHeistArena({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4"
+            className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4"
             onClick={() => setShowHistory(false)}
           >
             <motion.div
-              initial={{ scale: 0.94, opacity: 0 }}
+              initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.94, opacity: 0 }}
+              exit={{ scale: 0.95, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
-              className="max-w-xl w-full max-h-[82dvh] overflow-y-auto rounded-3xl bg-[#0b0718] border border-violet-400/40 p-5 space-y-3 shadow-2xl"
+              className="max-w-xl w-full max-h-[82dvh] overflow-y-auto rounded-2xl bg-[#111113] border border-zinc-800 p-5 space-y-3"
             >
-              <div className="flex items-center justify-between border-b border-white/10 pb-3">
+              <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
                 <div className="flex items-center gap-2">
-                  <History className="w-4 h-4 text-violet-400" />
-                  <h3 className="text-sm font-black uppercase tracking-widest text-white">
+                  <History className="w-4 h-4 text-indigo-400" />
+                  <h3 className="text-sm font-semibold tracking-tight text-zinc-50">
                     Neural Clash Log
                   </h3>
                 </div>
                 <button
                   type="button"
                   onClick={() => setShowHistory(false)}
-                  className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white cursor-pointer"
+                  className="p-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-400 hover:text-zinc-100 cursor-pointer transition-colors"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -1991,17 +1985,17 @@ export default function MindHeistArena({
                   return (
                     <div
                       key={entry.round}
-                      className="p-3 rounded-xl bg-black/55 border border-white/10 space-y-1.5"
+                      className="p-3 rounded-xl bg-zinc-950 border border-zinc-800 space-y-1.5"
                     >
-                      <div className="flex items-center justify-between text-[10px] font-mono">
-                        <span className="text-amber-300 font-black">ROUND {entry.round}</span>
-                        <span className="text-slate-400">
+                      <div className="flex items-center justify-between text-[10px] font-mono tabular-nums">
+                        <span className="text-amber-400 font-semibold">ROUND {entry.round}</span>
+                        <span className="text-zinc-400">
                           HP: {meIdx === 0 ? entry.p0SanityAfter : entry.p1SanityAfter} vs{' '}
                           {meIdx === 0 ? entry.p1SanityAfter : entry.p0SanityAfter}
                         </span>
                       </div>
-                      <div className="text-xs font-bold text-white">{entry.headline}</div>
-                      <div className="grid grid-cols-2 gap-2 text-[10px] font-mono text-slate-300">
+                      <div className="text-xs font-medium text-zinc-100">{entry.headline}</div>
+                      <div className="grid grid-cols-2 gap-2 text-[10px] font-mono text-zinc-400">
                         <div>
                           You → {mine.hitChamber} ({mine.totalDamageDealt} dmg
                           {mine.counterReadHit ? ', READ!' : ''}

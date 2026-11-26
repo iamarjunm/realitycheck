@@ -178,12 +178,13 @@ export default function QuizzesPage() {
 
   return (
     <main
-      className={`min-h-[100dvh] w-full relative flex flex-col items-center justify-start overflow-x-hidden overflow-y-auto bg-[#04050a] text-white ${
-        gameState === 'select' ? 'p-0' : 'p-4 pt-16 sm:pt-4 crt-flicker'
+      className={`min-h-[100dvh] w-full relative flex flex-col items-center justify-start overflow-x-hidden overflow-y-auto bg-[#09090b] text-zinc-50 ${
+        gameState === 'select' ? 'p-0' : 'p-4 pt-16 sm:pt-4'
       }`}
     >
-      <QuizVibeBackground quizId={activeQuizId} gameState={gameState} abyssDepth={currentDepth} />
-      {gameState !== 'select' && <div className="absolute inset-0 extreme-noise pointer-events-none" />}
+      {gameState !== 'select' && (
+        <QuizVibeBackground quizId={activeQuizId} gameState={gameState} abyssDepth={currentDepth} />
+      )}
 
       {gameState === 'select' ? (
         <div className="w-full relative z-[60]">
@@ -191,12 +192,13 @@ export default function QuizzesPage() {
         </div>
       ) : (
         <button
+          type="button"
           onClick={backToSelect}
-          className="fixed top-4 left-4 z-50 text-cyan-300 hover:text-white font-mono text-xs uppercase tracking-wider font-bold flex items-center gap-2 bg-[#070912]/85 hover:bg-cyan-500/15 px-3.5 py-2 rounded-full border border-cyan-500/35 hover:border-cyan-400/75 backdrop-blur-xl shadow-[0_4px_20px_rgba(0,0,0,0.5)] transition-all"
+          className="fixed top-4 left-4 z-50 inline-flex items-center gap-2 bg-zinc-900/90 hover:bg-zinc-800 border border-zinc-800 hover:border-zinc-700 text-zinc-200 hover:text-zinc-50 px-3.5 py-2 rounded-lg text-xs font-medium backdrop-blur-md transition-colors"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
-          <span className="hidden sm:inline">QUIZ MENU</span>
-          <span className="sm:hidden">MENU</span>
+          <span className="hidden sm:inline">Quiz Menu</span>
+          <span className="sm:hidden">Menu</span>
         </button>
       )}
 
@@ -213,45 +215,70 @@ export default function QuizzesPage() {
         {gameState === 'collection' && <CollectionScreen key="collection" />}
 
         {gameState === 'intro' && activeQuiz && (
-          <motion.div key="intro" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, filter: 'blur(10px)' }} className="z-10 flex flex-col items-center max-w-xl text-center space-y-8 my-auto">
-            <div className="space-y-6 relative z-10 mt-8">
-              <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full blur-3xl rounded-full pointer-events-none ${activeQuiz.id === 'lor' ? 'bg-[#8b5a2b]/20' : 'bg-cyan-500/10'}`} />
-              <div className={`relative inline-flex items-center space-x-2 bg-black border-2 font-black text-xs sm:text-sm px-4 py-1.5 shadow-[4px_4px_0_rgba(0,0,0,0.5)] transform -rotate-2 mb-4 ${activeQuiz.id === 'lor' ? 'border-[#8b5a2b] text-[#e5c158]' : 'border-red-500 text-red-500'}`}>
-                <AlertTriangle className="w-4 h-4 animate-ping" />
-                <span className="tracking-widest">{activeQuiz.id === 'lor' ? 'LOR EVALUATION PIPELINE' : 'WARNING: TRUTH PROTOCOL'}</span>
-              </div>
-              <h1 className="relative text-4xl sm:text-5xl md:text-6xl font-black tracking-tighter text-white uppercase glitch-overlay" data-text={activeQuiz.title}>{activeQuiz.title}</h1>
-              <p className={`text-lg sm:text-xl md:text-2xl font-black tracking-[0.2em] uppercase bg-black/80 px-4 py-1 inline-block border-y-4 transform rotate-1 ${activeQuiz.id === 'lor' ? 'text-[#e5c158] border-[#8b5a2b]' : 'text-cyan-400 border-cyan-500'}`}>{activeQuiz.subtitle}</p>
-            </div>
-            <p className={`text-zinc-300 font-mono text-sm sm:text-base max-w-md px-6 py-4 bg-zinc-900/80 border-l-4 relative z-10 shadow-lg ${activeQuiz.id === 'lor' ? 'border-[#8b5a2b]' : 'border-fuchsia-500'}`}>{activeQuiz.description}</p>
-            {activeQuiz.id === 'lor' && (
-              <div className="font-mono text-[10px] text-[#a27b5c] uppercase tracking-widest space-y-1 relative z-10">
-                <p>① Tap dossier · ② Founder DM · ③ Collectible card</p>
-              </div>
-            )}
-            <div className="flex flex-col items-center w-full max-w-sm space-y-6 pt-6 relative z-10">
-              <input
-                type="text"
-                maxLength={20}
-                value={userName}
-                onChange={(event) => setUserName(event.target.value)}
-                placeholder={activeQuiz.id === 'lor' ? 'LEGAL_NAME_FOR_LOR_' : 'INPUT_ENTITY_NAME_'}
-                className={`w-full bg-black/50 border-4 text-center text-white text-2xl py-4 focus:outline-none transition-colors font-black placeholder:text-zinc-600 uppercase shadow-[6px_6px_0_rgba(0,0,0,0.8)] transform -rotate-1 ${activeQuiz.id === 'lor' ? 'border-[#8b5a2b]/60 focus:border-[#e5c158]' : 'border-zinc-700 focus:border-cyan-400'}`}
-                onKeyDown={(event) => { if (event.key === 'Enter' && userName.trim()) handleStart(); }}
-                suppressHydrationWarning
-                autoComplete="off"
-                data-1p-ignore
-              />
-              <button
-                onClick={handleStart}
-                disabled={!userName.trim()}
-                className={`group relative w-full py-5 text-black font-black text-2xl uppercase tracking-widest border-4 border-black shadow-[8px_8px_0_rgba(0,0,0,0.5)] hover:shadow-[4px_4px_0_rgba(0,0,0,0.5)] hover:translate-x-1 hover:translate-y-1 transition-all disabled:opacity-50 sticker-card ${activeQuiz.id === 'lor' ? 'bg-[#e5c158]' : 'bg-cyan-400'}`}
-                style={{ '--rot': '1' } as React.CSSProperties}
-              >
-                <span className="relative flex items-center justify-center">
-                  {activeQuiz.id === 'lor' ? 'BEGIN EVALUATION' : 'EXECUTE'} <ChevronRight className="ml-2 w-6 h-6" />
+          <motion.div
+            key="intro"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
+            className="z-10 w-full max-w-lg my-auto"
+          >
+            <div className="rounded-2xl bg-[#111113]/95 border border-zinc-800/90 p-6 sm:p-8 backdrop-blur-md">
+              <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-md bg-zinc-900 border border-zinc-800 font-mono text-xs mb-5">
+                <AlertTriangle
+                  className={`w-3.5 h-3.5 ${
+                    activeQuiz.id === 'lor' ? 'text-amber-400' : 'text-rose-400'
+                  }`}
+                />
+                <span className={activeQuiz.id === 'lor' ? 'text-amber-400' : 'text-zinc-300'}>
+                  {activeQuiz.id === 'lor' ? 'LOR Evaluation Pipeline' : 'Diagnostic Protocol'}
                 </span>
-              </button>
+              </div>
+
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-50 mb-1.5">
+                {activeQuiz.title}
+              </h1>
+              <p className="font-mono text-xs text-zinc-500 mb-5">
+                {activeQuiz.subtitle}
+              </p>
+
+              <p className="text-sm text-zinc-400 leading-relaxed mb-5 pb-5 border-b border-zinc-800/80">
+                {activeQuiz.description}
+              </p>
+
+              {activeQuiz.id === 'lor' && (
+                <div className="font-mono text-xs text-amber-400/90 bg-amber-400/5 border border-amber-400/20 rounded-lg px-3.5 py-2.5 mb-5">
+                  1. Tap dossier · 2. Founder DM · 3. Collectible card
+                </div>
+              )}
+
+              <div className="space-y-3">
+                <label className="block font-mono text-xs text-zinc-400" htmlFor="quiz-entity-name">
+                  {activeQuiz.id === 'lor' ? 'Legal name for LOR' : 'Enter your name or handle'}
+                </label>
+                <input
+                  id="quiz-entity-name"
+                  type="text"
+                  maxLength={20}
+                  value={userName}
+                  onChange={(event) => setUserName(event.target.value)}
+                  placeholder={activeQuiz.id === 'lor' ? 'e.g. Alex Chen' : 'e.g. Operator_01'}
+                  className="w-full rounded-lg bg-zinc-950 border border-zinc-800 focus:border-zinc-500 px-3.5 py-3 text-sm text-zinc-50 placeholder:text-zinc-600 focus:outline-none transition-colors"
+                  onKeyDown={(event) => { if (event.key === 'Enter' && userName.trim()) handleStart(); }}
+                  suppressHydrationWarning
+                  autoComplete="off"
+                  data-1p-ignore
+                />
+                <button
+                  type="button"
+                  onClick={handleStart}
+                  disabled={!userName.trim()}
+                  className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-lg bg-zinc-50 hover:bg-white text-zinc-950 font-semibold text-sm transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  <span>{activeQuiz.id === 'lor' ? 'Begin Evaluation' : 'Start Diagnostic'}</span>
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
             </div>
           </motion.div>
         )}

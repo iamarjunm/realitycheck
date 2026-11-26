@@ -1,41 +1,33 @@
 @import "tailwindcss";
 
-@theme {
-  --font-sans: var(--font-sans);
-  --font-mono: var(--font-mono);
+@theme inline {
+  --font-sans: var(--font-sans), ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-display: var(--font-display), var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
 @layer utilities {
   .text-glow-cyan {
-    text-shadow: 0 0 10px rgba(0, 255, 255, 0.6), 0 0 20px rgba(0, 255, 255, 0.4);
+    text-shadow: none;
   }
   .box-glow-cyan {
-    box-shadow: 0 0 15px rgba(0, 255, 255, 0.2), inset 0 0 10px rgba(0, 255, 255, 0.1);
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06);
   }
   .bg-grid-white {
     background-size: 30px 30px;
-    background-image: linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    background-image: linear-gradient(to right, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+  }
+  .bg-subtle-grid {
+    background-size: 40px 40px;
+    background-image: linear-gradient(to right, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
   }
 }
 
 .scanlines {
-  background: linear-gradient(
-    to bottom,
-    rgba(255,255,255,0),
-    rgba(255,255,255,0) 50%,
-    rgba(0,0,0,0.1) 50%,
-    rgba(0,0,0,0.1)
-  );
-  background-size: 100% 4px;
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  pointer-events: none;
-  z-index: 50;
-  opacity: 0.22;
+  display: none;
 }
-
-
 
 @keyframes shine {
   0% {
@@ -97,7 +89,7 @@
 
 .glitch-foil {
   background-image: linear-gradient(
-    135deg,
+    100deg,
     rgba(255, 40, 40, 0) 0%,
     rgba(255, 40, 40, 0) 30%,
     rgba(255, 40, 40, 0.6) 40%,
@@ -167,7 +159,7 @@
   animation: glitch-skew 3s infinite linear alternate-reverse;
 }
 
-/* NEW CHAOTIC AESTHETIC CLASSES */
+/* Legacy chaotic quiz/experiment classes */
 
 @keyframes marquee-fast {
   0% { transform: translateX(0); }
@@ -405,11 +397,11 @@
   pointer-events: none;
 }
 
-/* ── AAA Dark-OS Design System Utilities ── */
+/* ── Matte Obsidian Studio Design System Utilities ── */
 html {
   color-scheme: dark;
   scrollbar-width: thin;
-  scrollbar-color: rgba(148, 163, 184, 0.24) transparent;
+  scrollbar-color: #27272a transparent;
 }
 
 ::-webkit-scrollbar {
@@ -418,20 +410,17 @@ html {
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(4, 5, 10, 0.65);
+  background: #09090b;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, rgba(56, 189, 248, 0.28), rgba(148, 163, 184, 0.24));
+  background: #27272a;
   border-radius: 9999px;
-  border: 2px solid transparent;
-  background-clip: padding-box;
+  border: 2px solid #09090b;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, rgba(34, 211, 238, 0.55), rgba(217, 70, 239, 0.45));
-  border: 2px solid transparent;
-  background-clip: padding-box;
+  background: #3f3f46;
 }
 
 .no-scrollbar {
@@ -444,35 +433,34 @@ html {
 }
 
 :where(a, button, input, textarea, select, [tabindex]):focus-visible {
-  outline: 2px solid rgba(34, 211, 238, 0.7);
+  outline: 2px solid rgba(250, 250, 250, 0.35);
   outline-offset: 2px;
   transition: outline-color 0.15s ease;
 }
 
-.glass-panel {
-  background: linear-gradient(
-    180deg,
-    rgba(13, 18, 32, 0.82) 0%,
-    rgba(7, 10, 20, 0.88) 100%
-  );
-  backdrop-filter: blur(20px) saturate(145%);
-  -webkit-backdrop-filter: blur(20px) saturate(145%);
+.studio-card {
+  background: #111113;
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-top-color: rgba(255, 255, 255, 0.18);
-  box-shadow:
-    0 20px 50px rgba(0, 0, 0, 0.55),
-    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.glass-panel {
+  background: rgba(17, 17, 19, 0.82);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.55);
 }
 
 .bg-aurora {
-  background-image:
-    radial-gradient(ellipse 65% 45% at 15% 0%, rgba(34, 211, 238, 0.14), transparent 65%),
-    radial-gradient(ellipse 55% 45% at 85% 5%, rgba(217, 70, 239, 0.12), transparent 65%),
-    radial-gradient(ellipse 60% 50% at 50% 100%, rgba(59, 130, 246, 0.09), transparent 70%);
+  background-image: radial-gradient(
+    ellipse 70% 45% at 50% 0%,
+    rgba(255, 255, 255, 0.03),
+    transparent 70%
+  );
 }
 
 .bg-dot-matrix {
-  background-image: radial-gradient(rgba(255, 255, 255, 0.085) 1px, transparent 1px);
+  background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
   background-size: 24px 24px;
 }
 
@@ -487,10 +475,9 @@ html {
   inset: -40% -60%;
   background: linear-gradient(
     115deg,
-    transparent 35%,
-    rgba(255, 255, 255, 0.09) 48%,
-    rgba(34, 211, 238, 0.12) 52%,
-    transparent 65%
+    transparent 38%,
+    rgba(255, 255, 255, 0.04) 50%,
+    transparent 62%
   );
   transform: translateX(-110%) skewX(-16deg);
   transition: transform 0.75s cubic-bezier(0.22, 1, 0.36, 1);

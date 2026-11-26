@@ -45,12 +45,12 @@ const CHIP_META: Record<
     icon: React.ComponentType<{ size?: number; className?: string }>;
   }
 > = {
-  xray: { name: 'X-Ray', desc: 'Scan next shell', accent: 'border-cyan-400/40 bg-cyan-500/15 text-cyan-300', icon: Eye },
-  overclock: { name: 'Overclock', desc: '2× LIVE dmg', accent: 'border-rose-500/40 bg-rose-500/15 text-rose-300', icon: Flame },
-  invert: { name: 'Flip', desc: 'LIVE ↔ BLANK', accent: 'border-amber-400/40 bg-amber-500/15 text-amber-300', icon: RefreshCw },
-  eject: { name: 'Eject', desc: 'Discard next', accent: 'border-sky-400/40 bg-sky-500/15 text-sky-300', icon: ArrowUpRight },
-  cuff: { name: 'Cuff Lock', desc: 'Skip rival turn', accent: 'border-purple-400/40 bg-purple-500/15 text-purple-300', icon: Lock },
-  siphon: { name: 'Siphon +1', desc: 'Heal 1 HP', accent: 'border-emerald-400/40 bg-emerald-500/15 text-emerald-300', icon: Heart },
+  xray: { name: 'X-Ray', desc: 'Scan next shell', accent: 'border-zinc-800 bg-zinc-950 text-zinc-100 hover:border-amber-400/50 hover:bg-zinc-900', icon: Eye },
+  overclock: { name: 'Overclock', desc: '2× LIVE dmg', accent: 'border-rose-500/30 bg-zinc-950 text-zinc-100 hover:border-rose-500/60 hover:bg-rose-950/20', icon: Flame },
+  invert: { name: 'Flip', desc: 'LIVE ↔ BLANK', accent: 'border-amber-400/30 bg-zinc-950 text-zinc-100 hover:border-amber-400/60 hover:bg-amber-950/20', icon: RefreshCw },
+  eject: { name: 'Eject', desc: 'Discard next', accent: 'border-zinc-800 bg-zinc-950 text-zinc-100 hover:border-zinc-600 hover:bg-zinc-900', icon: ArrowUpRight },
+  cuff: { name: 'Cuff Lock', desc: 'Skip rival turn', accent: 'border-amber-400/30 bg-zinc-950 text-zinc-100 hover:border-amber-400/60 hover:bg-amber-950/20', icon: Lock },
+  siphon: { name: 'Siphon +1', desc: 'Heal 1 HP', accent: 'border-emerald-500/30 bg-zinc-950 text-zinc-100 hover:border-emerald-400/60 hover:bg-emerald-950/20', icon: Heart },
 };
 
 function GlitchRoulettePvPContent() {
@@ -381,12 +381,12 @@ function GlitchRoulettePvPContent() {
 
   if (notFound) {
     return (
-      <div className="min-h-screen bg-[#06040a] flex flex-col items-center justify-center p-6 text-center space-y-4">
-        <h1 className="text-2xl font-black uppercase text-white">Chamber Not Found</h1>
+      <div className="min-h-screen bg-[#09090b] flex flex-col items-center justify-center p-6 text-center space-y-4">
+        <h1 className="text-2xl font-semibold tracking-tight text-zinc-50">Chamber Not Found</h1>
         <button
           type="button"
           onClick={() => router.push('/glitch-roulette')}
-          className="px-5 py-2.5 rounded-xl bg-rose-500 text-white font-black uppercase text-xs"
+          className="px-5 py-2.5 rounded-xl bg-zinc-50 hover:bg-white text-zinc-950 font-semibold text-xs transition-colors"
         >
           Back to Lobby
         </button>
@@ -396,7 +396,7 @@ function GlitchRoulettePvPContent() {
 
   if (!gameDoc) {
     return (
-      <div className="min-h-screen bg-[#06040a] flex items-center justify-center font-mono text-xs uppercase tracking-widest text-rose-400">
+      <div className="min-h-screen bg-[#09090b] flex items-center justify-center font-mono text-xs uppercase tracking-widest text-zinc-400">
         Connecting to Chamber...
       </div>
     );
@@ -411,60 +411,62 @@ function GlitchRoulettePvPContent() {
 
   return (
     <motion.div
-      animate={shake ? { x: [-8, 8, -5, 5, 0] } : { x: 0 }}
-      transition={{ duration: 0.3 }}
-      className="min-h-dvh lg:h-dvh lg:overflow-hidden bg-[#06040a] text-white flex flex-col relative"
+      animate={shake ? { x: [-6, 6, -4, 4, 0] } : { x: 0 }}
+      transition={{ duration: 0.28 }}
+      className="min-h-dvh lg:h-dvh lg:overflow-hidden bg-[#09090b] text-zinc-50 flex flex-col relative"
     >
       <AnimatePresence>
         {flash && (
           <motion.div
-            initial={{ opacity: 0.5 }}
+            initial={{ opacity: 0.35 }}
             animate={{ opacity: 0 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
+            transition={{ duration: 0.26 }}
             className={`pointer-events-none fixed inset-0 z-50 ${
-              flash === 'live' ? 'bg-rose-600/45' : flash === 'glitch' ? 'bg-cyan-400/20' : 'bg-white/15'
+              flash === 'live' ? 'bg-rose-600/35' : flash === 'glitch' ? 'bg-amber-400/15' : 'bg-zinc-200/10'
             }`}
           />
         )}
       </AnimatePresence>
 
       {/* HUD */}
-      <header className="relative z-20 w-full border-b border-rose-500/20 bg-black/75 backdrop-blur-xl shrink-0">
+      <header className="relative z-20 w-full border-b border-zinc-800/80 bg-[#09090b]/90 backdrop-blur-md shrink-0">
         <div className="max-w-[1360px] mx-auto px-3 sm:px-5 h-12 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <button
               type="button"
               onClick={() => router.push('/glitch-roulette')}
-              className="inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-widest text-zinc-400 hover:text-white"
+              className="inline-flex items-center gap-1.5 text-xs font-medium text-zinc-400 hover:text-zinc-100 transition-colors"
             >
               <ArrowLeft className="w-3.5 h-3.5" /> Lobby
             </button>
-            <span className="text-white/15">|</span>
-            <span className="font-black uppercase tracking-tight text-xs sm:text-sm text-white">
+            <span className="text-zinc-800">|</span>
+            <span className="font-semibold tracking-tight text-xs sm:text-sm text-zinc-50">
               Glitch Roulette 1v1
             </span>
-            <span className="font-mono text-[10px] px-2 py-0.5 rounded-full border border-rose-500/30 bg-rose-500/10 text-rose-300">
+            <span className="font-mono text-[10px] px-2.5 py-0.5 rounded-full border border-zinc-800 bg-zinc-900 text-zinc-300">
               {gameId}
             </span>
           </div>
           <button
             type="button"
             onClick={() => setSoundEnabled((s) => !s)}
-            className="p-1.5 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10"
+            className="p-1.5 rounded-lg border border-zinc-800 bg-zinc-900 hover:bg-zinc-800 transition-colors"
           >
-            {soundEnabled ? <Volume2 className="w-3.5 h-3.5 text-emerald-400" /> : <VolumeX className="w-3.5 h-3.5 text-zinc-500" />}
+            {soundEnabled ? <Volume2 className="w-3.5 h-3.5 text-zinc-300" /> : <VolumeX className="w-3.5 h-3.5 text-zinc-500" />}
           </button>
         </div>
       </header>
 
       <main className="relative z-10 flex-1 min-h-0 w-full max-w-[1360px] mx-auto px-3 sm:px-5 py-3 flex flex-col justify-center gap-3">
         {gameDoc.state === 'waiting' && (
-          <div className="max-w-md w-full mx-auto bg-black/75 border border-rose-500/25 rounded-2xl p-6 text-center space-y-4 shadow-2xl">
-            <Skull className="w-10 h-10 text-rose-400 mx-auto" />
+          <div className="max-w-md w-full mx-auto bg-[#111113] border border-zinc-800/90 rounded-2xl p-6 text-center space-y-4">
+            <div className="mx-auto w-12 h-12 rounded-2xl border border-zinc-800 bg-zinc-950 flex items-center justify-center">
+              <Skull className="w-6 h-6 text-rose-500" />
+            </div>
             {meIdx === -1 ? (
               <>
-                <h1 className="text-xl font-black uppercase">Enter 1v1 Chamber</h1>
+                <h1 className="text-xl font-semibold tracking-tight text-zinc-50">Enter 1v1 Chamber</h1>
                 <div className="flex gap-2">
                   <input
                     type="text"
@@ -472,13 +474,13 @@ function GlitchRoulettePvPContent() {
                     onChange={(e) => setJoinName(e.target.value)}
                     placeholder="CODENAME"
                     maxLength={14}
-                    className="flex-1 bg-zinc-950 border border-rose-500/30 rounded-xl px-3 py-2 text-xs font-mono uppercase text-white"
+                    className="flex-1 bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-xs font-mono uppercase text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:border-zinc-400 transition-colors"
                   />
                   <button
                     type="button"
                     disabled={busy || !joinName.trim()}
                     onClick={() => joinRoom(joinName.trim())}
-                    className="px-5 py-2 rounded-xl bg-rose-500 text-white font-black uppercase text-xs disabled:opacity-40"
+                    className="px-5 py-2 rounded-xl bg-zinc-50 hover:bg-white text-zinc-950 font-semibold text-xs disabled:opacity-40 transition-colors"
                   >
                     Join
                   </button>
@@ -486,11 +488,11 @@ function GlitchRoulettePvPContent() {
               </>
             ) : (
               <>
-                <h1 className="text-xl font-black uppercase">Waiting for Rival</h1>
-                <div className="flex items-center justify-between bg-zinc-950 border border-rose-500/25 rounded-xl px-4 py-3 text-left">
+                <h1 className="text-xl font-semibold tracking-tight text-zinc-50">Waiting for Rival</h1>
+                <div className="flex items-center justify-between bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-left">
                   <div>
-                    <div className="text-[9px] font-mono uppercase text-zinc-500">Chamber Code</div>
-                    <div className="font-mono text-2xl font-black tracking-[0.22em] text-rose-300">{gameId}</div>
+                    <div className="text-[10px] font-mono uppercase text-zinc-500">Chamber Code</div>
+                    <div className="font-mono text-2xl font-semibold tracking-[0.2em] text-zinc-50">{gameId}</div>
                   </div>
                   <button
                     type="button"
@@ -499,7 +501,7 @@ function GlitchRoulettePvPContent() {
                       setCopied(true);
                       setTimeout(() => setCopied(false), 1600);
                     }}
-                    className="px-3 py-1.5 rounded-lg bg-white/10 text-xs font-bold flex items-center gap-1"
+                    className="px-3 py-1.5 rounded-lg border border-zinc-800 bg-zinc-900 hover:bg-zinc-800 text-xs font-medium text-zinc-200 flex items-center gap-1.5 transition-colors"
                   >
                     {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
                     {copied ? 'Copied' : 'Copy'}
@@ -514,28 +516,28 @@ function GlitchRoulettePvPContent() {
           <>
             {/* HP Bars */}
             <div className="grid grid-cols-2 gap-3 shrink-0">
-              <div className={`rounded-2xl border p-3.5 flex items-center justify-between ${isMyTurn ? 'border-cyan-400/60 bg-cyan-950/20' : 'border-white/10 bg-black/55'}`}>
+              <div className={`rounded-2xl border p-4 flex items-center justify-between transition-colors ${isMyTurn ? 'border-zinc-500 bg-[#111113]' : 'border-zinc-800/90 bg-[#111113]'}`}>
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-black uppercase text-cyan-300">{meP.nickname} (You)</span>
-                    {isMyTurn && <span className="px-1.5 py-0.5 rounded bg-cyan-400 text-black font-mono text-[9px] font-black">YOUR TURN</span>}
-                    {meP.cuffed && <span className="px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-300 font-mono text-[9px]">CUFFED</span>}
+                    <span className="text-xs font-semibold text-zinc-100">{meP.nickname} (You)</span>
+                    {isMyTurn && <span className="px-2 py-0.5 rounded-md bg-zinc-50 text-zinc-950 font-mono text-[10px] font-semibold">YOUR TURN</span>}
+                    {meP.cuffed && <span className="px-2 py-0.5 rounded-md bg-amber-400/15 border border-amber-400/40 text-amber-300 font-mono text-[10px]">CUFFED</span>}
                   </div>
                   <div className="flex gap-1.5 mt-2">
                     {Array.from({ length: gameDoc.maxHp }).map((_, i) => (
-                      <Zap key={i} size={16} className={i < meP.hp ? 'text-cyan-400 fill-cyan-400' : 'text-zinc-800'} />
+                      <Zap key={i} size={16} className={i < meP.hp ? 'text-zinc-100 fill-zinc-100' : 'text-zinc-800'} />
                     ))}
                   </div>
                 </div>
-                <span className="font-mono text-2xl font-black text-cyan-300">{meP.hp}/{gameDoc.maxHp}</span>
+                <span className="font-mono text-2xl font-semibold text-zinc-100 tabular-nums">{meP.hp}/{gameDoc.maxHp}</span>
               </div>
 
-              <div className={`rounded-2xl border p-3.5 flex items-center justify-between ${!isMyTurn && gameDoc.state === 'playing' ? 'border-rose-500/60 bg-rose-950/25' : 'border-white/10 bg-black/55'}`}>
+              <div className={`rounded-2xl border p-4 flex items-center justify-between transition-colors ${!isMyTurn && gameDoc.state === 'playing' ? 'border-rose-500/60 bg-[#111113]' : 'border-zinc-800/90 bg-[#111113]'}`}>
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-black uppercase text-rose-300">{oppP.nickname}</span>
-                    {!isMyTurn && gameDoc.state === 'playing' && <span className="px-1.5 py-0.5 rounded bg-rose-500 text-white font-mono text-[9px] font-black">THEIR TURN</span>}
-                    {oppP.cuffed && <span className="px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-300 font-mono text-[9px]">SKIPPED</span>}
+                    <span className="text-xs font-semibold text-zinc-100">{oppP.nickname}</span>
+                    {!isMyTurn && gameDoc.state === 'playing' && <span className="px-2 py-0.5 rounded-md bg-rose-600 text-white font-mono text-[10px] font-semibold">THEIR TURN</span>}
+                    {oppP.cuffed && <span className="px-2 py-0.5 rounded-md bg-amber-400/15 border border-amber-400/40 text-amber-300 font-mono text-[10px]">SKIPPED</span>}
                   </div>
                   <div className="flex gap-1.5 mt-2">
                     {Array.from({ length: gameDoc.maxHp }).map((_, i) => (
@@ -544,7 +546,7 @@ function GlitchRoulettePvPContent() {
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="font-mono text-2xl font-black text-rose-400">{oppP.hp}/{gameDoc.maxHp}</div>
+                  <div className="font-mono text-2xl font-semibold text-rose-500 tabular-nums">{oppP.hp}/{gameDoc.maxHp}</div>
                   <div className="text-[10px] font-mono text-zinc-500">{oppP.chips.length} mods</div>
                 </div>
               </div>
@@ -552,18 +554,18 @@ function GlitchRoulettePvPContent() {
 
             <div className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-4 items-center">
               {/* Cylinder */}
-              <section className="lg:col-span-5 bg-black/60 border border-white/10 rounded-2xl p-4 sm:p-5 flex flex-col items-center justify-between gap-3 h-full max-h-[420px]">
+              <section className="lg:col-span-5 bg-[#111113] border border-zinc-800/90 rounded-2xl p-4 sm:p-5 flex flex-col items-center justify-between gap-3 h-full max-h-[420px]">
                 <div className="w-full flex items-center justify-between text-xs font-mono">
                   <span className="text-zinc-400">CHAMBER</span>
-                  <span className="text-amber-300 font-bold">{gameDoc.chamber.length} Left</span>
+                  <span className="text-amber-400 font-semibold">{gameDoc.chamber.length} Left</span>
                 </div>
 
                 <div className="relative flex items-center justify-center my-auto">
                   <motion.div
                     animate={{ rotate: gameDoc.cylinderAngle }}
                     transition={{ type: 'spring', stiffness: 180, damping: 18 }}
-                    className={`relative w-36 h-36 sm:w-44 sm:h-44 rounded-full border-4 flex items-center justify-center ${
-                      gameDoc.overclocked ? 'border-rose-500 bg-rose-950/30 shadow-[0_0_35px_rgba(244,63,94,0.4)]' : 'border-white/20 bg-zinc-950'
+                    className={`relative w-36 h-36 sm:w-44 sm:h-44 rounded-full border-2 flex items-center justify-center ${
+                      gameDoc.overclocked ? 'border-rose-500 bg-rose-950/20' : 'border-zinc-700 bg-zinc-950'
                     }`}
                   >
                     <Crosshair className="w-5 h-5 text-zinc-500" />
@@ -581,21 +583,21 @@ function GlitchRoulettePvPContent() {
                               ? idx === 0 && meP.scannedNext
                                 ? meP.scannedNext === 'live'
                                   ? 'bg-rose-500 border-rose-300'
-                                  : 'bg-sky-400 border-sky-200'
-                                : 'bg-amber-400/80 border-amber-200'
-                              : 'bg-black/80 border-white/10'
+                                  : 'bg-zinc-300 border-zinc-100'
+                                : 'bg-amber-400/80 border-amber-300/90'
+                              : 'bg-zinc-900 border-zinc-800'
                           }`}
                         />
                       );
                     })}
                   </motion.div>
                   {gameDoc.overclocked && (
-                    <span className="absolute -bottom-2 px-2.5 py-0.5 rounded-full bg-rose-500 text-white font-mono text-[10px] font-black">
+                    <span className="absolute -bottom-2.5 px-2.5 py-0.5 rounded-full bg-rose-600 text-white font-mono text-[10px] font-semibold">
                       2× OVERCLOCK
                     </span>
                   )}
                   {meP.scannedNext && !gameDoc.overclocked && (
-                    <span className={`absolute -bottom-2 px-2.5 py-0.5 rounded-full font-mono text-[10px] font-black ${meP.scannedNext === 'live' ? 'bg-rose-500 text-white' : 'bg-sky-400 text-black'}`}>
+                    <span className={`absolute -bottom-2.5 px-2.5 py-0.5 rounded-full font-mono text-[10px] font-semibold ${meP.scannedNext === 'live' ? 'bg-rose-600 text-white' : 'bg-zinc-200 text-zinc-950'}`}>
                       X-RAY: {meP.scannedNext.toUpperCase()}
                     </span>
                   )}
@@ -603,29 +605,29 @@ function GlitchRoulettePvPContent() {
 
                 <div className="w-full space-y-2">
                   <div className="grid grid-cols-3 gap-2 text-center font-mono text-xs">
-                    <div className="rounded-lg border border-rose-500/25 bg-rose-950/25 py-1.5">
-                      <div className="text-[9px] text-rose-300/70">LIVE</div>
-                      <div className="font-black text-rose-400">{liveLeft}</div>
+                    <div className="rounded-xl border border-rose-500/25 bg-rose-950/20 py-1.5">
+                      <div className="text-[10px] text-rose-400/80">LIVE</div>
+                      <div className="font-semibold text-rose-400">{liveLeft}</div>
                     </div>
-                    <div className="rounded-lg border border-sky-500/25 bg-sky-950/25 py-1.5">
-                      <div className="text-[9px] text-sky-300/70">BLANK</div>
-                      <div className="font-black text-sky-300">{blankLeft}</div>
+                    <div className="rounded-xl border border-zinc-800 bg-zinc-950 py-1.5">
+                      <div className="text-[10px] text-zinc-400">BLANK</div>
+                      <div className="font-semibold text-zinc-200">{blankLeft}</div>
                     </div>
-                    <div className="rounded-lg border border-amber-500/25 bg-amber-950/25 py-1.5">
-                      <div className="text-[9px] text-amber-300/70">ODDS</div>
-                      <div className="font-black text-amber-300">{liveOdds}%</div>
+                    <div className="rounded-xl border border-amber-400/25 bg-amber-950/15 py-1.5">
+                      <div className="text-[10px] text-amber-400/80">ODDS</div>
+                      <div className="font-semibold text-amber-400">{liveOdds}%</div>
                     </div>
                   </div>
-                  <div className="rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-center font-mono text-xs text-zinc-200 truncate">
+                  <div className="rounded-xl border border-zinc-800 bg-zinc-950 px-3 py-2 text-center font-mono text-xs text-zinc-300 truncate">
                     {gameDoc.lastEvent}
                   </div>
                 </div>
               </section>
 
               {/* Chips + Triggers */}
-              <section className="lg:col-span-7 bg-black/60 border border-white/10 rounded-2xl p-4 sm:p-5 flex flex-col justify-between gap-4 h-full max-h-[420px]">
-                <div className="space-y-2">
-                  <h2 className="text-xs font-black uppercase tracking-widest">Your Mod Chips ({meP.chips.length}/6)</h2>
+              <section className="lg:col-span-7 bg-[#111113] border border-zinc-800/90 rounded-2xl p-4 sm:p-5 flex flex-col justify-between gap-4 h-full max-h-[420px]">
+                <div className="space-y-2.5">
+                  <h2 className="text-xs font-semibold tracking-tight text-zinc-100">Your Mod Chips ({meP.chips.length}/6)</h2>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                     {meP.chips.map((c, i) => {
                       const m = CHIP_META[c];
@@ -636,12 +638,14 @@ function GlitchRoulettePvPContent() {
                           type="button"
                           disabled={!isMyTurn || busy}
                           onClick={() => handleUseChip(i)}
-                          className={`rounded-xl border p-2.5 text-left flex items-start gap-2 disabled:opacity-40 ${m.accent}`}
+                          className={`rounded-xl border p-2.5 text-left flex items-start gap-2.5 disabled:opacity-40 transition-colors ${m.accent}`}
                         >
-                          <Icon size={15} className="mt-0.5 shrink-0" />
+                          <div className="p-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-amber-400 shrink-0">
+                            <Icon size={14} />
+                          </div>
                           <div className="min-w-0">
-                            <div className="text-xs font-black truncate">{m.name}</div>
-                            <div className="text-[10px] opacity-75">{m.desc}</div>
+                            <div className="text-xs font-semibold truncate text-zinc-100">{m.name}</div>
+                            <div className="text-[11px] text-zinc-400">{m.desc}</div>
                           </div>
                         </button>
                       );
@@ -649,18 +653,18 @@ function GlitchRoulettePvPContent() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3 pt-2 border-t border-white/10">
+                <div className="grid grid-cols-2 gap-3 pt-3 border-t border-zinc-800">
                   <button
                     type="button"
                     disabled={!isMyTurn || busy}
                     onClick={() => handleFire(false)}
-                    className="py-4 px-4 rounded-2xl border-2 border-rose-500/60 bg-rose-600/20 hover:bg-rose-500/30 text-left disabled:opacity-35"
+                    className="py-4 px-4 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-left disabled:opacity-35 transition-colors"
                   >
-                    <div className="flex items-center justify-between font-black uppercase text-sm">
-                      <span>Shoot {oppP.nickname}</span>
-                      <Crosshair className="w-4 h-4 text-rose-400" />
+                    <div className="flex items-center justify-between font-semibold text-sm">
+                      <span className="truncate">Shoot {oppP.nickname}</span>
+                      <Crosshair className="w-4 h-4 text-rose-100 shrink-0" />
                     </div>
-                    <div className="text-[11px] font-mono text-rose-200/80 mt-1">
+                    <div className="text-[11px] font-mono text-rose-100/85 mt-1">
                       {gameDoc.overclocked ? '2 DMG if LIVE' : '1 DMG if LIVE'}
                     </div>
                   </button>
@@ -669,13 +673,13 @@ function GlitchRoulettePvPContent() {
                     type="button"
                     disabled={!isMyTurn || busy}
                     onClick={() => handleFire(true)}
-                    className="py-4 px-4 rounded-2xl border-2 border-cyan-500/50 bg-cyan-600/20 hover:bg-cyan-500/30 text-left disabled:opacity-35"
+                    className="py-4 px-4 rounded-xl border border-zinc-700 bg-zinc-900 hover:bg-zinc-800 text-zinc-100 text-left disabled:opacity-35 transition-colors"
                   >
-                    <div className="flex items-center justify-between font-black uppercase text-sm">
+                    <div className="flex items-center justify-between font-semibold text-sm">
                       <span>Shoot Self</span>
-                      <ShieldAlert className="w-4 h-4 text-cyan-400" />
+                      <ShieldAlert className="w-4 h-4 text-zinc-300 shrink-0" />
                     </div>
-                    <div className="text-[11px] font-mono text-cyan-200/80 mt-1">
+                    <div className="text-[11px] font-mono text-zinc-400 mt-1">
                       BLANK = Extra Turn
                     </div>
                   </button>
@@ -687,10 +691,12 @@ function GlitchRoulettePvPContent() {
       </main>
 
       {gameDoc.state === 'finished' && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4">
-          <div className="w-full max-w-sm bg-zinc-950 border border-rose-500/30 rounded-2xl p-6 text-center space-y-4">
-            <Trophy className="w-10 h-10 text-amber-300 mx-auto" />
-            <h2 className="text-2xl font-black uppercase">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
+          <div className="w-full max-w-sm bg-[#111113] border border-zinc-800 rounded-2xl p-6 text-center space-y-4">
+            <div className="mx-auto w-12 h-12 rounded-2xl bg-zinc-900 border border-zinc-800 flex items-center justify-center">
+              <Trophy className="w-6 h-6 text-amber-400" />
+            </div>
+            <h2 className="text-2xl font-semibold tracking-tight text-zinc-50">
               {gameDoc.winnerUid === meP?.uid ? 'You Survived!' : 'Flatlined'}
             </h2>
             <div className="flex gap-2">
@@ -699,7 +705,7 @@ function GlitchRoulettePvPContent() {
                   type="button"
                   disabled={busy}
                   onClick={handleRematch}
-                  className="flex-1 py-2.5 rounded-xl bg-rose-500 text-white font-black uppercase text-xs flex items-center justify-center gap-1.5"
+                  className="flex-1 py-2.5 rounded-xl bg-zinc-50 hover:bg-white text-zinc-950 font-semibold text-xs flex items-center justify-center gap-1.5 transition-colors"
                 >
                   <RotateCcw className="w-3.5 h-3.5" /> Rematch
                 </button>
@@ -707,7 +713,7 @@ function GlitchRoulettePvPContent() {
               <button
                 type="button"
                 onClick={() => router.push('/glitch-roulette')}
-                className="flex-1 py-2.5 rounded-xl border border-white/15 bg-white/5 text-white font-bold uppercase text-xs"
+                className="flex-1 py-2.5 rounded-xl border border-zinc-800 bg-zinc-900 hover:bg-zinc-800 text-zinc-200 font-medium text-xs transition-colors"
               >
                 Lobby
               </button>
@@ -721,7 +727,7 @@ function GlitchRoulettePvPContent() {
 
 export default function GlitchRouletteRoomPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[#06040a] flex items-center justify-center font-mono text-xs text-rose-400">Loading Chamber...</div>}>
+    <Suspense fallback={<div className="min-h-screen bg-[#09090b] flex items-center justify-center font-mono text-xs text-zinc-400">Loading Chamber...</div>}>
       <GlitchRoulettePvPContent />
     </Suspense>
   );
