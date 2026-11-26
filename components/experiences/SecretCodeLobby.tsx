@@ -10,6 +10,7 @@ import { signInAnonymously } from 'firebase/auth';
 import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
 import { BotDifficulty } from '@/lib/secret-code';
 import { playSound } from '@/lib/sounds';
+import GameArtwork from '@/components/GameArtwork';
 
 export default function SecretCodeLobby() {
   const router = useRouter();
@@ -115,63 +116,81 @@ export default function SecretCodeLobby() {
 
   if (loading) {
     return (
-      <div className="h-dvh bg-[#09090b] flex items-center justify-center">
-        <div className="h-9 w-9 rounded-full border-2 border-zinc-700 border-t-zinc-200 animate-spin" />
+      <div
+        className="h-dvh bg-[#0c0b0e] atelier-bg flex items-center justify-center"
+        style={{ backgroundImage: 'radial-gradient(ellipse at top, rgba(16, 100, 72, 0.16), transparent 60%)' }}
+      >
+        <div className="h-9 w-9 rounded-full border-2 border-[#e6c27a]/25 border-t-[#e6c27a] animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-dvh lg:h-dvh lg:overflow-hidden bg-[#09090b] text-zinc-50 flex flex-col items-center justify-center p-4 relative">
+    <div
+      className="min-h-dvh bg-[#0c0b0e] atelier-bg text-[#f5efe2] flex flex-col items-center justify-center px-4 py-14 sm:py-8 relative overflow-x-hidden"
+      style={{
+        backgroundImage: 'radial-gradient(ellipse at top, rgba(16, 100, 72, 0.16), transparent 60%)',
+      }}
+    >
+      <div className="atelier-grain pointer-events-none fixed inset-0 z-0" />
+
       <Link
         href="/card-games"
         onClick={() => playSound('chip')}
-        className="absolute top-4 left-4 z-20 inline-flex items-center gap-2 rounded-xl border border-zinc-800 bg-zinc-900/90 px-3.5 py-2 text-xs font-medium text-zinc-400 hover:text-zinc-100 hover:border-zinc-700 transition-colors"
+        className="absolute top-4 left-4 z-20 inline-flex items-center gap-2 rounded-xl border border-[#e6c27a]/25 bg-[#0f1714]/90 backdrop-blur-md px-3.5 py-2 text-xs font-medium text-[#d6cbb8] hover:text-[#faf4e8] hover:border-[#e6c27a]/50 transition-colors shadow-[0_8px_24px_rgba(0,0,0,0.45)]"
       >
-        <ArrowLeft size={14} /> Card Games
+        <ArrowLeft size={14} className="text-[#e6c27a]" /> Card Games
       </Link>
 
       <motion.div
-        initial={{ opacity: 0, y: 12 }}
+        initial={{ opacity: 0, y: 14 }}
         animate={{ opacity: 1, y: 0 }}
-        className="relative z-10 w-full max-w-md"
+        transition={{ duration: 0.35 }}
+        className="relative z-10 w-full max-w-lg space-y-4"
       >
-        {/* Compact Header */}
-        <div className="text-center mb-5">
-          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl border border-zinc-800 bg-[#111113]">
-            <KeyRound className="text-amber-400" size={20} />
+        {/* Framed Parlor Key-Art Banner */}
+        <div className="atelier-card rounded-2xl overflow-hidden border border-[#e6c27a]/25 shadow-[0_24px_64px_rgba(0,0,0,0.75)]">
+          <div className="relative h-36 sm:h-40 w-full overflow-hidden bg-[#0c1613]">
+            <GameArtwork id="secret-code" className="w-full h-full object-cover" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#0d1211] via-[#0d1211]/45 to-transparent" />
+            <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#e6c27a]/55 to-transparent" />
+
+            <div className="absolute top-3 left-3.5 inline-flex items-center gap-1.5 rounded-full border border-[#e6c27a]/30 bg-[#0b1210]/80 backdrop-blur-md px-2.5 py-1 text-[10px] font-mono uppercase tracking-[0.2em] text-[#e6c27a]">
+              <KeyRound size={11} className="text-emerald-400" />
+              <span>Cipher Deduction</span>
+            </div>
+
+            <div className="absolute bottom-3 left-4 right-4">
+              <h1 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-[#faf4e8] leading-none">
+                Secret <span className="font-serif italic font-normal text-[#e6c27a]">Order</span>
+              </h1>
+              <p className="mt-1.5 text-xs text-[#cbbda8] max-w-sm leading-relaxed">
+                26 cards, 6 logic rules, 1 unique 4-card code. One wrong guess knocks you out.
+              </p>
+            </div>
           </div>
-          <p className="text-[11px] font-mono uppercase tracking-[0.2em] text-amber-400/90 mb-1.5">
-            Cipher Deduction
-          </p>
-          <h1 className="text-3xl font-semibold tracking-tight text-zinc-50">
-            Secret Order
-          </h1>
-          <p className="mt-1.5 text-xs text-zinc-400 max-w-xs mx-auto leading-relaxed">
-            26 cards, 6 logic rules, 1 unique 4-card code. One wrong guess knocks you out.
-          </p>
         </div>
 
         {error && (
-          <div className="mb-3 rounded-xl border border-rose-500/30 bg-rose-950/30 px-3.5 py-2.5 text-xs text-rose-200 text-center">
+          <div className="rounded-xl border border-[#dc2626]/40 bg-[#450a0a]/60 px-3.5 py-2.5 text-xs text-[#fecaca] text-center">
             {error}
           </div>
         )}
 
         <div className="space-y-3">
-          <div className="rounded-2xl border border-zinc-800/90 bg-[#111113] p-5 space-y-4">
+          <div className="atelier-card rounded-2xl p-5 space-y-4">
             {/* Mode Switch */}
-            <div className="grid grid-cols-2 gap-1 p-1 rounded-xl bg-zinc-950 border border-zinc-800">
+            <div className="grid grid-cols-2 gap-1.5 p-1 rounded-xl bg-[#090d0c] border border-[#e6c27a]/15 shadow-inner">
               <button
                 type="button"
                 onClick={() => {
                   playSound('chip');
                   setMode('solo');
                 }}
-                className={`py-2 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors ${
+                className={`py-2 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-all ${
                   mode === 'solo'
-                    ? 'bg-zinc-50 text-zinc-950'
-                    : 'text-zinc-400 hover:text-zinc-200'
+                    ? 'bg-gradient-to-b from-[#e6c27a] to-[#b5893a] text-[#171108] border border-[#f5dfa9]/50 shadow-[0_4px_14px_rgba(230,194,122,0.28)]'
+                    : 'text-[#9e9282] hover:text-[#ede4d3]'
                 }`}
               >
                 <Bot className="w-3.5 h-3.5" />
@@ -183,10 +202,10 @@ export default function SecretCodeLobby() {
                   playSound('chip');
                   setMode('multi');
                 }}
-                className={`py-2 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors ${
+                className={`py-2 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-all ${
                   mode === 'multi'
-                    ? 'bg-zinc-50 text-zinc-950'
-                    : 'text-zinc-400 hover:text-zinc-200'
+                    ? 'bg-gradient-to-b from-[#e6c27a] to-[#b5893a] text-[#171108] border border-[#f5dfa9]/50 shadow-[0_4px_14px_rgba(230,194,122,0.28)]'
+                    : 'text-[#9e9282] hover:text-[#ede4d3]'
                 }`}
               >
                 <Users className="w-3.5 h-3.5" />
@@ -197,7 +216,7 @@ export default function SecretCodeLobby() {
             {/* Nickname + Rounds row */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="block text-[11px] font-medium text-zinc-400 mb-1.5">
+                <label className="block text-[11px] font-mono uppercase tracking-[0.14em] text-[#b9ab96] mb-1.5">
                   Codename
                 </label>
                 <input
@@ -206,15 +225,15 @@ export default function SecretCodeLobby() {
                   onChange={(e) => setNickname(e.target.value)}
                   placeholder="Agent..."
                   maxLength={18}
-                  className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-xs font-medium text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:border-zinc-400 transition-colors"
+                  className="w-full bg-[#090d0c] border border-[#e6c27a]/20 rounded-xl px-3.5 py-2.5 text-xs font-medium text-[#f5efe2] placeholder:text-[#6f6559] focus:outline-none focus:border-[#e6c27a]/60 transition-colors"
                 />
               </div>
 
               <div>
-                <label className="flex items-center gap-1 text-[11px] font-medium text-zinc-400 mb-1.5">
-                  <Sparkles size={11} className="text-amber-400" /> Rounds
+                <label className="flex items-center gap-1.5 text-[11px] font-mono uppercase tracking-[0.14em] text-[#b9ab96] mb-1.5">
+                  <Sparkles size={11} className="text-[#e6c27a]" /> Rounds
                 </label>
-                <div className="flex gap-1">
+                <div className="flex gap-1.5">
                   {[3, 5, 7, 10].map((num) => (
                     <button
                       key={num}
@@ -223,10 +242,10 @@ export default function SecretCodeLobby() {
                         playSound('chip');
                         setTotalRounds(num);
                       }}
-                      className={`flex-1 py-2 rounded-xl font-mono font-semibold text-xs border transition-colors ${
+                      className={`flex-1 py-2.5 rounded-xl font-mono font-semibold text-xs border transition-all ${
                         totalRounds === num
-                          ? 'border-amber-400/50 bg-amber-400/10 text-amber-300'
-                          : 'bg-zinc-950 text-zinc-400 border-zinc-800 hover:border-zinc-700 hover:text-zinc-200'
+                          ? 'border-[#e6c27a]/65 bg-[#e6c27a]/15 text-[#f3d99d]'
+                          : 'bg-[#090d0c] text-[#9e9282] border-[#e6c27a]/15 hover:border-[#e6c27a]/35 hover:text-[#f5efe2]'
                       }`}
                     >
                       {num}
@@ -238,8 +257,8 @@ export default function SecretCodeLobby() {
 
             {mode === 'solo' ? (
               <div>
-                <label className="flex items-center gap-1.5 text-[11px] font-medium text-zinc-400 mb-1.5">
-                  <ShieldCheck size={12} className="text-amber-400" /> Bot Difficulty
+                <label className="flex items-center gap-1.5 text-[11px] font-mono uppercase tracking-[0.14em] text-[#b9ab96] mb-1.5">
+                  <ShieldCheck size={12} className="text-emerald-400" /> Bot Difficulty
                 </label>
                 <div className="grid grid-cols-3 gap-2">
                   {(
@@ -256,22 +275,22 @@ export default function SecretCodeLobby() {
                         playSound('chip');
                         setDifficulty(d.id);
                       }}
-                      className={`py-2 px-2 rounded-xl border text-center transition-colors ${
+                      className={`py-2 px-2 rounded-xl border text-center transition-all ${
                         difficulty === d.id
-                          ? 'border-amber-400/50 bg-amber-400/10 text-zinc-100'
-                          : 'border-zinc-800 bg-zinc-950 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200'
+                          ? 'border-emerald-400/55 bg-emerald-950/45 text-[#faf4e8] shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]'
+                          : 'border-[#e6c27a]/15 bg-[#090d0c] text-[#9e9282] hover:border-[#e6c27a]/35 hover:text-[#f5efe2]'
                       }`}
                     >
                       <div className="text-xs font-semibold">{d.label}</div>
-                      <div className="text-[10px] font-mono text-zinc-500">{d.sub}</div>
+                      <div className="text-[10px] font-mono text-[#a39480]">{d.sub}</div>
                     </button>
                   ))}
                 </div>
               </div>
             ) : (
               <div>
-                <label className="flex items-center gap-1.5 text-[11px] font-medium text-zinc-400 mb-1.5">
-                  <Users size={12} className="text-amber-400" /> Max Players
+                <label className="flex items-center gap-1.5 text-[11px] font-mono uppercase tracking-[0.14em] text-[#b9ab96] mb-1.5">
+                  <Users size={12} className="text-emerald-400" /> Max Players
                 </label>
                 <div className="flex gap-1.5">
                   {[2, 3, 4, 5, 6].map((num) => (
@@ -282,10 +301,10 @@ export default function SecretCodeLobby() {
                         playSound('chip');
                         setMaxPlayers(num);
                       }}
-                      className={`flex-1 py-2 rounded-xl font-mono font-semibold text-xs border transition-colors ${
+                      className={`flex-1 py-2 rounded-xl font-mono font-semibold text-xs border transition-all ${
                         maxPlayers === num
-                          ? 'border-amber-400/50 bg-amber-400/10 text-amber-300'
-                          : 'bg-zinc-950 text-zinc-400 border-zinc-800 hover:border-zinc-700 hover:text-zinc-200'
+                          ? 'border-emerald-400/55 bg-emerald-950/45 text-emerald-200'
+                          : 'bg-[#090d0c] text-[#9e9282] border-[#e6c27a]/15 hover:border-[#e6c27a]/35 hover:text-[#f5efe2]'
                       }`}
                     >
                       {num}
@@ -299,7 +318,7 @@ export default function SecretCodeLobby() {
               <button
                 type="button"
                 onClick={handleStartSolo}
-                className="w-full bg-zinc-50 hover:bg-white text-zinc-950 font-semibold py-3 rounded-xl text-sm transition-colors"
+                className="btn-brass w-full py-3.5 rounded-xl font-display font-bold text-sm tracking-wide"
               >
                 Start Solo Match
               </button>
@@ -308,7 +327,7 @@ export default function SecretCodeLobby() {
                 type="button"
                 disabled={busy}
                 onClick={handleCreateRoom}
-                className="w-full bg-zinc-50 hover:bg-white text-zinc-950 font-semibold py-3 rounded-xl text-sm transition-colors disabled:opacity-50"
+                className="btn-brass w-full py-3.5 rounded-xl font-display font-bold text-sm tracking-wide disabled:opacity-50"
               >
                 {busy ? 'Creating Room...' : 'Create Cipher Room'}
               </button>
@@ -316,7 +335,7 @@ export default function SecretCodeLobby() {
           </div>
 
           {mode === 'multi' && (
-            <div className="flex gap-2">
+            <div className="atelier-card rounded-2xl p-3 flex gap-2">
               <input
                 type="text"
                 value={inviteCode}
@@ -324,13 +343,13 @@ export default function SecretCodeLobby() {
                 onKeyDown={(e) => e.key === 'Enter' && handleJoinRoom()}
                 placeholder="ROOM CODE"
                 maxLength={6}
-                className="flex-1 bg-zinc-950 border border-zinc-800 rounded-xl px-3.5 py-2.5 font-mono text-xs text-center uppercase text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:border-zinc-400 tracking-[0.22em] transition-colors"
+                className="flex-1 bg-[#090d0c] border border-[#e6c27a]/20 rounded-xl px-3.5 py-2.5 font-mono text-xs text-center uppercase text-[#f5efe2] placeholder:text-[#6f6559] focus:outline-none focus:border-[#e6c27a]/60 tracking-[0.24em] transition-colors"
               />
               <button
                 type="button"
                 disabled={busy || !inviteCode.trim()}
                 onClick={handleJoinRoom}
-                className="bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-200 font-medium px-5 py-2.5 rounded-xl text-xs disabled:opacity-40 transition-colors"
+                className="btn-obsidian font-semibold px-5 py-2.5 rounded-xl text-xs disabled:opacity-40"
               >
                 Join
               </button>

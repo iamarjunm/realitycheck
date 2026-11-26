@@ -8,6 +8,7 @@ import { signInAnonymously } from 'firebase/auth';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { ArrowLeft, Flame, Sparkles, Users } from 'lucide-react';
 import { motion } from 'motion/react';
+import GameArtwork from '@/components/GameArtwork';
 
 const AVATARS = ['Devil', 'Gambler', 'Dealer', 'Player', 'King', 'Queen', 'Joker', 'Spy'];
 
@@ -98,48 +99,69 @@ export default function DoubtAndBetLobby() {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-[#09090b] flex items-center justify-center">
-                <div className="h-9 w-9 rounded-full border-2 border-zinc-700 border-t-zinc-200 animate-spin" />
+            <div
+                className="min-h-screen bg-[#0c0b0e] atelier-bg flex items-center justify-center"
+                style={{ backgroundImage: 'radial-gradient(ellipse at top, rgba(16, 100, 72, 0.16), transparent 60%)' }}
+            >
+                <div className="h-9 w-9 rounded-full border-2 border-[#e6c27a]/25 border-t-[#e6c27a] animate-spin" />
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-[#09090b] text-zinc-50 flex flex-col items-center justify-center p-4 font-sans relative overflow-hidden">
+        <div
+            className="min-h-screen bg-[#0c0b0e] atelier-bg text-[#f5efe2] flex flex-col items-center justify-center px-4 py-14 sm:py-8 font-sans relative overflow-x-hidden"
+            style={{
+                backgroundImage: 'radial-gradient(ellipse at top, rgba(16, 100, 72, 0.16), transparent 60%)',
+            }}
+        >
+            <div className="atelier-grain pointer-events-none fixed inset-0 z-0" />
+
             <Link
                 href="/card-games"
-                className="absolute top-5 left-5 z-20 inline-flex items-center gap-2 rounded-xl border border-zinc-800 bg-zinc-900/90 px-3.5 py-2 text-xs font-medium text-zinc-400 hover:text-zinc-100 hover:border-zinc-700 transition-colors"
+                className="absolute top-5 left-5 z-20 inline-flex items-center gap-2 rounded-xl border border-[#e6c27a]/25 bg-[#0f1714]/90 backdrop-blur-md px-3.5 py-2 text-xs font-medium text-[#d6cbb8] hover:text-[#faf4e8] hover:border-[#e6c27a]/50 transition-colors shadow-[0_8px_24px_rgba(0,0,0,0.45)]"
             >
-                <ArrowLeft size={14} /> Card Games
+                <ArrowLeft size={14} className="text-[#e6c27a]" /> Card Games
             </Link>
 
             <motion.div
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="relative z-10 w-full max-w-lg py-12 sm:py-6"
+                transition={{ duration: 0.35 }}
+                className="relative z-10 w-full max-w-lg py-4 space-y-4"
             >
-                <div className="text-center mb-6">
-                    <div className="mx-auto mb-3.5 flex h-14 w-14 items-center justify-center rounded-2xl border border-zinc-800 bg-[#111113]">
-                        <Flame className="text-rose-400" size={24} />
+                {/* Framed Parlor Key-Art Banner */}
+                <div className="atelier-card rounded-2xl overflow-hidden border border-[#e6c27a]/25 shadow-[0_24px_64px_rgba(0,0,0,0.75)]">
+                    <div className="relative h-36 sm:h-40 w-full overflow-hidden bg-[#0c1613]">
+                        <GameArtwork id="doubt-and-bet" className="w-full h-full object-cover" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#0d1211] via-[#0d1211]/45 to-transparent" />
+                        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#e6c27a]/55 to-transparent" />
+
+                        <div className="absolute top-3 left-3.5 inline-flex items-center gap-1.5 rounded-full border border-[#e6c27a]/30 bg-[#0b1210]/80 backdrop-blur-md px-2.5 py-1 text-[10px] font-mono uppercase tracking-[0.2em] text-[#e6c27a]">
+                            <Flame size={11} className="text-[#e0525c]" />
+                            <span>The Devil&apos;s Deduction</span>
+                        </div>
+
+                        <div className="absolute bottom-3 left-4 right-4">
+                            <h1 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-[#faf4e8] leading-none">
+                                Doubt <span className="font-serif italic font-normal text-[#e6c27a]">&amp; Bet</span>
+                            </h1>
+                            <p className="mt-1.5 text-xs text-[#cbbda8] max-w-sm leading-relaxed">
+                                Bluff, wager, and call the lie. Last player standing claims the table.
+                            </p>
+                        </div>
                     </div>
-                    <p className="text-[11px] font-mono uppercase tracking-[0.2em] text-amber-400/90 mb-1.5">The Devil&apos;s Deduction</p>
-                    <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight text-zinc-50">
-                        Doubt &amp; Bet
-                    </h1>
-                    <p className="mt-2 text-sm text-zinc-400 max-w-sm mx-auto leading-relaxed">
-                        Bluff, wager, and call the lie. Last player standing wins.
-                    </p>
                 </div>
 
                 {error && (
-                    <div className="mb-4 rounded-xl border border-rose-500/30 bg-rose-950/30 px-4 py-3 text-sm text-rose-200 text-center">
+                    <div className="rounded-xl border border-[#dc2626]/40 bg-[#450a0a]/60 px-4 py-3 text-sm text-[#fecaca] text-center">
                         {error}
                     </div>
                 )}
 
                 <div className="space-y-4">
-                    <div className="rounded-2xl border border-zinc-800/90 bg-[#111113] p-5 sm:p-6">
-                        <label className="block text-xs font-medium text-zinc-400 mb-2">Your Identity</label>
+                    <div className="atelier-card rounded-2xl p-5 sm:p-6">
+                        <label className="block text-[11px] font-mono uppercase tracking-[0.14em] text-[#b9ab96] mb-2">Your Identity</label>
                         <input
                             type="text"
                             suppressHydrationWarning
@@ -147,7 +169,7 @@ export default function DoubtAndBetLobby() {
                             onChange={e => setNickname(e.target.value)}
                             placeholder="Enter codename..."
                             maxLength={16}
-                            className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-2.5 text-sm font-medium text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:border-zinc-400 transition-colors mb-4"
+                            className="w-full bg-[#090d0c] border border-[#e6c27a]/20 rounded-xl px-4 py-2.5 text-sm font-medium text-[#f5efe2] placeholder:text-[#6f6559] focus:outline-none focus:border-[#e6c27a]/60 transition-colors mb-4"
                         />
                         <div className="grid grid-cols-4 gap-2">
                             {AVATARS.map(av => (
@@ -156,7 +178,11 @@ export default function DoubtAndBetLobby() {
                                     type="button"
                                     suppressHydrationWarning
                                     onClick={() => setAvatar(av)}
-                                    className={`relative p-2 rounded-xl border transition-colors flex items-center justify-center ${avatar === av ? 'bg-amber-400/10 border-amber-400/60' : 'bg-zinc-950 border-zinc-800/80 opacity-60 hover:opacity-100 hover:border-zinc-700'}`}
+                                    className={`relative p-2 rounded-xl border transition-all flex items-center justify-center ${
+                                        avatar === av
+                                            ? 'bg-[#e6c27a]/15 border-[#e6c27a]/70 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]'
+                                            : 'bg-[#090d0c] border-[#e6c27a]/15 opacity-65 hover:opacity-100 hover:border-[#e6c27a]/40'
+                                    }`}
                                 >
                                     <img src={`https://api.dicebear.com/9.x/bottts/svg?seed=${av}`} alt={av} className="w-10 h-10 object-contain" />
                                 </button>
@@ -164,10 +190,10 @@ export default function DoubtAndBetLobby() {
                         </div>
                     </div>
 
-                    <div className="rounded-2xl border border-zinc-800/90 bg-[#111113] p-5 sm:p-6 space-y-5">
+                    <div className="atelier-card rounded-2xl p-5 sm:p-6 space-y-5">
                         <div>
-                            <label className="flex items-center gap-2 text-xs font-medium text-zinc-400 mb-2">
-                                <Users size={13} className="text-zinc-400" /> Max Players
+                            <label className="flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.14em] text-[#b9ab96] mb-2">
+                                <Users size={13} className="text-emerald-400" /> Max Players
                             </label>
                             <div className="flex gap-2">
                                 {[2, 3, 4, 5, 6].map(num => (
@@ -176,7 +202,11 @@ export default function DoubtAndBetLobby() {
                                         type="button"
                                         suppressHydrationWarning
                                         onClick={() => setMaxPlayers(num)}
-                                        className={`flex-1 py-2.5 rounded-xl font-mono font-semibold text-sm border transition-colors ${maxPlayers === num ? 'border-amber-400/50 bg-amber-400/10 text-amber-300' : 'bg-zinc-950 text-zinc-400 border-zinc-800 hover:border-zinc-700 hover:text-zinc-200'}`}
+                                        className={`flex-1 py-2.5 rounded-xl font-mono font-semibold text-sm border transition-all ${
+                                            maxPlayers === num
+                                                ? 'border-[#e6c27a]/65 bg-[#e6c27a]/15 text-[#f3d99d]'
+                                                : 'bg-[#090d0c] text-[#9e9282] border-[#e6c27a]/15 hover:border-[#e6c27a]/35 hover:text-[#f5efe2]'
+                                        }`}
                                     >
                                         {num}
                                     </button>
@@ -185,8 +215,8 @@ export default function DoubtAndBetLobby() {
                         </div>
 
                         <div>
-                            <label className="flex items-center gap-2 text-xs font-medium text-zinc-400 mb-2">
-                                <Sparkles size={13} className="text-amber-400" /> Starting Tokens
+                            <label className="flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.14em] text-[#b9ab96] mb-2">
+                                <Sparkles size={13} className="text-[#e6c27a]" /> Starting Tokens
                             </label>
                             <div className="flex gap-2">
                                 {[10, 20, 50, 100].map(num => (
@@ -195,7 +225,11 @@ export default function DoubtAndBetLobby() {
                                         type="button"
                                         suppressHydrationWarning
                                         onClick={() => setStartingTokens(num)}
-                                        className={`flex-1 py-2.5 rounded-xl font-mono font-semibold text-sm border transition-colors ${startingTokens === num ? 'border-rose-400/50 bg-rose-400/10 text-rose-300' : 'bg-zinc-950 text-zinc-400 border-zinc-800 hover:border-zinc-700 hover:text-zinc-200'}`}
+                                        className={`flex-1 py-2.5 rounded-xl font-mono font-semibold text-sm border transition-all ${
+                                            startingTokens === num
+                                                ? 'border-emerald-400/55 bg-emerald-950/45 text-emerald-200'
+                                                : 'bg-[#090d0c] text-[#9e9282] border-[#e6c27a]/15 hover:border-[#e6c27a]/35 hover:text-[#f5efe2]'
+                                        }`}
                                     >
                                         {num}
                                     </button>
@@ -208,19 +242,19 @@ export default function DoubtAndBetLobby() {
                             suppressHydrationWarning
                             onClick={createGame}
                             disabled={busy}
-                            className="w-full bg-zinc-50 hover:bg-white text-zinc-950 font-semibold py-3.5 rounded-xl text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="btn-brass w-full py-3.5 rounded-xl font-display font-bold text-sm tracking-wide disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {busy ? 'Creating...' : 'Create Lobby'}
                         </button>
                     </div>
 
                     <div className="relative flex items-center py-1">
-                        <div className="flex-grow border-t border-zinc-800" />
-                        <span className="mx-4 text-[11px] uppercase tracking-widest text-zinc-500 font-medium">or join</span>
-                        <div className="flex-grow border-t border-zinc-800" />
+                        <div className="flex-grow border-t border-[#e6c27a]/15" />
+                        <span className="mx-4 text-[11px] font-mono uppercase tracking-[0.2em] text-[#8e8271] font-medium">or join</span>
+                        <div className="flex-grow border-t border-[#e6c27a]/15" />
                     </div>
 
-                    <div className="flex gap-2">
+                    <div className="atelier-card rounded-2xl p-3 flex gap-2">
                         <input
                             type="text"
                             suppressHydrationWarning
@@ -229,14 +263,14 @@ export default function DoubtAndBetLobby() {
                             onKeyDown={e => e.key === 'Enter' && joinGame()}
                             placeholder="INVITE CODE"
                             maxLength={6}
-                            className="flex-1 bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 font-mono text-sm text-center uppercase text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:border-zinc-400 tracking-[0.25em] transition-colors"
+                            className="flex-1 bg-[#090d0c] border border-[#e6c27a]/20 rounded-xl px-4 py-3 font-mono text-sm text-center uppercase text-[#f5efe2] placeholder:text-[#6f6559] focus:outline-none focus:border-[#e6c27a]/60 tracking-[0.25em] transition-colors"
                         />
                         <button
                             type="button"
                             suppressHydrationWarning
                             onClick={joinGame}
                             disabled={busy || !inviteCode.trim()}
-                            className="bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-200 font-medium px-6 py-3 rounded-xl text-sm disabled:opacity-40 transition-colors"
+                            className="btn-obsidian font-semibold px-6 py-3 rounded-xl text-sm disabled:opacity-40"
                         >
                             Join
                         </button>

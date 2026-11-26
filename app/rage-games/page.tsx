@@ -8,80 +8,81 @@ import TetherRage from '@/app/components/rage-games/TetherRage';
 import TypeRage from '@/app/components/rage-games/TypeRage';
 import ChaosCore from '@/app/components/rage-games/ChaosCore';
 import {
-  Link as LinkIcon,
-  Keyboard,
-  Zap,
   ArrowLeft,
   Volume2,
   VolumeX,
   HelpCircle,
   X,
   Music,
-  ChevronRight,
-  Activity,
-  MousePointer2,
+  ArrowRight,
+  Flame,
 } from 'lucide-react';
 import { playBGM, stopBGM } from '@/app/components/rage-games/AudioSystem';
 import GlobalNav from '@/components/GlobalNav';
+import GameArtwork, { type GameArtworkId } from '@/components/GameArtwork';
 
-const GAMES = [
+type RagePlayableId = 'flip' | 'tap' | 'brain' | 'tether' | 'type' | 'chaos';
+type RageGameId = 'menu' | RagePlayableId;
+
+interface RageGameCard {
+  id: RagePlayableId & GameArtworkId;
+  title: string;
+  subtitle: string;
+  description: string;
+  badge: string;
+  trialNo: string;
+}
+
+const GAMES: readonly RageGameCard[] = [
   {
     id: 'flip',
     title: 'Flip Rage',
     subtitle: 'Gravity inversion',
     description: 'One button. Gravity inverts on tap. Endless obstacles that only accelerate.',
-    icon: Activity,
-    iconTint: 'text-indigo-400',
     badge: 'One Button',
+    trialNo: 'Trial 01',
   },
   {
     id: 'tap',
     title: 'Mad Tap',
     subtitle: 'Reaction precision',
     description: 'Click the blue orbs before they shrink. Ignore the red decoys.',
-    icon: MousePointer2,
-    iconTint: 'text-rose-400',
     badge: 'Precision',
+    trialNo: 'Trial 02',
   },
   {
     id: 'brain',
     title: 'Brain Lag',
     subtitle: 'Muscle memory scramble',
     description: 'Keyboard only. Lane bindings scramble periodically to break your reflexes.',
-    icon: Keyboard,
-    iconTint: 'text-amber-400',
     badge: 'Confusion',
+    trialNo: 'Trial 03',
   },
   {
     id: 'tether',
     title: 'Tether Rage',
     subtitle: 'Elastic physics',
     description: 'You are tethered to the ball by a bungee cord. Overcorrecting makes it worse.',
-    icon: LinkIcon,
-    iconTint: 'text-rose-400',
     badge: 'Mouse Only',
+    trialNo: 'Trial 04',
   },
   {
     id: 'type',
     title: 'Typo Terror',
     subtitle: 'Zero-error speed typing',
     description: 'Keyboard only. A single typo or expired timer ends the run immediately.',
-    icon: Keyboard,
-    iconTint: 'text-emerald-400',
     badge: 'Perfection',
+    trialNo: 'Trial 05',
   },
   {
     id: 'chaos',
     title: 'Chaos Core',
     subtitle: 'Multi-phase bullet hell',
     description: 'Keyboard only. Survive escalating projectile patterns for as long as possible.',
-    icon: Zap,
-    iconTint: 'text-amber-400',
     badge: 'Bullet Hell',
+    trialNo: 'Trial 06',
   },
-] as const;
-
-type RageGameId = 'menu' | 'flip' | 'tap' | 'brain' | 'tether' | 'type' | 'chaos';
+];
 
 const HELP_TEXT: Record<string, string> = {
   menu: 'Welcome to Rage Suite. Select a game to begin.',
@@ -112,39 +113,57 @@ export default function Page() {
   const toggleSFX = () => setSfxMuted(!sfxMuted);
 
   return (
-    <main className="min-h-screen bg-[#09090b] text-zinc-50 relative overflow-hidden font-sans flex flex-col">
-      {/* Show GlobalNav ONLY on the Menu */}
-      {game === 'menu' && <GlobalNav activePortal="rage" />}
+    <main
+      className="min-h-screen bg-[#0c0b0e] text-[#f5f0e6] relative overflow-hidden font-sans flex flex-col"
+      style={
+        game === 'menu'
+          ? {
+              backgroundImage:
+                'radial-gradient(ellipse 85% 50% at 50% 0%, rgba(217, 56, 58, 0.24) 0%, rgba(48, 14, 16, 0.34) 44%, rgba(12, 11, 14, 1) 88%)',
+            }
+          : undefined
+      }
+    >
+      {game === 'menu' && (
+        <div className="atelier-grain pointer-events-none fixed inset-0 z-0" aria-hidden="true" />
+      )}
 
-      {/* Floating Controls ONLY when playing a rage game */}
+      {/* Show GlobalNav ONLY on the Menu */}
+      {game === 'menu' && (
+        <div className="relative z-40">
+          <GlobalNav activePortal="rage" />
+        </div>
+      )}
+
+      {/* Floating Obsidian/Brass HUD Controls ONLY when playing a rage game */}
       {game !== 'menu' && (
         <div className="fixed top-4 right-4 z-50 flex items-center gap-1.5 pointer-events-auto">
           <button
             type="button"
             onClick={() => setShowHelp(true)}
-            className="p-2 bg-[#111113]/95 border border-zinc-800 rounded-lg hover:bg-zinc-800 hover:border-zinc-700 transition-colors"
+            className="p-2 bg-[#141118]/95 border border-[#e6c27a]/30 rounded-lg hover:bg-[#1e1923] hover:border-[#e6c27a]/60 transition-colors shadow-lg"
             title="How to Play"
           >
-            <HelpCircle className="w-4 h-4 text-zinc-200" />
+            <HelpCircle className="w-4 h-4 text-[#e6c27a]" />
           </button>
           <button
             type="button"
             onClick={toggleBGM}
-            className="p-2 bg-[#111113]/95 border border-zinc-800 rounded-lg hover:bg-zinc-800 hover:border-zinc-700 transition-colors"
+            className="p-2 bg-[#141118]/95 border border-[#e6c27a]/30 rounded-lg hover:bg-[#1e1923] hover:border-[#e6c27a]/60 transition-colors shadow-lg"
             title="Toggle Music"
           >
-            <Music className={`w-4 h-4 ${bgmMuted ? 'text-rose-400' : 'text-zinc-200'}`} />
+            <Music className={`w-4 h-4 ${bgmMuted ? 'text-[#D9383A]' : 'text-[#e6c27a]'}`} />
           </button>
           <button
             type="button"
             onClick={toggleSFX}
-            className="p-2 bg-[#111113]/95 border border-zinc-800 rounded-lg hover:bg-zinc-800 hover:border-zinc-700 transition-colors"
+            className="p-2 bg-[#141118]/95 border border-[#e6c27a]/30 rounded-lg hover:bg-[#1e1923] hover:border-[#e6c27a]/60 transition-colors shadow-lg"
             title="Toggle Sound Effects"
           >
             {sfxMuted ? (
-              <VolumeX className="w-4 h-4 text-rose-400" />
+              <VolumeX className="w-4 h-4 text-[#D9383A]" />
             ) : (
-              <Volume2 className="w-4 h-4 text-zinc-200" />
+              <Volume2 className="w-4 h-4 text-[#e6c27a]" />
             )}
           </button>
         </div>
@@ -158,31 +177,31 @@ export default function Page() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setShowHelp(false)}
-            className="fixed inset-0 z-[100] bg-black/75 backdrop-blur-sm flex items-center justify-center p-4 pointer-events-auto"
+            className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 pointer-events-auto"
           >
             <motion.div
               initial={{ scale: 0.96, y: 10 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.96, y: 10 }}
               onClick={(e) => e.stopPropagation()}
-              className="bg-[#111113] border border-zinc-800 p-6 rounded-2xl max-w-md w-full relative"
+              className="atelier-card bg-[#141118] border border-[#D9383A]/45 p-6 rounded-2xl max-w-md w-full relative shadow-[0_24px_60px_rgba(0,0,0,0.75)]"
             >
               <button
                 type="button"
                 onClick={() => setShowHelp(false)}
-                className="absolute top-4 right-4 p-1.5 rounded-lg text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800 transition-colors"
+                className="absolute top-4 right-4 p-1.5 rounded-lg text-[#b4a99a] hover:text-[#f5f0e6] hover:bg-white/5 transition-colors"
                 aria-label="Close help"
               >
                 <X className="w-4 h-4" />
               </button>
-              <div className="inline-flex items-center gap-1.5 font-mono text-xs text-rose-400 mb-2">
+              <div className="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.18em] text-[#D9383A] mb-2">
                 <HelpCircle className="w-3.5 h-3.5" />
-                <span>Briefing</span>
+                <span>Gauntlet Briefing</span>
               </div>
-              <h2 className="text-xl font-semibold tracking-tight text-zinc-50 mb-3">
-                How to Play
+              <h2 className="font-display text-2xl font-extrabold tracking-tight text-[#f5f0e6] mb-3">
+                How to <span className="font-serif italic font-normal text-[#e6c27a]">Survive</span>
               </h2>
-              <p className="text-zinc-300 font-mono text-xs sm:text-sm whitespace-pre-wrap leading-relaxed">
+              <p className="text-[#d6ccbe] font-mono text-xs sm:text-sm whitespace-pre-wrap leading-relaxed">
                 {HELP_TEXT[game]}
               </p>
             </motion.div>
@@ -197,114 +216,126 @@ export default function Page() {
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="w-full flex-1 flex flex-col"
+            transition={{ duration: 0.22 }}
+            className="relative z-10 w-full flex-1 flex flex-col"
           >
             <div className="w-full max-w-6xl mx-auto px-5 sm:px-6 pt-10 pb-16 flex-1 flex flex-col">
-              {/* Header Bar with Integrated Audio & Help Controls */}
-              <header className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 pb-8 mb-8 border-b border-zinc-800/80">
+              {/* Header Bar with Integrated Tactile Audio & Help Controls */}
+              <header className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 pb-8 mb-9 border-b border-[#D9383A]/25">
                 <div>
-                  <div className="inline-flex items-center gap-2 font-mono text-xs text-zinc-500 mb-2.5">
-                    <span className="h-1.5 w-1.5 rounded-full bg-rose-400" />
-                    <span>6 Precision Challenges</span>
+                  <div className="inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.2em] text-[#f27c7e] mb-3">
+                    <Flame className="w-3.5 h-3.5 text-[#D9383A]" />
+                    <span>Lacquer Arcade · 6 Precision Trials</span>
                   </div>
-                  <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-50">
-                    Rage Suite
+                  <h1 className="font-display text-4xl sm:text-5xl font-extrabold tracking-tight text-[#f5f0e6] leading-[1.05]">
+                    Rage{' '}
+                    <span className="font-serif italic font-normal text-[#e6c27a]">Suite</span>
                   </h1>
-                  <p className="text-sm text-zinc-400 mt-2 max-w-xl leading-relaxed">
-                    Six unforgiving reflex, physics, and typing gauntlets engineered to test your composure.
+                  <p className="text-sm text-[#c4b5b0] mt-3 max-w-xl leading-relaxed">
+                    Six unforgiving reflex, elastic-physics, and zero-error typing gauntlets built
+                    to fracture your composure.
                   </p>
                 </div>
 
-                {/* Inline Controls Bar */}
-                <div className="inline-flex items-center gap-1 p-1 rounded-xl border border-zinc-800 bg-[#111113] self-start lg:self-auto">
+                {/* Inline Tactile Obsidian/Brass Controls Bar */}
+                <div className="inline-flex items-center gap-1.5 p-1.5 rounded-xl border border-[#D9383A]/30 bg-[#141015]/95 self-start lg:self-auto shadow-[0_10px_28px_rgba(0,0,0,0.45)]">
                   <button
                     type="button"
                     onClick={() => setShowHelp(true)}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-zinc-300 hover:text-zinc-50 hover:bg-zinc-800 transition-colors"
+                    className="btn-obsidian inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-[#e8dfd1] hover:text-[#f5f0e6]"
                     title="How to Play"
                   >
-                    <HelpCircle className="w-3.5 h-3.5 text-zinc-400" />
+                    <HelpCircle className="w-3.5 h-3.5 text-[#e6c27a]" />
                     <span>Help</span>
                   </button>
-                  <div className="w-px h-4 bg-zinc-800" />
                   <button
                     type="button"
                     onClick={toggleBGM}
-                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono transition-colors ${
+                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono border transition-colors ${
                       bgmMuted
-                        ? 'bg-zinc-900 text-rose-400'
-                        : 'text-zinc-300 hover:text-zinc-50 hover:bg-zinc-800'
+                        ? 'bg-[#261013] border-[#D9383A]/45 text-[#f48284]'
+                        : 'bg-[#1c171f] border-[#e6c27a]/25 text-[#e6c27a] hover:border-[#e6c27a]/50'
                     }`}
                     title="Toggle Music"
                   >
-                    <Music className={`w-3.5 h-3.5 ${bgmMuted ? 'text-rose-400' : 'text-emerald-400'}`} />
+                    <Music className="w-3.5 h-3.5" />
                     <span>BGM {bgmMuted ? 'Off' : 'On'}</span>
                   </button>
                   <button
                     type="button"
                     onClick={toggleSFX}
-                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono transition-colors ${
+                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono border transition-colors ${
                       sfxMuted
-                        ? 'bg-zinc-900 text-rose-400'
-                        : 'text-zinc-300 hover:text-zinc-50 hover:bg-zinc-800'
+                        ? 'bg-[#261013] border-[#D9383A]/45 text-[#f48284]'
+                        : 'bg-[#1c171f] border-[#e6c27a]/25 text-[#e6c27a] hover:border-[#e6c27a]/50'
                     }`}
                     title="Toggle Sound Effects"
                   >
                     {sfxMuted ? (
-                      <VolumeX className="w-3.5 h-3.5 text-rose-400" />
+                      <VolumeX className="w-3.5 h-3.5" />
                     ) : (
-                      <Volume2 className="w-3.5 h-3.5 text-emerald-400" />
+                      <Volume2 className="w-3.5 h-3.5" />
                     )}
                     <span>SFX {sfxMuted ? 'Off' : 'On'}</span>
                   </button>
                 </div>
               </header>
 
-              {/* 6 Gauntlets Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {GAMES.map((g, i) => {
-                  const Icon = g.icon;
-                  return (
-                    <motion.div
-                      key={g.id}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: i * 0.04, duration: 0.25 }}
-                      className="h-full"
+              {/* 6 Illustrated Vermilion Gauntlets Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {GAMES.map((g, i) => (
+                  <motion.div
+                    key={g.id}
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.045, duration: 0.28 }}
+                    className="h-full"
+                  >
+                    <button
+                      type="button"
+                      onClick={() => setGame(g.id)}
+                      className="atelier-card w-full text-left group flex flex-col justify-between h-full rounded-2xl bg-[#151116] border border-[#D9383A]/30 hover:border-[#D9383A]/75 overflow-hidden transition-all duration-300 hover:-translate-y-1 active:translate-y-0 shadow-[0_16px_38px_rgba(0,0,0,0.55)]"
                     >
-                      <button
-                        type="button"
-                        onClick={() => setGame(g.id)}
-                        className="w-full text-left group flex flex-col justify-between h-full min-h-[212px] rounded-xl bg-[#111113] border border-zinc-800/90 hover:border-zinc-700 hover:bg-[#151518] p-5 transition-all"
-                      >
-                        <div className="w-full">
-                          <div className="flex items-start justify-between gap-2 mb-4 w-full">
-                            <div className="w-9 h-9 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center shrink-0">
-                              <Icon className={`w-4 h-4 ${g.iconTint}`} />
-                            </div>
-                            <span className="px-2 py-0.5 rounded-md bg-zinc-900 border border-zinc-800 font-mono text-[11px] text-zinc-400">
-                              {g.badge}
-                            </span>
+                      <div className="w-full">
+                        {/* Bold Graphic Art Banner */}
+                        <div className="relative h-36 w-full overflow-hidden bg-[#0e0a0c]">
+                          <div className="w-full h-full transition-transform duration-500 ease-out group-hover:scale-105">
+                            <GameArtwork id={g.id} />
                           </div>
-                          <h2 className="text-base font-semibold tracking-tight text-zinc-50 mb-0.5">
+                          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#151116] via-[#151116]/25 to-transparent" />
+                          <span className="absolute top-3 left-3 px-2.5 py-0.5 rounded-md bg-[#120b0d]/85 border border-[#e6c27a]/30 backdrop-blur-md font-mono text-[10px] uppercase tracking-[0.16em] text-[#e6c27a]">
+                            {g.trialNo}
+                          </span>
+                          <span className="absolute top-3 right-3 px-2.5 py-0.5 rounded-md bg-[#D9383A]/90 text-[#fff6f2] font-mono text-[10px] uppercase tracking-wider font-bold shadow">
+                            {g.badge}
+                          </span>
+                        </div>
+
+                        <div className="px-5 pt-3.5 pb-4">
+                          <h2 className="font-display text-lg font-extrabold tracking-tight text-[#f5f0e6] group-hover:text-[#ff9c9e] transition-colors mb-0.5">
                             {g.title}
                           </h2>
-                          <p className="text-xs text-zinc-500 mb-3">
+                          <p className="font-serif italic text-xs text-[#e6c27a]/90 mb-2.5">
                             {g.subtitle}
                           </p>
-                          <p className="text-sm text-zinc-400 leading-relaxed mb-4">
+                          <p className="text-xs sm:text-[13px] text-[#bdb0ab] leading-relaxed">
                             {g.description}
                           </p>
                         </div>
-                        <div className="pt-3.5 border-t border-zinc-800/80 flex items-center justify-between text-xs font-medium text-zinc-400 group-hover:text-zinc-50 transition-colors w-full">
-                          <span>Start challenge</span>
-                          <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
-                        </div>
-                      </button>
-                    </motion.div>
-                  );
-                })}
+                      </div>
+
+                      <div className="px-5 py-3.5 border-t border-[#D9383A]/20 bg-[#100c0f]/90 flex items-center justify-between w-full">
+                        <span className="font-mono text-[11px] uppercase tracking-wider text-[#9d8d8a]">
+                          Instant Death
+                        </span>
+                        <span className="btn-crimson inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-display text-xs font-bold tracking-wide">
+                          <span>Start</span>
+                          <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" />
+                        </span>
+                      </div>
+                    </button>
+                  </motion.div>
+                ))}
               </div>
             </div>
           </motion.div>
@@ -317,7 +348,7 @@ export default function Page() {
             <button
               type="button"
               onClick={() => setGame('menu')}
-              className="fixed top-4 left-4 z-50 flex items-center gap-2 bg-[#111113]/95 border border-zinc-800 px-3 py-2 rounded-lg text-zinc-200 hover:text-zinc-50 hover:bg-zinc-800 hover:border-zinc-700 transition-colors text-xs font-medium pointer-events-auto"
+              className="fixed top-4 left-4 z-50 flex items-center gap-2 bg-[#141118]/95 border border-[#e6c27a]/30 px-3.5 py-2 rounded-lg text-[#f5f0e6] hover:text-[#e6c27a] hover:bg-[#1e1923] hover:border-[#e6c27a]/60 transition-colors text-xs font-semibold pointer-events-auto shadow-lg"
             >
               <ArrowLeft className="w-3.5 h-3.5" /> Menu
             </button>
@@ -329,7 +360,7 @@ export default function Page() {
             <button
               type="button"
               onClick={() => setGame('menu')}
-              className="fixed top-4 left-4 z-50 flex items-center gap-2 bg-[#111113]/95 border border-zinc-800 px-3 py-2 rounded-lg text-zinc-200 hover:text-zinc-50 hover:bg-zinc-800 hover:border-zinc-700 transition-colors text-xs font-medium pointer-events-auto"
+              className="fixed top-4 left-4 z-50 flex items-center gap-2 bg-[#141118]/95 border border-[#e6c27a]/30 px-3.5 py-2 rounded-lg text-[#f5f0e6] hover:text-[#e6c27a] hover:bg-[#1e1923] hover:border-[#e6c27a]/60 transition-colors text-xs font-semibold pointer-events-auto shadow-lg"
             >
               <ArrowLeft className="w-3.5 h-3.5" /> Menu
             </button>
@@ -341,7 +372,7 @@ export default function Page() {
             <button
               type="button"
               onClick={() => setGame('menu')}
-              className="fixed top-4 left-4 z-50 flex items-center gap-2 bg-[#111113]/95 border border-zinc-800 px-3 py-2 rounded-lg text-zinc-200 hover:text-zinc-50 hover:bg-zinc-800 hover:border-zinc-700 transition-colors text-xs font-medium pointer-events-auto"
+              className="fixed top-4 left-4 z-50 flex items-center gap-2 bg-[#141118]/95 border border-[#e6c27a]/30 px-3.5 py-2 rounded-lg text-[#f5f0e6] hover:text-[#e6c27a] hover:bg-[#1e1923] hover:border-[#e6c27a]/60 transition-colors text-xs font-semibold pointer-events-auto shadow-lg"
             >
               <ArrowLeft className="w-3.5 h-3.5" /> Menu
             </button>
@@ -353,7 +384,7 @@ export default function Page() {
             <button
               type="button"
               onClick={() => setGame('menu')}
-              className="fixed top-4 left-4 z-50 flex items-center gap-2 bg-[#111113]/95 border border-zinc-800 px-3 py-2 rounded-lg text-zinc-200 hover:text-zinc-50 hover:bg-zinc-800 hover:border-zinc-700 transition-colors text-xs font-medium pointer-events-auto"
+              className="fixed top-4 left-4 z-50 flex items-center gap-2 bg-[#141118]/95 border border-[#e6c27a]/30 px-3.5 py-2 rounded-lg text-[#f5f0e6] hover:text-[#e6c27a] hover:bg-[#1e1923] hover:border-[#e6c27a]/60 transition-colors text-xs font-semibold pointer-events-auto shadow-lg"
             >
               <ArrowLeft className="w-3.5 h-3.5" /> Menu
             </button>
@@ -365,7 +396,7 @@ export default function Page() {
             <button
               type="button"
               onClick={() => setGame('menu')}
-              className="fixed top-4 left-4 z-50 flex items-center gap-2 bg-[#111113]/95 border border-zinc-800 px-3 py-2 rounded-lg text-zinc-200 hover:text-zinc-50 hover:bg-zinc-800 hover:border-zinc-700 transition-colors text-xs font-medium pointer-events-auto"
+              className="fixed top-4 left-4 z-50 flex items-center gap-2 bg-[#141118]/95 border border-[#e6c27a]/30 px-3.5 py-2 rounded-lg text-[#f5f0e6] hover:text-[#e6c27a] hover:bg-[#1e1923] hover:border-[#e6c27a]/60 transition-colors text-xs font-semibold pointer-events-auto shadow-lg"
             >
               <ArrowLeft className="w-3.5 h-3.5" /> Menu
             </button>
@@ -377,7 +408,7 @@ export default function Page() {
             <button
               type="button"
               onClick={() => setGame('menu')}
-              className="fixed top-4 left-4 z-50 flex items-center gap-2 bg-[#111113]/95 border border-zinc-800 px-3 py-2 rounded-lg text-zinc-200 hover:text-zinc-50 hover:bg-zinc-800 hover:border-zinc-700 transition-colors text-xs font-medium pointer-events-auto"
+              className="fixed top-4 left-4 z-50 flex items-center gap-2 bg-[#141118]/95 border border-[#e6c27a]/30 px-3.5 py-2 rounded-lg text-[#f5f0e6] hover:text-[#e6c27a] hover:bg-[#1e1923] hover:border-[#e6c27a]/60 transition-colors text-xs font-semibold pointer-events-auto shadow-lg"
             >
               <ArrowLeft className="w-3.5 h-3.5" /> Menu
             </button>

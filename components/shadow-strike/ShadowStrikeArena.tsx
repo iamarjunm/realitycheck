@@ -126,7 +126,7 @@ export default function ShadowStrikeArena({
         particleCount: 90,
         spread: 75,
         origin: { y: 0.6 },
-        colors: ['#34d399', '#38bdf8', '#fbbf24', '#f4f4f5'],
+        colors: ['#34d399', '#e6c27a', '#d4a853', '#f5efe2'],
       });
     } else if (state.status === 'finished' && state.winnerIdx !== null && state.winnerIdx !== meIdx) {
       playSound('fold');
@@ -226,75 +226,84 @@ export default function ShadowStrikeArena({
   };
 
   return (
-    <div className="min-h-dvh lg:h-dvh lg:overflow-hidden bg-[#09090b] text-zinc-100 flex flex-col relative select-none">
+    <div className="min-h-dvh lg:h-dvh lg:overflow-hidden bg-[#080d0b] atelier-bg text-[#f1ece1] flex flex-col relative select-none">
+      <div className="atelier-grain pointer-events-none fixed inset-0 z-0" />
+      <div
+        className="pointer-events-none fixed inset-0 z-0"
+        style={{
+          background:
+            'radial-gradient(ellipse 65% 45% at 50% 0%, rgba(16,120,84,0.16), transparent 65%), radial-gradient(ellipse 40% 35% at 88% 85%, rgba(212,168,83,0.09), transparent 60%)',
+        }}
+      />
+
       {/* Subtle screen flash on hit/orbital/sonar */}
       <AnimatePresence>
         {impactFlash && (
           <motion.div
-            initial={{ opacity: 0.25 }}
+            initial={{ opacity: 0.28 }}
             animate={{ opacity: 0 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.35 }}
             className={`pointer-events-none fixed inset-0 z-40 ${
               impactFlash === 'orbital'
-                ? 'bg-amber-400/15'
+                ? 'bg-[#e6c27a]/20'
                 : impactFlash === 'sonar'
-                ? 'bg-sky-400/15'
-                : 'bg-rose-400/15'
+                ? 'bg-emerald-400/18'
+                : 'bg-[#e05263]/20'
             }`}
           />
         )}
       </AnimatePresence>
 
       {/* Top HUD Bar */}
-      <header className="relative z-10 shrink-0 border-b border-zinc-800/80 bg-[#09090b]/90 backdrop-blur-md px-3 sm:px-5 py-2.5 flex items-center justify-between gap-2">
+      <header className="relative z-20 shrink-0 border-b border-[#c9a55a]/18 bg-[#080d0b]/85 backdrop-blur-md px-3 sm:px-5 py-2.5 flex items-center justify-between gap-2">
         <div className="flex items-center gap-2.5 min-w-0">
           <button
             onClick={onBack}
-            className="p-2 rounded-xl bg-zinc-900 border border-zinc-800 hover:bg-zinc-800 text-zinc-300 hover:text-zinc-50 transition-colors cursor-pointer"
+            className="btn-obsidian p-2 rounded-xl text-[#e5dec9] cursor-pointer"
             title="Leave Arena"
           >
-            <ArrowLeft className="w-4 h-4" />
+            <ArrowLeft className="w-4 h-4 text-[#d4a853]" />
           </button>
           <div className="min-w-0">
             <div className="flex items-center gap-2">
               <Radar className="w-4 h-4 text-emerald-400 shrink-0" />
-              <h1 className="font-semibold tracking-tight text-sm sm:text-base text-zinc-50 truncate">
-                Shadow Strike
+              <h1 className="font-display font-bold tracking-tight text-sm sm:text-base text-[#f6f1e6] uppercase truncate">
+                Shadow <span className="font-serif italic font-normal capitalize text-[#e6c27a]">Strike</span>
               </h1>
-              <span className="hidden sm:inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-zinc-900 text-zinc-300 border border-zinc-800">
+              <span className="hidden sm:inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-mono uppercase tracking-wider bg-[#0f1a16] text-emerald-300 border border-emerald-500/25">
                 {isSolo ? 'Solo vs AI' : '1v1 Live PvP'}
               </span>
             </div>
-            <p className="text-[11px] text-zinc-500 hidden sm:block">
-              6×6 Stealth Fleet · Chain-Hit Extra Turns · 3×3 Sonar &amp; Orbital Beam
+            <p className="text-[11px] text-[#8d9a92] hidden sm:block">
+              6×6 Naval War Table · Chain-Hit Extra Turns · 3×3 Sonar &amp; Orbital Beam
             </p>
           </div>
         </div>
 
         {/* Center Score Strip */}
-        <div className="flex items-center gap-2 sm:gap-4 bg-[#111113] border border-zinc-800/90 rounded-xl px-3.5 py-1.5">
+        <div className="flex items-center gap-2 sm:gap-4 bg-[#0d1512] border border-[#c9a55a]/28 rounded-xl px-3.5 py-1.5 shadow-[inset_0_1px_0_rgba(230,194,122,0.14)]">
           <div className="text-right">
-            <div className="text-[10px] font-medium text-emerald-400 truncate max-w-[90px] sm:max-w-[120px]">
+            <div className="text-[10px] font-mono font-medium text-emerald-400 truncate max-w-[90px] sm:max-w-[120px]">
               {me?.nickname ?? 'You'}
             </div>
-            <div className="text-sm sm:text-base font-semibold font-mono text-zinc-50 leading-none">
+            <div className="text-sm sm:text-base font-bold font-mono text-[#f6f1e6] leading-none">
               {myHitsLanded}
-              <span className="text-zinc-500 text-xs">/{SHADOW_FLEET_SIZE}</span>
+              <span className="text-[#77857d] text-xs">/{SHADOW_FLEET_SIZE}</span>
             </div>
           </div>
 
-          <div className="px-2 py-0.5 rounded-md bg-zinc-950 border border-zinc-800 text-[10px] font-mono font-medium text-zinc-400">
+          <div className="px-2 py-0.5 rounded-md bg-[#080d0b] border border-[#c9a55a]/25 text-[10px] font-mono font-semibold text-[#e6c27a]">
             VS
           </div>
 
           <div className="text-left">
-            <div className="text-[10px] font-medium text-rose-400 truncate max-w-[90px] sm:max-w-[120px]">
+            <div className="text-[10px] font-mono font-medium text-[#f07687] truncate max-w-[90px] sm:max-w-[120px]">
               {opp?.nickname ?? 'Waiting…'}
             </div>
-            <div className="text-sm sm:text-base font-semibold font-mono text-zinc-50 leading-none">
+            <div className="text-sm sm:text-base font-bold font-mono text-[#f6f1e6] leading-none">
               {oppHitsLanded}
-              <span className="text-zinc-500 text-xs">/{SHADOW_FLEET_SIZE}</span>
+              <span className="text-[#77857d] text-xs">/{SHADOW_FLEET_SIZE}</span>
             </div>
           </div>
         </div>
@@ -304,7 +313,7 @@ export default function ShadowStrikeArena({
           {roomCode && (
             <button
               onClick={copyCode}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 hover:bg-zinc-800 text-zinc-200 font-mono text-xs font-medium transition-colors cursor-pointer"
+              className="btn-obsidian flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-[#e6c27a] font-mono text-xs font-medium cursor-pointer"
               title="Copy Room Code"
             >
               <span>{roomCode}</span>
@@ -318,26 +327,26 @@ export default function ShadowStrikeArena({
       <main className="relative z-10 flex-1 min-h-0 flex flex-col justify-center p-3 sm:p-4 max-w-6xl w-full mx-auto">
         {/* WAITING PHASE */}
         {state.status === 'waiting' && (
-          <div className="max-w-md w-full mx-auto bg-[#111113] border border-zinc-800/90 rounded-2xl p-6 text-center">
-            <div className="w-12 h-12 mx-auto mb-4 rounded-2xl bg-zinc-950 border border-zinc-800 flex items-center justify-center">
+          <div className="atelier-card max-w-md w-full mx-auto rounded-2xl border-[#c9a55a]/28 bg-gradient-to-b from-[#111a16]/95 to-[#0b100e]/95 p-6 text-center">
+            <div className="w-12 h-12 mx-auto mb-4 rounded-2xl bg-[#09120e] border border-emerald-500/35 flex items-center justify-center shadow-[inset_0_0_16px_rgba(16,185,129,0.18)]">
               <Radar className="w-6 h-6 text-emerald-400 animate-spin" style={{ animationDuration: '4s' }} />
             </div>
-            <h2 className="text-xl font-semibold tracking-tight text-zinc-50 mb-1">
-              Awaiting Rival Commander
+            <h2 className="font-display text-xl font-bold tracking-tight text-[#f6f1e6] mb-1">
+              Awaiting Rival <span className="font-serif italic font-normal text-[#e6c27a]">Commander</span>
             </h2>
-            <p className="text-xs sm:text-sm text-zinc-400 mb-5">
+            <p className="text-xs sm:text-sm text-[#9ca8a1] mb-5">
               Share this frequency code with a friend to start the 1v1 Shadow Strike duel.
             </p>
             {roomCode && (
               <button
                 onClick={copyCode}
-                className="w-full py-3.5 px-4 rounded-xl bg-zinc-950 border border-zinc-800 hover:border-zinc-600 flex items-center justify-center gap-3 font-mono text-2xl font-semibold tracking-[0.25em] text-zinc-100 transition-colors cursor-pointer mb-3"
+                className="w-full py-3.5 px-4 rounded-xl bg-[#070c0a] border border-[#c9a55a]/30 hover:border-[#e6c27a]/70 flex items-center justify-center gap-3 font-mono text-2xl font-semibold tracking-[0.25em] text-[#e6c27a] transition-colors cursor-pointer mb-3 shadow-[inset_0_2px_10px_rgba(0,0,0,0.7)]"
               >
                 <span>{roomCode}</span>
-                {copied ? <Check className="w-5 h-5 text-emerald-400" /> : <Copy className="w-5 h-5 text-zinc-400" />}
+                {copied ? <Check className="w-5 h-5 text-emerald-400" /> : <Copy className="w-5 h-5 text-[#c9a55a]" />}
               </button>
             )}
-            <p className="text-xs text-zinc-500">
+            <p className="text-xs text-[#808d85]">
               Both players hide 6 stealth nodes, then hunt with Chain-Hit Strikes, 3×3 Sonar &amp; Orbital Beams.
             </p>
           </div>
@@ -347,24 +356,24 @@ export default function ShadowStrikeArena({
         {state.status === 'setup' && me && (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-center min-h-0">
             {/* Left: Interactive Fleet Placement Grid */}
-            <div className="lg:col-span-7 bg-[#111113] border border-zinc-800/90 rounded-2xl p-4 sm:p-5">
+            <div style={{ transform: 'none' }} className="lg:col-span-7 atelier-card rounded-2xl border-[#c9a55a]/28 bg-gradient-to-b from-[#101815]/95 to-[#0a100d]/95 p-4 sm:p-5">
               <div className="flex items-center justify-between mb-3">
                 <div>
-                  <span className="text-[11px] font-mono text-emerald-400">
+                  <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#e6c27a]">
                     Phase 1 · Stealth Deployment
                   </span>
-                  <h2 className="text-lg font-semibold text-zinc-50">
-                    Hide Your {SHADOW_FLEET_SIZE} Stealth Nodes
+                  <h2 className="font-display text-lg font-bold text-[#f6f1e6]">
+                    Hide Your {SHADOW_FLEET_SIZE} <span className="font-serif italic font-normal text-[#e6c27a]">Stealth Nodes</span>
                   </h2>
                 </div>
-                <div className="px-3 py-1 rounded-full bg-zinc-900 border border-zinc-800 text-xs font-mono font-medium text-emerald-400">
+                <div className="px-3 py-1 rounded-full bg-[#09120e] border border-emerald-500/35 text-xs font-mono font-semibold text-emerald-300">
                   {me.ready ? SHADOW_FLEET_SIZE : draftFleet.length} / {SHADOW_FLEET_SIZE} Placed
                 </div>
               </div>
 
-              <div className="max-w-[360px] mx-auto">
+              <div className="max-w-[375px] mx-auto rounded-xl border border-[#c9a55a]/22 bg-[#0a110e] p-3 shadow-[inset_0_2px_14px_rgba(0,0,0,0.7)]">
                 {/* Column headers */}
-                <div className="grid grid-cols-7 gap-1.5 mb-1.5 text-center text-[10px] font-mono text-zinc-500">
+                <div className="grid grid-cols-7 gap-1.5 mb-1.5 text-center text-[10px] font-mono font-semibold text-[#c9a55a]/85">
                   <div />
                   {[1, 2, 3, 4, 5, 6].map((c) => (
                     <div key={c}>{c}</div>
@@ -373,7 +382,7 @@ export default function ShadowStrikeArena({
                 <div className="space-y-1.5">
                   {ROW_LABELS.map((rowLabel, r) => (
                     <div key={rowLabel} className="grid grid-cols-7 gap-1.5 items-center">
-                      <div className="text-[10px] font-mono text-zinc-500 text-center">{rowLabel}</div>
+                      <div className="text-[10px] font-mono font-semibold text-[#c9a55a]/85 text-center">{rowLabel}</div>
                       {Array.from({ length: SHADOW_GRID_SIZE }).map((_, c) => {
                         const idx = r * SHADOW_GRID_SIZE + c;
                         const placed = myFleetSet.has(idx);
@@ -382,13 +391,13 @@ export default function ShadowStrikeArena({
                             key={idx}
                             disabled={me.ready}
                             onClick={() => toggleDraftCell(idx)}
-                            className={`aspect-square rounded-lg border text-xs font-semibold flex items-center justify-center transition-colors ${
+                            className={`aspect-square rounded-lg border text-xs font-semibold flex items-center justify-center transition-all ${
                               placed
-                                ? 'bg-emerald-500/15 border-emerald-400/75 text-emerald-400'
-                                : 'bg-zinc-950 border-zinc-800 hover:border-zinc-600 text-zinc-600'
+                                ? 'bg-gradient-to-b from-[#134231] to-[#0a261c] border-emerald-400/75 text-emerald-300 shadow-[inset_0_1px_0_rgba(167,243,208,0.28),0_0_12px_rgba(16,185,129,0.2)]'
+                                : 'bg-[#0d1612] border-[#263830] hover:border-[#c9a55a]/55 text-[#51635a] shadow-[inset_0_2px_5px_rgba(0,0,0,0.5)]'
                             } ${me.ready ? 'cursor-default opacity-80' : 'cursor-pointer'}`}
                           >
-                            {placed ? <Shield className="w-4 h-4 fill-emerald-400/20" /> : null}
+                            {placed ? <Shield className="w-4 h-4 fill-emerald-400/25" /> : null}
                           </button>
                         );
                       })}
@@ -400,57 +409,57 @@ export default function ShadowStrikeArena({
 
             {/* Right: Controls & Rules */}
             <div className="lg:col-span-5 space-y-3">
-              <div className="bg-[#111113] border border-zinc-800/90 rounded-2xl p-4 space-y-3">
-                <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-300">
+              <div className="atelier-card rounded-2xl border-[#c9a55a]/22 bg-gradient-to-b from-[#101815]/95 to-[#0b100e]/95 p-4 space-y-3">
+                <h3 className="text-[10px] font-mono font-semibold uppercase tracking-[0.2em] text-[#e6c27a]">
                   Arsenal Briefing
                 </h3>
-                <div className="space-y-2 text-xs text-zinc-400">
-                  <div className="flex items-start gap-2.5 p-2.5 rounded-xl bg-zinc-950 border border-zinc-800">
-                    <Crosshair className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
+                <div className="space-y-2 text-xs text-[#a5b2aa]">
+                  <div className="flex items-start gap-2.5 p-2.5 rounded-xl bg-[#080f0c] border border-[#e05263]/28">
+                    <Crosshair className="w-4 h-4 text-[#f06b7c] shrink-0 mt-0.5" />
                     <div>
-                      <span className="font-semibold text-zinc-100">Chain-Hit Laser:</span> Hitting a stealth node grants an immediate <span className="text-rose-400 font-medium">extra turn</span>.
+                      <span className="font-semibold text-[#f5efe2]">Chain-Hit Laser:</span> Hitting a stealth node grants an immediate <span className="text-[#f07687] font-medium">extra turn</span>.
                     </div>
                   </div>
-                  <div className="flex items-start gap-2.5 p-2.5 rounded-xl bg-zinc-950 border border-zinc-800">
-                    <Radar className="w-4 h-4 text-sky-400 shrink-0 mt-0.5" />
+                  <div className="flex items-start gap-2.5 p-2.5 rounded-xl bg-[#080f0c] border border-emerald-500/28">
+                    <Radar className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
                     <div>
-                      <span className="font-semibold text-zinc-100">3×3 Sonar Ping (×2):</span> Reveals the exact count of enemy nodes inside a 3×3 square.
+                      <span className="font-semibold text-[#f5efe2]">3×3 Sonar Ping (×2):</span> Reveals the exact count of enemy nodes inside a 3×3 square.
                     </div>
                   </div>
-                  <div className="flex items-start gap-2.5 p-2.5 rounded-xl bg-zinc-950 border border-zinc-800">
-                    <Zap className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+                  <div className="flex items-start gap-2.5 p-2.5 rounded-xl bg-[#080f0c] border border-[#d4a853]/30">
+                    <Zap className="w-4 h-4 text-[#e6c27a] shrink-0 mt-0.5" />
                     <div>
-                      <span className="font-semibold text-zinc-100">Orbital Beam (×1):</span> Obliterates an entire Row or Column (6 cells) in one strike.
+                      <span className="font-semibold text-[#f5efe2]">Orbital Beam (×1):</span> Obliterates an entire Row or Column (6 cells) in one strike.
                     </div>
                   </div>
                 </div>
               </div>
 
               {!me.ready ? (
-                <div className="bg-[#111113] border border-zinc-800/90 rounded-2xl p-4 space-y-2.5">
+                <div className="atelier-card rounded-2xl border-[#c9a55a]/22 bg-gradient-to-b from-[#101815]/95 to-[#0b100e]/95 p-4 space-y-2.5">
                   <div className="grid grid-cols-2 gap-2">
                     <button
                       onClick={handleAutoDeploy}
-                      className="py-2.5 px-3 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-200 text-xs font-medium flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                      className="btn-obsidian py-2.5 px-3 rounded-xl text-[#e5dec9] text-xs font-medium flex items-center justify-center gap-1.5 cursor-pointer"
                     >
-                      <Shuffle className="w-3.5 h-3.5 text-sky-400" />
+                      <Shuffle className="w-3.5 h-3.5 text-emerald-400" />
                       Auto-Deploy
                     </button>
                     <button
                       onClick={handleClearFleet}
-                      className="py-2.5 px-3 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-200 text-xs font-medium flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                      className="btn-obsidian py-2.5 px-3 rounded-xl text-[#e5dec9] text-xs font-medium flex items-center justify-center gap-1.5 cursor-pointer"
                     >
-                      <Trash2 className="w-3.5 h-3.5 text-rose-400" />
+                      <Trash2 className="w-3.5 h-3.5 text-[#f06b7c]" />
                       Clear Grid
                     </button>
                   </div>
                   <button
                     onClick={handleLockFleet}
                     disabled={draftFleet.length !== SHADOW_FLEET_SIZE}
-                    className={`w-full py-3 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-colors ${
+                    className={`w-full py-3 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-all ${
                       draftFleet.length === SHADOW_FLEET_SIZE
-                        ? 'bg-zinc-50 hover:bg-white text-zinc-950 cursor-pointer'
-                        : 'bg-zinc-900 border border-zinc-800 text-zinc-500 cursor-not-allowed'
+                        ? 'btn-brass cursor-pointer'
+                        : 'bg-[#0b110e] border border-[#24302a] text-[#606d66] cursor-not-allowed'
                     }`}
                   >
                     <Shield className="w-4 h-4" />
@@ -458,12 +467,12 @@ export default function ShadowStrikeArena({
                   </button>
                 </div>
               ) : (
-                <div className="bg-[#111113] border border-emerald-500/40 rounded-2xl p-5 text-center">
+                <div className="atelier-card border-emerald-500/45 rounded-2xl p-5 text-center bg-[#0c1a14]/90">
                   <Sparkles className="w-5 h-5 text-emerald-400 mx-auto mb-2 animate-pulse" />
-                  <p className="font-semibold text-emerald-400 text-sm">
+                  <p className="font-semibold text-emerald-300 text-sm">
                     Fleet Locked &amp; Cloaked
                   </p>
-                  <p className="text-xs text-zinc-400 mt-1">
+                  <p className="text-xs text-[#9ca8a1] mt-1">
                     Waiting for {opp?.nickname ?? 'opponent'} to finish deploying…
                   </p>
                 </div>
@@ -475,25 +484,25 @@ export default function ShadowStrikeArena({
         {/* PLAYING & FINISHED PHASE */}
         {(state.status === 'playing' || state.status === 'finished') && me && opp && (
           <div className="flex flex-col gap-3 min-h-0 flex-1 justify-center">
-            {/* Turn Banner + Weapon Selector */}
-            <div className="shrink-0 bg-[#111113] border border-zinc-800/90 rounded-2xl px-3.5 py-2.5 flex flex-wrap items-center justify-between gap-2.5">
+            {/* Turn Banner + Tactile Submarine Fire-Control Switchboard */}
+            <div className="shrink-0 atelier-card rounded-2xl border-[#c9a55a]/25 bg-gradient-to-b from-[#101815]/95 to-[#0b100e]/95 px-3.5 py-2.5 flex flex-wrap items-center justify-between gap-2.5">
               {/* Turn indicator */}
               <div className="flex items-center gap-2.5">
                 <div
                   className={`px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1.5 border ${
                     state.status === 'finished'
                       ? state.winnerIdx === meIdx
-                        ? 'bg-emerald-500/15 border-emerald-500/50 text-emerald-400'
-                        : 'bg-rose-500/15 border-rose-500/50 text-rose-400'
+                        ? 'bg-emerald-950/80 border-emerald-400/60 text-emerald-300'
+                        : 'bg-[#3d111b] border-[#e05263]/60 text-[#fda4af]'
                       : isMyTurn
-                      ? 'bg-emerald-500/15 border-emerald-500/50 text-emerald-400'
-                      : 'bg-zinc-900 border-zinc-800 text-zinc-400'
+                      ? 'bg-emerald-950/80 border-emerald-400/60 text-emerald-300 shadow-[0_0_14px_rgba(16,185,129,0.2)]'
+                      : 'bg-[#0b110e] border-[#c9a55a]/20 text-[#96a39b]'
                   }`}
                 >
                   {state.status === 'finished' ? (
                     state.winnerIdx === meIdx ? (
                       <>
-                        <Trophy className="w-3.5 h-3.5" /> Victory
+                        <Trophy className="w-3.5 h-3.5 text-[#e6c27a]" /> Victory
                       </>
                     ) : (
                       <>
@@ -502,7 +511,7 @@ export default function ShadowStrikeArena({
                     )
                   ) : isMyTurn ? (
                     <>
-                      <Flame className="w-3.5 h-3.5" /> Your Strike
+                      <Flame className="w-3.5 h-3.5 text-[#e6c27a]" /> Your Strike
                     </>
                   ) : (
                     <>
@@ -512,13 +521,13 @@ export default function ShadowStrikeArena({
                 </div>
 
                 {state.lastAction && (
-                  <p className="text-xs text-zinc-400 hidden md:block truncate max-w-[360px]">
+                  <p className="text-xs text-[#a5b2aa] hidden md:block truncate max-w-[360px]">
                     {state.lastAction.summary}
                   </p>
                 )}
               </div>
 
-              {/* Weapon Bar */}
+              {/* Tactile Weapon Switches */}
               <div className="flex items-center gap-1.5 flex-wrap">
                 <button
                   disabled={!isMyTurn}
@@ -526,13 +535,13 @@ export default function ShadowStrikeArena({
                     playSound('tick');
                     setSelectedWeapon('strike');
                   }}
-                  className={`px-2.5 py-1.5 rounded-xl text-xs font-medium flex items-center gap-1.5 border transition-colors ${
+                  className={`px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 border transition-all ${
                     selectedWeapon === 'strike'
-                      ? 'bg-rose-500/15 border-rose-400/70 text-rose-300'
-                      : 'bg-zinc-950 border-zinc-800 text-zinc-400 hover:text-zinc-100'
+                      ? 'bg-gradient-to-b from-[#591625] to-[#340c16] border-[#f06b7c]/80 text-[#ffe4e8] shadow-[inset_0_1px_0_rgba(255,220,225,0.28),0_2px_10px_rgba(224,82,99,0.25)]'
+                      : 'bg-[#09100d] border-[#26362e] text-[#97a49c] hover:text-[#f1ece1]'
                   } ${isMyTurn ? 'cursor-pointer' : 'opacity-50 cursor-not-allowed'}`}
                 >
-                  <Crosshair className="w-3.5 h-3.5 text-rose-400" />
+                  <Crosshair className="w-3.5 h-3.5 text-[#f06b7c]" />
                   <span>Laser</span>
                 </button>
 
@@ -542,17 +551,17 @@ export default function ShadowStrikeArena({
                     playSound('tick');
                     setSelectedWeapon('sonar');
                   }}
-                  className={`px-2.5 py-1.5 rounded-xl text-xs font-medium flex items-center gap-1.5 border transition-colors ${
+                  className={`px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 border transition-all ${
                     selectedWeapon === 'sonar'
-                      ? 'bg-sky-500/15 border-sky-400/70 text-sky-300'
-                      : 'bg-zinc-950 border-zinc-800 text-zinc-400 hover:text-zinc-100'
+                      ? 'bg-gradient-to-b from-[#134231] to-[#0a261c] border-emerald-400/80 text-emerald-200 shadow-[inset_0_1px_0_rgba(167,243,208,0.28),0_2px_10px_rgba(16,185,129,0.25)]'
+                      : 'bg-[#09100d] border-[#26362e] text-[#97a49c] hover:text-[#f1ece1]'
                   } ${
                     isMyTurn && me.sonarLeft > 0 ? 'cursor-pointer' : 'opacity-40 cursor-not-allowed'
                   }`}
                 >
-                  <Radar className="w-3.5 h-3.5 text-sky-400" />
+                  <Radar className="w-3.5 h-3.5 text-emerald-400" />
                   <span>Sonar 3×3</span>
-                  <span className="px-1.5 py-0.5 rounded bg-sky-500/15 text-sky-400 font-mono text-[10px]">
+                  <span className="px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-mono text-[10px]">
                     ×{me.sonarLeft}
                   </span>
                 </button>
@@ -563,47 +572,51 @@ export default function ShadowStrikeArena({
                     playSound('tick');
                     setSelectedWeapon(selectedWeapon === 'orbital_row' ? 'orbital_col' : 'orbital_row');
                   }}
-                  className={`px-2.5 py-1.5 rounded-xl text-xs font-medium flex items-center gap-1.5 border transition-colors ${
+                  className={`px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 border transition-all ${
                     selectedWeapon === 'orbital_row' || selectedWeapon === 'orbital_col'
-                      ? 'bg-amber-500/15 border-amber-400/70 text-amber-300'
-                      : 'bg-zinc-950 border-zinc-800 text-zinc-400 hover:text-zinc-100'
+                      ? 'bg-gradient-to-b from-[#f0d088] to-[#b98a36] border-[#f8e3b0] text-[#141008] shadow-[inset_0_1px_0_rgba(255,255,255,0.6),0_2px_12px_rgba(230,194,122,0.35)]'
+                      : 'bg-[#09100d] border-[#26362e] text-[#97a49c] hover:text-[#f1ece1]'
                   } ${
                     isMyTurn && me.orbitalLeft > 0 ? 'cursor-pointer' : 'opacity-40 cursor-not-allowed'
                   }`}
                   title="Click again to toggle Row vs Column beam"
                 >
-                  <Zap className="w-3.5 h-3.5 text-amber-400" />
+                  <Zap className={`w-3.5 h-3.5 ${selectedWeapon === 'orbital_row' || selectedWeapon === 'orbital_col' ? 'text-[#141008]' : 'text-[#e6c27a]'}`} />
                   <span>
                     Orbital {selectedWeapon === 'orbital_col' ? 'COL' : 'ROW'}
                   </span>
-                  <span className="px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-400 font-mono text-[10px]">
+                  <span className={`px-1.5 py-0.5 rounded font-mono text-[10px] ${
+                    selectedWeapon === 'orbital_row' || selectedWeapon === 'orbital_col'
+                      ? 'bg-[#141008]/20 text-[#141008]'
+                      : 'bg-[#d4a853]/18 text-[#e6c27a]'
+                  }`}>
                     ×{me.orbitalLeft}
                   </span>
                 </button>
               </div>
             </div>
 
-            {/* Dual Grids Side by Side */}
+            {/* Dual Naval Plotting Tables Side by Side */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-3.5 items-stretch min-h-0">
               {/* LEFT: ENEMY RADAR (Offensive Board) */}
-              <div className="lg:col-span-6 bg-[#111113] border border-zinc-800/90 rounded-2xl p-3.5 sm:p-4 flex flex-col justify-between">
+              <div style={{ transform: 'none' }} className="lg:col-span-6 atelier-card rounded-2xl border-[#c9a55a]/25 bg-gradient-to-b from-[#101815]/95 to-[#0a100d]/95 p-3.5 sm:p-4 flex flex-col justify-between">
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2">
-                    <Crosshair className="w-4 h-4 text-rose-400" />
-                    <h2 className="text-sm font-semibold text-zinc-100">
-                      Enemy Radar · {opp.nickname}
+                    <Crosshair className="w-4 h-4 text-[#f06b7c]" />
+                    <h2 className="font-display text-sm font-bold text-[#f6f1e6]">
+                      Enemy Radar · <span className="font-serif italic font-normal text-[#e6c27a]">{opp.nickname}</span>
                     </h2>
                   </div>
-                  <span className="text-[11px] font-mono font-medium text-rose-400">
+                  <span className="text-[11px] font-mono font-semibold text-[#f07687]">
                     {SHADOW_FLEET_SIZE - myHitsLanded} Hidden Left
                   </span>
                 </div>
 
                 <div
-                  className="max-w-[330px] w-full mx-auto my-auto"
+                  className="max-w-[345px] w-full mx-auto my-auto rounded-xl border border-[#c9a55a]/22 bg-[#09100d] p-2.5 shadow-[inset_0_2px_14px_rgba(0,0,0,0.7)]"
                   onMouseLeave={() => setHoveredCell(null)}
                 >
-                  <div className="grid grid-cols-7 gap-1 mb-1 text-center text-[10px] font-mono text-zinc-500">
+                  <div className="grid grid-cols-7 gap-1 mb-1 text-center text-[10px] font-mono font-semibold text-[#c9a55a]/85">
                     <div />
                     {[1, 2, 3, 4, 5, 6].map((c) => (
                       <div key={c}>{c}</div>
@@ -612,7 +625,7 @@ export default function ShadowStrikeArena({
                   <div className="space-y-1">
                     {ROW_LABELS.map((rowLabel, r) => (
                       <div key={rowLabel} className="grid grid-cols-7 gap-1 items-center">
-                        <div className="text-[10px] font-mono text-zinc-500 text-center">{rowLabel}</div>
+                        <div className="text-[10px] font-mono font-semibold text-[#c9a55a]/85 text-center">{rowLabel}</div>
                         {Array.from({ length: SHADOW_GRID_SIZE }).map((_, c) => {
                           const idx = r * SHADOW_GRID_SIZE + c;
                           const shot = myShotSet.has(idx);
@@ -623,22 +636,23 @@ export default function ShadowStrikeArena({
                           const sonarCount = mySonarMap.get(idx);
 
                           let cellClass =
-                            'bg-zinc-950 border-zinc-800/90 text-zinc-600 hover:border-zinc-600';
+                            'bg-[#0e1814] border-[#25372f] text-[#52655c] hover:border-[#c9a55a]/60 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]';
                           if (isHit) {
-                            cellClass = 'bg-rose-500/20 border-rose-400/75 text-rose-400';
+                            cellClass =
+                              'bg-gradient-to-b from-[#541422] to-[#300a13] border-[#e05263]/80 text-[#fda4af] shadow-[inset_0_0_12px_rgba(225,29,72,0.35)]';
                           } else if (isMiss) {
-                            cellClass = 'bg-zinc-900/60 border-zinc-800/60 text-zinc-600';
+                            cellClass = 'bg-[#080e0c] border-[#19241f] text-[#3f5048]';
                           } else if (revealUnshot) {
-                            cellClass = 'bg-amber-500/15 border-amber-400/70 text-amber-400';
+                            cellClass = 'bg-[#2a2112] border-[#e6c27a]/75 text-[#e6c27a]';
                           }
 
                           if (inPreview && isMyTurn) {
                             if (selectedWeapon === 'sonar') {
-                              cellClass += ' ring-2 ring-sky-400/80 bg-sky-500/15';
+                              cellClass += ' ring-2 ring-emerald-400/85 bg-emerald-950/60';
                             } else if (selectedWeapon === 'orbital_row' || selectedWeapon === 'orbital_col') {
-                              cellClass += ' ring-2 ring-amber-400/80 bg-amber-500/15';
+                              cellClass += ' ring-2 ring-[#e6c27a]/90 bg-[#362912]/70';
                             } else if (!shot) {
-                              cellClass += ' ring-2 ring-rose-400/80 bg-rose-500/15';
+                              cellClass += ' ring-2 ring-[#f06b7c]/85 bg-[#471420]/65';
                             }
                           }
 
@@ -648,22 +662,22 @@ export default function ShadowStrikeArena({
                               disabled={!isMyTurn || (selectedWeapon === 'strike' && shot)}
                               onMouseEnter={() => setHoveredCell(idx)}
                               onClick={() => handleEnemyCellClick(idx)}
-                              className={`relative aspect-square rounded-lg border flex items-center justify-center transition-colors ${cellClass} ${
+                              className={`relative aspect-square rounded-lg border flex items-center justify-center transition-all ${cellClass} ${
                                 isMyTurn && !(selectedWeapon === 'strike' && shot)
                                   ? 'cursor-crosshair'
                                   : 'cursor-default'
                               }`}
                               title={`${formatCoord(idx)}`}
                             >
-                              {isHit && <Flame className="w-4 h-4 text-rose-400 fill-rose-400/30" />}
-                              {isMiss && <span className="w-1.5 h-1.5 rounded-full bg-zinc-700" />}
-                              {revealUnshot && <Shield className="w-3.5 h-3.5 text-amber-400" />}
+                              {isHit && <Flame className="w-4 h-4 text-[#fda4af] fill-[#e05263]/45" />}
+                              {isMiss && <span className="w-1.5 h-1.5 rounded-full bg-[#3e5248]" />}
+                              {revealUnshot && <Shield className="w-3.5 h-3.5 text-[#e6c27a]" />}
                               {sonarCount !== undefined && (
                                 <span
-                                  className={`absolute -top-1 -right-1 min-w-[16px] h-[16px] px-1 rounded-full text-[9px] font-mono font-bold flex items-center justify-center border ${
+                                  className={`absolute -top-1 -right-1 min-w-[17px] h-[17px] px-1 rounded-full text-[9px] font-mono font-bold flex items-center justify-center border shadow-sm ${
                                     sonarCount > 0
-                                      ? 'bg-sky-400 text-zinc-950 border-sky-300'
-                                      : 'bg-zinc-900 text-zinc-400 border-zinc-700'
+                                      ? 'bg-gradient-to-b from-[#f2d48f] to-[#b88936] text-[#141008] border-[#faebbf]'
+                                      : 'bg-[#121e19] text-[#8da196] border-[#2c4037]'
                                   }`}
                                   title={`3×3 Sonar around ${formatCoord(idx)}: ${sonarCount} node(s)`}
                                 >
@@ -678,7 +692,7 @@ export default function ShadowStrikeArena({
                   </div>
                 </div>
 
-                <p className="text-[11px] text-zinc-500 text-center mt-2">
+                <p className="text-[11px] text-[#8d9a92] text-center mt-2">
                   {selectedWeapon === 'strike' && 'Click any unshot sector. Hits grant a chain extra turn.'}
                   {selectedWeapon === 'sonar' && 'Click center tile to scan a 3×3 zone for hidden nodes.'}
                   {(selectedWeapon === 'orbital_row' || selectedWeapon === 'orbital_col') &&
@@ -688,21 +702,21 @@ export default function ShadowStrikeArena({
 
               {/* RIGHT: YOUR FLEET + COMBAT FEED */}
               <div className="lg:col-span-6 grid grid-rows-[auto_1fr] gap-3 min-h-0">
-                <div className="bg-[#111113] border border-zinc-800/90 rounded-2xl p-3.5 sm:p-4">
+                <div className="atelier-card rounded-2xl border-[#c9a55a]/25 bg-gradient-to-b from-[#101815]/95 to-[#0a100d]/95 p-3.5 sm:p-4">
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
                       <Shield className="w-4 h-4 text-emerald-400" />
-                      <h2 className="text-sm font-semibold text-zinc-100">
-                        Your Stealth Grid
+                      <h2 className="font-display text-sm font-bold text-[#f6f1e6]">
+                        Your <span className="font-serif italic font-normal text-[#e6c27a]">Stealth Grid</span>
                       </h2>
                     </div>
-                    <span className="text-[11px] font-mono font-medium text-emerald-400">
+                    <span className="text-[11px] font-mono font-semibold text-emerald-300">
                       {SHADOW_FLEET_SIZE - oppHitsLanded}/{SHADOW_FLEET_SIZE} Intact
                     </span>
                   </div>
 
-                  <div className="max-w-[260px] w-full mx-auto">
-                    <div className="grid grid-cols-7 gap-1 mb-1 text-center text-[9px] font-mono text-zinc-500">
+                  <div className="max-w-[270px] w-full mx-auto rounded-xl border border-[#c9a55a]/18 bg-[#09100d] p-2 shadow-[inset_0_2px_10px_rgba(0,0,0,0.65)]">
+                    <div className="grid grid-cols-7 gap-1 mb-1 text-center text-[9px] font-mono font-semibold text-[#c9a55a]/80">
                       <div />
                       {[1, 2, 3, 4, 5, 6].map((c) => (
                         <div key={c}>{c}</div>
@@ -711,7 +725,7 @@ export default function ShadowStrikeArena({
                     <div className="space-y-1">
                       {ROW_LABELS.map((rowLabel, r) => (
                         <div key={rowLabel} className="grid grid-cols-7 gap-1 items-center">
-                          <div className="text-[9px] font-mono text-zinc-500 text-center">{rowLabel}</div>
+                          <div className="text-[9px] font-mono font-semibold text-[#c9a55a]/80 text-center">{rowLabel}</div>
                           {Array.from({ length: SHADOW_GRID_SIZE }).map((_, c) => {
                             const idx = r * SHADOW_GRID_SIZE + c;
                             const hasNode = myFleetSet.has(idx);
@@ -723,17 +737,17 @@ export default function ShadowStrikeArena({
                                 key={idx}
                                 className={`aspect-square rounded-md border flex items-center justify-center ${
                                   destroyed
-                                    ? 'bg-rose-500/20 border-rose-500/75 text-rose-400'
+                                    ? 'bg-gradient-to-b from-[#541422] to-[#300a13] border-[#e05263]/80 text-[#fda4af]'
                                     : hasNode
-                                    ? 'bg-emerald-500/15 border-emerald-400/65 text-emerald-400'
+                                    ? 'bg-gradient-to-b from-[#134231] to-[#0a261c] border-emerald-400/70 text-emerald-300'
                                     : oppShot
-                                    ? 'bg-zinc-900/60 border-zinc-800/60 text-zinc-600'
-                                    : 'bg-zinc-950 border-zinc-800/80'
+                                    ? 'bg-[#080e0c] border-[#1a2621] text-[#3f5048]'
+                                    : 'bg-[#0e1713] border-[#22332b]'
                                 }`}
                               >
-                                {destroyed && <Flame className="w-3 h-3 text-rose-400" />}
-                                {hasNode && !destroyed && <Shield className="w-3 h-3 fill-emerald-400/20" />}
-                                {!hasNode && oppShot && <span className="w-1 h-1 rounded-full bg-zinc-700" />}
+                                {destroyed && <Flame className="w-3 h-3 text-[#fda4af]" />}
+                                {hasNode && !destroyed && <Shield className="w-3 h-3 fill-emerald-400/25" />}
+                                {!hasNode && oppShot && <span className="w-1 h-1 rounded-full bg-[#3e5248]" />}
                               </div>
                             );
                           })}
@@ -744,23 +758,23 @@ export default function ShadowStrikeArena({
                 </div>
 
                 {/* Compact Combat Log */}
-                <div className="bg-[#111113] border border-zinc-800/90 rounded-2xl p-3.5 flex flex-col min-h-[110px] overflow-hidden">
-                  <div className="text-[10px] font-mono font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">
-                    Tactical Feed
+                <div className="atelier-card rounded-2xl border-[#c9a55a]/22 bg-gradient-to-b from-[#101815]/95 to-[#0a100d]/95 p-3.5 flex flex-col min-h-[110px] overflow-hidden">
+                  <div className="text-[10px] font-mono font-semibold uppercase tracking-[0.2em] text-[#e6c27a] mb-1.5">
+                    Sonar &amp; Strike Log
                   </div>
                   <div className="flex-1 overflow-y-auto space-y-1 pr-1 text-xs">
                     {state.logs.length === 0 ? (
-                      <p className="text-zinc-500 italic">Awaiting first strike…</p>
+                      <p className="text-[#7c8a82] italic">Awaiting first strike…</p>
                     ) : (
                       state.logs.map((entry) => (
                         <div
                           key={entry.id}
                           className={`px-2.5 py-1.5 rounded-lg border text-[11px] ${
                             entry.hits > 0
-                              ? 'bg-rose-500/10 border-rose-500/25 text-rose-300'
+                              ? 'bg-[#3b121c]/65 border-[#e05263]/35 text-[#ffc2cb]'
                               : entry.weapon === 'sonar'
-                              ? 'bg-sky-500/10 border-sky-500/25 text-sky-300'
-                              : 'bg-zinc-950 border-zinc-800/80 text-zinc-400'
+                              ? 'bg-[#102920]/70 border-emerald-500/35 text-emerald-200'
+                              : 'bg-[#080e0c] border-[#1f2e27] text-[#97a49c]'
                           }`}
                         >
                           {entry.summary}
@@ -788,13 +802,13 @@ export default function ShadowStrikeArena({
               initial={{ scale: 0.94, y: 12 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.94, y: 12 }}
-              className="max-w-sm w-full bg-[#111113] border border-zinc-800 rounded-2xl p-6 text-center"
+              className="atelier-card max-w-sm w-full rounded-2xl border-[#c9a55a]/35 bg-gradient-to-b from-[#121c18] to-[#0a100d] p-6 text-center"
             >
               <div
                 className={`w-14 h-14 mx-auto mb-4 rounded-2xl flex items-center justify-center border ${
                   state.winnerIdx === meIdx
-                    ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-400'
-                    : 'bg-rose-500/15 border-rose-500/40 text-rose-400'
+                    ? 'bg-emerald-950/80 border-emerald-400/55 text-[#e6c27a]'
+                    : 'bg-[#3d111b] border-[#e05263]/55 text-[#fda4af]'
                 }`}
               >
                 {state.winnerIdx === meIdx ? (
@@ -803,25 +817,33 @@ export default function ShadowStrikeArena({
                   <Skull className="w-7 h-7" />
                 )}
               </div>
-              <h2 className="text-2xl font-semibold tracking-tight text-zinc-50 mb-1">
-                {state.winnerIdx === meIdx ? 'Sector Cleared' : 'Fleet Destroyed'}
+              <h2 className="font-display text-2xl font-bold tracking-tight text-[#f6f1e6] mb-1">
+                {state.winnerIdx === meIdx ? (
+                  <>
+                    Sector <span className="font-serif italic font-normal text-[#e6c27a]">Cleared</span>
+                  </>
+                ) : (
+                  <>
+                    Fleet <span className="font-serif italic font-normal text-[#f07687]">Destroyed</span>
+                  </>
+                )}
               </h2>
-              <p className="text-xs sm:text-sm text-zinc-400 mb-5">
+              <p className="text-xs sm:text-sm text-[#9ea9a2] mb-5">
                 {state.winnerIdx === meIdx
                   ? `You eliminated all ${SHADOW_FLEET_SIZE} of ${opp?.nickname}'s stealth nodes.`
                   : `${opp?.nickname} located all ${SHADOW_FLEET_SIZE} of your stealth nodes first.`}
               </p>
 
               <div className="grid grid-cols-2 gap-2.5 mb-5">
-                <div className="p-3 rounded-xl bg-zinc-950 border border-zinc-800">
-                  <div className="text-[10px] font-mono uppercase text-zinc-500">Your Hits</div>
-                  <div className="text-xl font-semibold font-mono text-emerald-400">
+                <div className="p-3 rounded-xl bg-[#080e0c] border border-[#c9a55a]/22">
+                  <div className="text-[10px] font-mono uppercase text-[#8a9790]">Your Hits</div>
+                  <div className="text-xl font-bold font-mono text-emerald-400">
                     {myHitsLanded}/{SHADOW_FLEET_SIZE}
                   </div>
                 </div>
-                <div className="p-3 rounded-xl bg-zinc-950 border border-zinc-800">
-                  <div className="text-[10px] font-mono uppercase text-zinc-500">Enemy Hits</div>
-                  <div className="text-xl font-semibold font-mono text-rose-400">
+                <div className="p-3 rounded-xl bg-[#080e0c] border border-[#c9a55a]/22">
+                  <div className="text-[10px] font-mono uppercase text-[#8a9790]">Enemy Hits</div>
+                  <div className="text-xl font-bold font-mono text-[#f07687]">
                     {oppHitsLanded}/{SHADOW_FLEET_SIZE}
                   </div>
                 </div>
@@ -830,13 +852,13 @@ export default function ShadowStrikeArena({
               <div className="flex gap-2.5">
                 <button
                   onClick={onBack}
-                  className="flex-1 py-2.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-200 font-medium text-sm transition-colors cursor-pointer"
+                  className="btn-obsidian flex-1 py-2.5 rounded-xl text-[#e5dec9] font-medium text-sm cursor-pointer"
                 >
                   Lobby
                 </button>
                 <button
                   onClick={onRematch}
-                  className="flex-1 py-2.5 rounded-xl bg-zinc-50 hover:bg-white text-zinc-950 font-semibold text-sm flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                  className="btn-brass flex-1 py-2.5 rounded-xl font-semibold text-sm flex items-center justify-center gap-1.5 cursor-pointer"
                 >
                   <RotateCcw className="w-4 h-4" />
                   Rematch

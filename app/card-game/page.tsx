@@ -8,6 +8,7 @@ import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { signInAnonymously } from 'firebase/auth';
 import { ArrowLeft, Spade, Users } from 'lucide-react';
 import { motion } from 'motion/react';
+import GameArtwork from '@/components/GameArtwork';
 
 const RANKS = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
 const SUITS = ['H', 'C', 'D', 'S'];
@@ -85,52 +86,81 @@ export default function CardGameLobby() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#09090b] flex items-center justify-center">
-        <div className="h-9 w-9 rounded-full border-2 border-zinc-700 border-t-zinc-200 animate-spin" />
+      <div
+        className="min-h-screen bg-[#0c0b0e] atelier-bg flex items-center justify-center"
+        style={{ backgroundImage: 'radial-gradient(ellipse at top, rgba(16, 100, 72, 0.16), transparent 60%)' }}
+      >
+        <div className="h-9 w-9 rounded-full border-2 border-[#e6c27a]/25 border-t-[#e6c27a] animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#09090b] text-zinc-50 relative overflow-hidden flex flex-col">
+    <div
+      className="min-h-screen bg-[#0c0b0e] atelier-bg text-[#f5efe2] relative overflow-x-hidden flex flex-col"
+      style={{
+        backgroundImage: 'radial-gradient(ellipse at top, rgba(16, 100, 72, 0.16), transparent 60%)',
+      }}
+    >
+      <div className="atelier-grain pointer-events-none fixed inset-0 z-0" />
+
       <Link
         href="/card-games"
-        className="relative z-20 m-5 inline-flex items-center gap-2 rounded-xl border border-zinc-800 bg-zinc-900/90 px-3.5 py-2 text-xs font-medium text-zinc-400 hover:text-zinc-100 hover:border-zinc-700 transition-colors w-fit"
+        className="relative z-20 m-5 inline-flex items-center gap-2 rounded-xl border border-[#e6c27a]/25 bg-[#0f1714]/90 backdrop-blur-md px-3.5 py-2 text-xs font-medium text-[#d6cbb8] hover:text-[#faf4e8] hover:border-[#e6c27a]/50 transition-colors w-fit shadow-[0_8px_24px_rgba(0,0,0,0.45)]"
       >
-        <ArrowLeft size={14} /> Card Games
+        <ArrowLeft size={14} className="text-[#e6c27a]" /> Card Games
       </Link>
 
       <div className="relative z-10 flex-1 flex items-center justify-center px-4 pb-12">
-        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-md">
-          <div className="text-center mb-6">
-            <div className="mx-auto mb-3.5 flex h-14 w-14 items-center justify-center rounded-2xl border border-zinc-800 bg-[#111113]">
-              <Spade className="text-emerald-400" size={24} />
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.35 }}
+          className="w-full max-w-lg space-y-4"
+        >
+          {/* Framed Parlor Key-Art Banner */}
+          <div className="atelier-card rounded-2xl overflow-hidden border border-[#e6c27a]/25 shadow-[0_24px_64px_rgba(0,0,0,0.75)]">
+            <div className="relative h-36 sm:h-44 w-full overflow-hidden bg-[#0c1613]">
+              <GameArtwork id="death-parade" className="w-full h-full object-cover" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0d1211] via-[#0d1211]/45 to-transparent" />
+              <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#e6c27a]/55 to-transparent" />
+
+              <div className="absolute top-3 left-3.5 inline-flex items-center gap-1.5 rounded-full border border-[#e6c27a]/30 bg-[#0b1210]/80 backdrop-blur-md px-2.5 py-1 text-[10px] font-mono uppercase tracking-[0.2em] text-[#e6c27a]">
+                <Spade size={11} className="text-emerald-400" />
+                <span>Head-to-Head</span>
+              </div>
+
+              <div className="absolute bottom-3 left-4 right-4">
+                <h1 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-[#faf4e8] leading-none">
+                  Death <span className="font-serif italic font-normal text-[#e6c27a]">Parade</span>
+                </h1>
+                <p className="mt-1.5 text-xs text-[#cbbda8] flex items-center gap-1.5">
+                  <Users size={13} className="text-[#e6c27a]" /> 2 players · secret bets · deduction
+                </p>
+              </div>
             </div>
-            <p className="text-[11px] font-mono uppercase tracking-[0.2em] text-emerald-400/90 mb-1.5">Head-to-Head</p>
-            <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight text-zinc-50">Death Parade</h1>
-            <p className="mt-2.5 text-sm text-zinc-400 flex items-center justify-center gap-2">
-              <Users size={14} className="text-zinc-500" /> 2 players · secret bets · deduction
-            </p>
           </div>
 
           {error && (
-            <div className="mb-4 rounded-xl border border-rose-500/30 bg-rose-950/30 px-4 py-3 text-sm text-rose-200 text-center">{error}</div>
+            <div className="rounded-xl border border-[#dc2626]/40 bg-[#450a0a]/60 px-4 py-3 text-sm text-[#fecaca] text-center">
+              {error}
+            </div>
           )}
 
-          <div className="rounded-2xl border border-zinc-800/90 bg-[#111113] p-6 space-y-4">
+          <div className="atelier-card rounded-2xl p-6 space-y-4">
             <button
               type="button"
               onClick={createGame}
               disabled={busy}
-              className="w-full rounded-xl bg-zinc-50 hover:bg-white py-3.5 text-sm font-semibold text-zinc-950 disabled:opacity-50 transition-colors"
+              className="btn-brass w-full rounded-xl py-3.5 text-sm font-display font-bold tracking-wide disabled:opacity-50"
             >
               {busy ? 'Creating...' : 'Create Table'}
             </button>
 
             <div className="relative flex items-center py-1">
-              <div className="flex-grow border-t border-zinc-800" />
-              <span className="mx-4 text-[11px] uppercase tracking-widest text-zinc-500 font-medium">or join</span>
-              <div className="flex-grow border-t border-zinc-800" />
+              <div className="flex-grow border-t border-[#e6c27a]/15" />
+              <span className="mx-4 text-[11px] font-mono uppercase tracking-[0.2em] text-[#8e8271] font-medium">or join</span>
+              <div className="flex-grow border-t border-[#e6c27a]/15" />
             </div>
 
             <input
@@ -138,13 +168,13 @@ export default function CardGameLobby() {
               placeholder="INVITE CODE"
               value={inviteCode}
               onChange={e => setInviteCode(e.target.value)}
-              className="w-full rounded-xl border border-zinc-800 bg-zinc-950 px-4 py-3 font-mono text-sm text-center uppercase tracking-[0.22em] text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:border-zinc-400 transition-colors"
+              className="w-full rounded-xl border border-[#e6c27a]/20 bg-[#090d0c] px-4 py-3 font-mono text-sm text-center uppercase tracking-[0.24em] text-[#f5efe2] placeholder:text-[#6f6559] focus:outline-none focus:border-[#e6c27a]/60 transition-colors"
             />
             <button
               type="button"
               onClick={joinGame}
               disabled={!inviteCode.trim()}
-              className="w-full rounded-xl border border-zinc-800 bg-zinc-900 hover:bg-zinc-800 py-3 text-sm font-medium text-zinc-200 disabled:opacity-40 transition-colors"
+              className="btn-obsidian w-full rounded-xl py-3 text-sm font-semibold disabled:opacity-40"
             >
               Join Table
             </button>

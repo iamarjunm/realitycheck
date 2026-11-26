@@ -42,42 +42,48 @@ const MOD_CHIPS: Record<ModChipType, ModChipMeta> = {
     id: 'xray',
     name: 'X-Ray Scan',
     shortDesc: 'Reveal next shell',
-    accent: 'border-zinc-800 bg-zinc-950 text-zinc-100 hover:border-amber-400/50 hover:bg-zinc-900',
+    accent:
+      'border-[#e6c27a]/25 bg-gradient-to-b from-[#1b181d] to-[#110f13] text-[#f5efe2] hover:border-[#e6c27a]/65 hover:from-[#231e24]',
     icon: Eye,
   },
   overclock: {
     id: 'overclock',
     name: 'Overclock',
     shortDesc: 'Next LIVE = 2 DMG',
-    accent: 'border-rose-500/30 bg-zinc-950 text-zinc-100 hover:border-rose-500/60 hover:bg-rose-950/20',
+    accent:
+      'border-[#dc2626]/40 bg-gradient-to-b from-[#231317] to-[#130c0f] text-[#f5efe2] hover:border-[#ef4444]/75 hover:from-[#2d161b]',
     icon: Flame,
   },
   invert: {
     id: 'invert',
     name: 'Polarity Flip',
     shortDesc: 'Flip LIVE ↔ BLANK',
-    accent: 'border-amber-400/30 bg-zinc-950 text-zinc-100 hover:border-amber-400/60 hover:bg-amber-950/20',
+    accent:
+      'border-[#e6c27a]/35 bg-gradient-to-b from-[#1e1915] to-[#120f0d] text-[#f5efe2] hover:border-[#e6c27a]/75 hover:from-[#272019]',
     icon: RefreshCw,
   },
   eject: {
     id: 'eject',
     name: 'Pump Eject',
     shortDesc: 'Discard next shell',
-    accent: 'border-zinc-800 bg-zinc-950 text-zinc-100 hover:border-zinc-600 hover:bg-zinc-900',
+    accent:
+      'border-[#d6cbb8]/20 bg-gradient-to-b from-[#19171c] to-[#100e12] text-[#f5efe2] hover:border-[#e6c27a]/55 hover:from-[#221f26]',
     icon: ArrowUpRight,
   },
   cuff: {
     id: 'cuff',
     name: 'Cuff Lock',
     shortDesc: 'Skip Dealer turn',
-    accent: 'border-amber-400/30 bg-zinc-950 text-zinc-100 hover:border-amber-400/60 hover:bg-amber-950/20',
+    accent:
+      'border-[#e6c27a]/35 bg-gradient-to-b from-[#1e1915] to-[#120f0d] text-[#f5efe2] hover:border-[#e6c27a]/75 hover:from-[#272019]',
     icon: Lock,
   },
   siphon: {
     id: 'siphon',
     name: 'Siphon +1',
     shortDesc: 'Heal 1 HP',
-    accent: 'border-emerald-500/30 bg-zinc-950 text-zinc-100 hover:border-emerald-400/60 hover:bg-emerald-950/20',
+    accent:
+      'border-emerald-500/35 bg-gradient-to-b from-[#111e1a] to-[#0c1311] text-[#f5efe2] hover:border-emerald-400/70 hover:from-[#162923]',
     icon: Heart,
   },
 };
@@ -86,8 +92,8 @@ const ALL_CHIP_TYPES: ModChipType[] = ['xray', 'overclock', 'invert', 'eject', '
 
 const STAGES = [
   { stage: 1, name: 'SCRIPT KIDDIE', maxHp: 3, chipsPerLoad: 2, accent: 'text-emerald-400' },
-  { stage: 2, name: 'SYS-ADMIN', maxHp: 4, chipsPerLoad: 3, accent: 'text-amber-400' },
-  { stage: 3, name: 'THE ARCHITECT', maxHp: 5, chipsPerLoad: 4, accent: 'text-rose-400' },
+  { stage: 2, name: 'SYS-ADMIN', maxHp: 4, chipsPerLoad: 3, accent: 'text-[#e6c27a]' },
+  { stage: 3, name: 'THE ARCHITECT', maxHp: 5, chipsPerLoad: 4, accent: 'text-[#e0525c]' },
 ] as const;
 
 function buildMagazine(stage: number): { chamber: ShellType[]; liveTotal: number; blankTotal: number } {
@@ -516,59 +522,65 @@ export function GlitchRouletteArena() {
     <motion.div
       animate={shake ? { x: [-6, 6, -4, 4, -2, 2, 0], y: [3, -3, 2, -2, 0] } : { x: 0, y: 0 }}
       transition={{ duration: 0.28 }}
-      className="min-h-dvh lg:h-dvh lg:overflow-hidden bg-[#09090b] text-zinc-50 flex flex-col relative"
+      className="min-h-dvh lg:h-dvh lg:overflow-hidden bg-[#0c0b0e] atelier-bg text-[#f5efe2] flex flex-col relative"
+      style={{
+        backgroundImage:
+          'radial-gradient(ellipse 75% 45% at 50% 0%, rgba(168, 28, 36, 0.16), rgba(230, 194, 122, 0.04) 50%, transparent 75%)',
+      }}
     >
+      <div className="atelier-grain pointer-events-none fixed inset-0 z-0" />
+
       {/* Screen Flash Effect */}
       <AnimatePresence>
         {flashTone && (
           <motion.div
-            initial={{ opacity: 0.35 }}
+            initial={{ opacity: 0.38 }}
             animate={{ opacity: 0 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.26 }}
             className={`pointer-events-none fixed inset-0 z-50 ${
               flashTone === 'live'
-                ? 'bg-rose-600/35'
+                ? 'bg-[#b91c1c]/45'
                 : flashTone === 'glitch'
-                ? 'bg-amber-400/15'
-                : 'bg-zinc-200/10'
+                ? 'bg-[#e6c27a]/18'
+                : 'bg-[#f5efe2]/12'
             }`}
           />
         )}
       </AnimatePresence>
 
       {/* COMPACT 48px HUD */}
-      <header className="relative z-20 w-full border-b border-zinc-800/80 bg-[#09090b]/90 backdrop-blur-md shrink-0">
+      <header className="relative z-20 w-full border-b border-[#e6c27a]/15 bg-[#0e0c10]/90 backdrop-blur-md shrink-0">
         <div className="max-w-[1360px] mx-auto px-3 sm:px-5 h-12 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
             <Link
               href="/tactical-games"
               onClick={() => sfx('chip')}
-              className="inline-flex items-center gap-1.5 text-xs font-medium text-zinc-400 hover:text-zinc-100 transition-colors whitespace-nowrap"
+              className="inline-flex items-center gap-1.5 text-xs font-medium text-[#b8aa95] hover:text-[#f8f2e4] transition-colors whitespace-nowrap"
             >
-              <ArrowLeft className="w-3.5 h-3.5" />
+              <ArrowLeft className="w-3.5 h-3.5 text-[#e6c27a]" />
               <span>Arenas</span>
             </Link>
-            <span className="text-zinc-800 hidden sm:inline">|</span>
+            <span className="text-[#e6c27a]/25 hidden sm:inline">|</span>
             <div className="flex items-center gap-2 text-xs truncate">
-              <Skull className="w-3.5 h-3.5 text-rose-500 shrink-0 hidden sm:inline" />
-              <span className="font-semibold tracking-tight text-zinc-50 whitespace-nowrap">
-                Glitch Roulette
+              <Skull className="w-3.5 h-3.5 text-[#e0525c] shrink-0 hidden sm:inline" />
+              <span className="font-display font-bold tracking-tight text-[#faf4e8] whitespace-nowrap">
+                Glitch <span className="font-serif italic font-normal text-[#e6c27a]">Roulette</span>
               </span>
-              <span className="rounded-full border border-zinc-800 bg-zinc-900 px-2.5 py-0.5 font-mono text-[10px] font-medium text-zinc-300">
+              <span className="rounded-full border border-[#e6c27a]/25 bg-[#171318] px-2.5 py-0.5 font-mono text-[10px] font-medium text-[#e6c27a]">
                 Stage {stageCfg.stage}/3 · {stageCfg.name}
               </span>
             </div>
           </div>
 
           <div className="flex items-center gap-2 shrink-0">
-            <div className="hidden sm:flex items-center gap-3 px-3 py-1 rounded-lg border border-zinc-800 bg-zinc-900 font-mono text-[11px]">
-              <span className="text-zinc-400">
-                Score <strong className="text-amber-400">{score}</strong>
+            <div className="hidden sm:flex items-center gap-3 px-3 py-1 rounded-lg border border-[#e6c27a]/20 bg-[#141116] font-mono text-[11px]">
+              <span className="text-[#a89b86]">
+                Score <strong className="text-[#e6c27a]">{score}</strong>
               </span>
-              <span className="text-zinc-700">|</span>
-              <span className="text-zinc-400">
-                Best <strong className="text-zinc-100">{bestScore}</strong>
+              <span className="text-[#e6c27a]/25">|</span>
+              <span className="text-[#a89b86]">
+                Best <strong className="text-[#faf4e8]">{bestScore}</strong>
               </span>
             </div>
             <button
@@ -577,20 +589,20 @@ export function GlitchRouletteArena() {
                 sfx('rule_check');
                 setShowRules(true);
               }}
-              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-zinc-800 bg-zinc-900 hover:bg-zinc-800 text-xs font-medium text-zinc-200 transition-colors"
+              className="btn-obsidian inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium"
             >
-              <Info className="w-3.5 h-3.5 text-zinc-400" />
+              <Info className="w-3.5 h-3.5 text-[#e6c27a]" />
               <span className="hidden sm:inline">Rules</span>
             </button>
             <button
               type="button"
               onClick={() => setSoundEnabled((s) => !s)}
-              className="p-1.5 rounded-lg border border-zinc-800 bg-zinc-900 hover:bg-zinc-800 text-zinc-200 transition-colors"
+              className="btn-obsidian p-1.5 rounded-lg"
             >
               {soundEnabled ? (
-                <Volume2 className="w-3.5 h-3.5 text-zinc-300" />
+                <Volume2 className="w-3.5 h-3.5 text-[#e6c27a]" />
               ) : (
-                <VolumeX className="w-3.5 h-3.5 text-zinc-500" />
+                <VolumeX className="w-3.5 h-3.5 text-[#7a6f61]" />
               )}
             </button>
           </div>
@@ -603,24 +615,24 @@ export function GlitchRouletteArena() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 shrink-0">
           {/* Player Bar */}
           <div
-            className={`rounded-2xl border p-4 flex items-center justify-between gap-3 transition-colors ${
+            className={`atelier-card rounded-2xl p-4 flex items-center justify-between gap-3 transition-all ${
               turn === 'player'
-                ? 'border-zinc-500 bg-[#111113]'
-                : 'border-zinc-800/90 bg-[#111113]'
+                ? 'border-[#e6c27a]/65 shadow-[0_0_28px_rgba(230,194,122,0.14)]'
+                : 'border-[#e6c27a]/15'
             }`}
           >
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-xs font-semibold tracking-tight text-zinc-100">
+                <span className="font-display text-xs font-bold tracking-wide text-[#faf4e8]">
                   Operative (You)
                 </span>
                 {turn === 'player' && (
-                  <span className="px-2 py-0.5 rounded-md bg-zinc-50 text-zinc-950 font-mono text-[10px] font-semibold">
+                  <span className="px-2 py-0.5 rounded-md bg-gradient-to-b from-[#e6c27a] to-[#b5893a] text-[#171108] font-mono text-[10px] font-bold">
                     YOUR TURN
                   </span>
                 )}
                 {playerCuffed && (
-                  <span className="px-2 py-0.5 rounded-md bg-amber-400/15 border border-amber-400/40 text-amber-300 font-mono text-[10px] font-semibold">
+                  <span className="px-2 py-0.5 rounded-md bg-[#e6c27a]/15 border border-[#e6c27a]/45 text-[#f3d99d] font-mono text-[10px] font-semibold">
                     CUFFED
                   </span>
                 )}
@@ -632,39 +644,40 @@ export function GlitchRouletteArena() {
                     size={16}
                     className={
                       i < playerHp
-                        ? 'text-zinc-100 fill-zinc-100'
-                        : 'text-zinc-800'
+                        ? 'text-[#e6c27a] fill-[#e6c27a] drop-shadow-[0_0_6px_rgba(230,194,122,0.5)]'
+                        : 'text-[#2b262d]'
                     }
                   />
                 ))}
               </div>
             </div>
-            <div className="font-mono text-2xl font-semibold text-zinc-100 tabular-nums">
-              {playerHp}/{stageCfg.maxHp}
+            <div className="font-mono text-2xl font-bold text-[#f5efe2] tabular-nums">
+              {playerHp}
+              <span className="text-[#7c7163] text-base">/{stageCfg.maxHp}</span>
             </div>
           </div>
 
           {/* Dealer Bar */}
           <div
-            className={`rounded-2xl border p-4 flex items-center justify-between gap-3 transition-colors ${
+            className={`atelier-card rounded-2xl p-4 flex items-center justify-between gap-3 transition-all ${
               turn === 'dealer'
-                ? 'border-rose-500/60 bg-[#111113]'
-                : 'border-zinc-800/90 bg-[#111113]'
+                ? 'border-[#dc2626]/70 shadow-[0_0_28px_rgba(185,28,28,0.22)]'
+                : 'border-[#e6c27a]/15'
             }`}
           >
             <div>
               <div className="flex items-center gap-2">
-                <Cpu className="w-3.5 h-3.5 text-rose-500" />
-                <span className="text-xs font-semibold tracking-tight text-zinc-100">
+                <Cpu className="w-3.5 h-3.5 text-[#e0525c]" />
+                <span className="font-display text-xs font-bold tracking-wide text-[#faf4e8]">
                   {stageCfg.name}
                 </span>
                 {turn === 'dealer' && (
-                  <span className="px-2 py-0.5 rounded-md bg-rose-600 text-white font-mono text-[10px] font-semibold animate-pulse">
+                  <span className="px-2 py-0.5 rounded-md bg-gradient-to-b from-[#c8323e] to-[#8f1d27] text-white font-mono text-[10px] font-bold animate-pulse">
                     ACTING
                   </span>
                 )}
                 {dealerCuffed && (
-                  <span className="px-2 py-0.5 rounded-md bg-amber-400/15 border border-amber-400/40 text-amber-300 font-mono text-[10px] font-semibold">
+                  <span className="px-2 py-0.5 rounded-md bg-[#e6c27a]/15 border border-[#e6c27a]/45 text-[#f3d99d] font-mono text-[10px] font-semibold">
                     SKIPPED
                   </span>
                 )}
@@ -676,18 +689,19 @@ export function GlitchRouletteArena() {
                     size={16}
                     className={
                       i < dealerHp
-                        ? 'text-rose-500 fill-rose-500'
-                        : 'text-zinc-800'
+                        ? 'text-[#e0525c] fill-[#e0525c] drop-shadow-[0_0_6px_rgba(224,82,92,0.55)]'
+                        : 'text-[#2b262d]'
                     }
                   />
                 ))}
               </div>
             </div>
             <div className="text-right">
-              <div className="font-mono text-2xl font-semibold text-rose-500 tabular-nums">
-                {dealerHp}/{stageCfg.maxHp}
+              <div className="font-mono text-2xl font-bold text-[#e0525c] tabular-nums">
+                {dealerHp}
+                <span className="text-[#7c7163] text-base">/{stageCfg.maxHp}</span>
               </div>
-              <div className="text-[10px] font-mono text-zinc-500">
+              <div className="text-[10px] font-mono text-[#9c8f7e]">
                 {dealerChips.length} mods held
               </div>
             </div>
@@ -696,28 +710,30 @@ export function GlitchRouletteArena() {
 
         {/* CENTER CHAMBER & ACTION STAGE */}
         <div className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-4 items-center">
-          {/* LEFT 5 COLS: SPINNING CYLINDER + LIVE ODDS + EVENT LOG */}
-          <section className="lg:col-span-5 bg-[#111113] border border-zinc-800/90 rounded-2xl p-4 sm:p-5 flex flex-col items-center justify-between gap-3 h-full max-h-[430px]">
-            <div className="w-full flex items-center justify-between text-xs font-mono">
-              <span className="text-zinc-400 uppercase tracking-wider">Chamber Telemetry</span>
-              <span className="text-amber-400 font-semibold">
+          {/* LEFT 5 COLS: SPINNING BRASS CYLINDER + LIVE ODDS + EVENT LOG */}
+          <section className="lg:col-span-5 atelier-card rounded-2xl p-4 sm:p-5 flex flex-col items-center justify-between gap-3 h-full max-h-[430px] relative overflow-hidden">
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_42%,rgba(230,194,122,0.08),transparent_62%)]" />
+            <div className="relative z-10 w-full flex items-center justify-between text-xs font-mono">
+              <span className="text-[#a89b86] uppercase tracking-[0.16em]">Chamber Telemetry</span>
+              <span className="text-[#e6c27a] font-semibold">
                 {chamber.length} Shells Left
               </span>
             </div>
 
-            {/* Revolving Cylinder Visual */}
-            <div className="relative flex items-center justify-center my-auto">
+            {/* Revolving Brushed-Brass Cylinder Visual */}
+            <div className="relative z-10 flex items-center justify-center my-auto">
+              <div className="absolute -inset-4 rounded-full border border-[#e6c27a]/15 pointer-events-none" />
               <motion.div
                 animate={{ rotate: cylinderAngle }}
                 transition={{ type: 'spring', stiffness: 180, damping: 18 }}
-                className={`relative w-36 h-36 sm:w-44 sm:h-44 rounded-full border-2 flex items-center justify-center ${
+                className={`relative w-36 h-36 sm:w-44 sm:h-44 rounded-full border-[3px] flex items-center justify-center shadow-[inset_0_2px_14px_rgba(230,194,122,0.18),0_18px_42px_rgba(0,0,0,0.8)] ${
                   overclocked
-                    ? 'border-rose-500 bg-rose-950/20'
-                    : 'border-zinc-700 bg-zinc-950'
+                    ? 'border-[#dc2626] bg-[radial-gradient(circle_at_35%_30%,#3d151a,#190c0f_65%,#0b080a)] shadow-[0_0_32px_rgba(220,38,38,0.4)]'
+                    : 'border-[#c89d4e]/75 bg-[radial-gradient(circle_at_35%_30%,#2d2724,#161317_65%,#0a090c)]'
                 }`}
               >
-                <div className="w-8 h-8 rounded-full border border-zinc-700 bg-[#09090b] flex items-center justify-center">
-                  <Crosshair className={`w-4 h-4 ${overclocked ? 'text-rose-400 animate-spin' : 'text-zinc-500'}`} />
+                <div className="w-10 h-10 rounded-full border-2 border-[#c89d4e]/60 bg-[radial-gradient(circle_at_35%_35%,#2e261f,#0c0a0d)] flex items-center justify-center shadow-inner">
+                  <Crosshair className={`w-4 h-4 ${overclocked ? 'text-[#f87171] animate-spin' : 'text-[#e6c27a]'}`} />
                 </div>
                 {Array.from({ length: 6 }).map((_, idx) => {
                   const angle = (idx * 60 * Math.PI) / 180;
@@ -729,31 +745,35 @@ export function GlitchRouletteArena() {
                     <div
                       key={idx}
                       style={{ transform: `translate(${x}px, ${y}px)` }}
-                      className={`absolute w-6 h-6 rounded-full border-2 transition-colors ${
+                      className={`absolute w-6 h-6 rounded-full border-2 transition-all flex items-center justify-center ${
                         hasShell
                           ? idx === 0 && scannedNext
                             ? scannedNext === 'live'
-                              ? 'bg-rose-500 border-rose-300'
-                              : 'bg-zinc-300 border-zinc-100'
-                            : 'bg-amber-400/80 border-amber-300/90'
-                          : 'bg-zinc-900 border-zinc-800'
+                              ? 'bg-gradient-to-br from-[#ef4444] to-[#991b1b] border-[#fca5a5] shadow-[0_0_14px_rgba(239,68,68,0.8)]'
+                              : 'bg-gradient-to-br from-[#faf4e8] to-[#b5aa99] border-white shadow-[0_0_10px_rgba(255,255,255,0.45)]'
+                            : 'bg-gradient-to-br from-[#f2d28b] via-[#c79844] to-[#7c591e] border-[#fae3ad]/80 shadow-[inset_0_1px_2px_rgba(255,255,255,0.45),0_2px_6px_rgba(0,0,0,0.65)]'
+                          : 'bg-[#0a090c] border-[#383135] shadow-inner'
                       }`}
-                    />
+                    >
+                      {hasShell && (
+                        <span className="w-2 h-2 rounded-full bg-black/30 border border-white/20" />
+                      )}
+                    </div>
                   );
                 })}
               </motion.div>
 
               {overclocked && (
-                <span className="absolute -bottom-2.5 px-2.5 py-0.5 rounded-full bg-rose-600 text-white font-mono text-[10px] font-semibold tracking-wider">
+                <span className="absolute -bottom-3 px-3 py-0.5 rounded-full bg-gradient-to-b from-[#dc2626] to-[#991b1b] border border-[#fca5a5]/40 text-white font-mono text-[10px] font-bold tracking-wider shadow-[0_4px_14px_rgba(185,28,28,0.5)]">
                   2× OVERCLOCK ARMED
                 </span>
               )}
               {scannedNext && !overclocked && (
                 <span
-                  className={`absolute -bottom-2.5 px-2.5 py-0.5 rounded-full font-mono text-[10px] font-semibold tracking-wider ${
+                  className={`absolute -bottom-3 px-3 py-0.5 rounded-full font-mono text-[10px] font-bold tracking-wider shadow-lg ${
                     scannedNext === 'live'
-                      ? 'bg-rose-600 text-white'
-                      : 'bg-zinc-200 text-zinc-950'
+                      ? 'bg-gradient-to-b from-[#dc2626] to-[#991b1b] border border-[#fca5a5]/40 text-white'
+                      : 'bg-gradient-to-b from-[#faf4e8] to-[#d6cbb8] text-[#14100d]'
                   }`}
                 >
                   NEXT = {scannedNext.toUpperCase()}
@@ -762,43 +782,43 @@ export function GlitchRouletteArena() {
             </div>
 
             {/* Shell Breakdown & Live Odds */}
-            <div className="w-full space-y-2">
+            <div className="relative z-10 w-full space-y-2">
               <div className="grid grid-cols-3 gap-2 text-center font-mono text-xs">
-                <div className="rounded-xl border border-rose-500/25 bg-rose-950/20 py-1.5">
-                  <div className="text-[10px] text-rose-400/80">LIVE</div>
-                  <div className="font-semibold text-rose-400 text-sm">{liveRemaining}</div>
+                <div className="rounded-xl border border-[#dc2626]/35 bg-[#240e12]/80 py-1.5 shadow-inner">
+                  <div className="text-[10px] text-[#f87171]/85 tracking-wider">LIVE</div>
+                  <div className="font-bold text-[#f87171] text-sm">{liveRemaining}</div>
                 </div>
-                <div className="rounded-xl border border-zinc-800 bg-zinc-950 py-1.5">
-                  <div className="text-[10px] text-zinc-400">BLANK</div>
-                  <div className="font-semibold text-zinc-200 text-sm">{blankRemaining}</div>
+                <div className="rounded-xl border border-[#e6c27a]/15 bg-[#121015] py-1.5 shadow-inner">
+                  <div className="text-[10px] text-[#a89b86] tracking-wider">BLANK</div>
+                  <div className="font-bold text-[#f5efe2] text-sm">{blankRemaining}</div>
                 </div>
-                <div className="rounded-xl border border-amber-400/25 bg-amber-950/15 py-1.5">
-                  <div className="text-[10px] text-amber-400/80">LIVE ODDS</div>
-                  <div className="font-semibold text-amber-400 text-sm">{liveOdds}%</div>
+                <div className="rounded-xl border border-[#e6c27a]/35 bg-[#1e1811]/85 py-1.5 shadow-inner">
+                  <div className="text-[10px] text-[#e6c27a]/85 tracking-wider">LIVE ODDS</div>
+                  <div className="font-bold text-[#e6c27a] text-sm">{liveOdds}%</div>
                 </div>
               </div>
 
-              <div className="rounded-xl border border-zinc-800 bg-zinc-950 px-3 py-2 text-center font-mono text-xs text-zinc-300 truncate">
+              <div className="rounded-xl border border-[#e6c27a]/20 bg-[#0a090c] px-3 py-2 text-center font-mono text-xs text-[#e6dbc7] truncate shadow-inner">
                 {eventLog}
               </div>
             </div>
           </section>
 
           {/* RIGHT 7 COLS: MOD CHIPS TRAY + FIRE TARGETS */}
-          <section className="lg:col-span-7 bg-[#111113] border border-zinc-800/90 rounded-2xl p-4 sm:p-5 flex flex-col justify-between gap-4 h-full max-h-[430px]">
+          <section className="lg:col-span-7 atelier-card rounded-2xl p-4 sm:p-5 flex flex-col justify-between gap-4 h-full max-h-[430px]">
             {/* Mod Chips Inventory */}
             <div className="space-y-2.5">
               <div className="flex items-center justify-between">
-                <h2 className="text-xs font-semibold tracking-tight text-zinc-100">
-                  Reality Mod Chips ({playerChips.length}/6)
+                <h2 className="font-display text-xs font-bold tracking-wide uppercase text-[#faf4e8]">
+                  Reality Mod Chips <span className="font-mono text-[#e6c27a]">({playerChips.length}/6)</span>
                 </h2>
-                <span className="text-[11px] font-mono text-zinc-400">
+                <span className="text-[11px] font-mono text-[#a89b86]">
                   +{stageCfg.chipsPerLoad} chips per magazine
                 </span>
               </div>
 
               {playerChips.length === 0 ? (
-                <div className="h-28 rounded-xl border border-dashed border-zinc-800 bg-zinc-950/60 flex items-center justify-center text-xs font-mono text-zinc-500">
+                <div className="h-28 rounded-xl border border-dashed border-[#e6c27a]/20 bg-[#0b0a0e]/70 flex items-center justify-center text-xs font-mono text-[#7c7163]">
                   No Mod Chips held — draw on next magazine load
                 </div>
               ) : (
@@ -812,16 +832,16 @@ export function GlitchRouletteArena() {
                         type="button"
                         disabled={turn !== 'player' || chamber.length === 0}
                         onClick={() => handleUsePlayerChip(idx)}
-                        className={`rounded-xl border p-2.5 text-left transition-colors flex items-start gap-2.5 disabled:opacity-40 disabled:cursor-not-allowed active:scale-[0.98] ${meta.accent}`}
+                        className={`rounded-xl border p-2.5 text-left transition-all flex items-start gap-2.5 disabled:opacity-40 disabled:cursor-not-allowed active:scale-[0.98] shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_4px_12px_rgba(0,0,0,0.45)] ${meta.accent}`}
                       >
-                        <div className="p-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-amber-400 shrink-0">
+                        <div className="p-1.5 rounded-lg bg-[#0a090c] border border-[#e6c27a]/30 text-[#e6c27a] shrink-0">
                           <Icon size={15} />
                         </div>
                         <div className="min-w-0">
-                          <div className="text-xs font-semibold leading-tight truncate text-zinc-100">
+                          <div className="text-xs font-semibold leading-tight truncate text-[#faf4e8]">
                             {meta.name}
                           </div>
-                          <div className="text-[11px] text-zinc-400 leading-tight mt-0.5">
+                          <div className="text-[11px] text-[#aba08f] leading-tight mt-0.5">
                             {meta.shortDesc}
                           </div>
                         </div>
@@ -833,10 +853,10 @@ export function GlitchRouletteArena() {
             </div>
 
             {/* Firing Triggers */}
-            <div className="space-y-2.5 pt-3 border-t border-zinc-800">
-              <div className="flex items-center justify-between text-[11px] font-mono text-zinc-400">
-                <span>PULL THE TRIGGER</span>
-                <span>BLANK ON SELF = EXTRA TURN</span>
+            <div className="space-y-2.5 pt-3 border-t border-[#e6c27a]/15">
+              <div className="flex items-center justify-between text-[11px] font-mono text-[#a89b86]">
+                <span className="tracking-wider">PULL THE TRIGGER</span>
+                <span className="text-[#e6c27a]/90">BLANK ON SELF = EXTRA TURN</span>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -844,15 +864,15 @@ export function GlitchRouletteArena() {
                   type="button"
                   disabled={turn !== 'player' || chamber.length === 0}
                   onClick={() => resolveShot('player', 'dealer')}
-                  className="group relative py-4 px-5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-left transition-colors disabled:opacity-35 disabled:cursor-not-allowed active:scale-[0.99]"
+                  className="btn-crimson group relative py-4 px-5 rounded-xl text-left disabled:opacity-35 disabled:cursor-not-allowed"
                 >
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-semibold tracking-tight">
+                    <span className="font-display text-sm font-bold tracking-wide">
                       Shoot Dealer
                     </span>
-                    <Crosshair className="w-5 h-5 text-rose-100 group-hover:scale-105 transition-transform" />
+                    <Crosshair className="w-5 h-5 text-[#fecaca] group-hover:scale-105 transition-transform" />
                   </div>
-                  <p className="text-[11px] font-mono text-rose-100/85 mt-1">
+                  <p className="text-[11px] font-mono text-[#fecaca]/85 mt-1">
                     Deal {overclocked ? '2 DMG' : '1 DMG'} if LIVE · Ends your turn
                   </p>
                 </button>
@@ -861,15 +881,15 @@ export function GlitchRouletteArena() {
                   type="button"
                   disabled={turn !== 'player' || chamber.length === 0}
                   onClick={() => resolveShot('player', 'player')}
-                  className="group relative py-4 px-5 rounded-xl border border-zinc-700 bg-zinc-900 hover:bg-zinc-800 text-zinc-100 text-left transition-colors disabled:opacity-35 disabled:cursor-not-allowed active:scale-[0.99]"
+                  className="btn-obsidian group relative py-4 px-5 rounded-xl text-left disabled:opacity-35 disabled:cursor-not-allowed"
                 >
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-semibold tracking-tight">
+                    <span className="font-display text-sm font-bold tracking-wide text-[#faf4e8]">
                       Shoot Self
                     </span>
-                    <ShieldAlert className="w-5 h-5 text-zinc-300 group-hover:scale-105 transition-transform" />
+                    <ShieldAlert className="w-5 h-5 text-[#e6c27a] group-hover:scale-105 transition-transform" />
                   </div>
-                  <p className="text-[11px] font-mono text-zinc-400 mt-1">
+                  <p className="text-[11px] font-mono text-[#b3a692] mt-1">
                     Keep turn +100 pts if BLANK · Take {overclocked ? '2 DMG' : '1 DMG'} if LIVE
                   </p>
                 </button>
@@ -885,26 +905,32 @@ export function GlitchRouletteArena() {
           <motion.div
             initial={{ scale: 0.94, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="w-full max-w-md bg-[#111113] border border-zinc-800 rounded-2xl p-6 text-center space-y-5"
+            className="w-full max-w-md atelier-card rounded-2xl p-6 text-center space-y-5 border border-[#e6c27a]/30"
           >
-            <div className="mx-auto w-14 h-14 rounded-2xl bg-zinc-900 border border-zinc-800 flex items-center justify-center">
+            <div className="mx-auto w-14 h-14 rounded-2xl bg-[#161217] border border-[#e6c27a]/30 flex items-center justify-center shadow-inner">
               {turn === 'gameover' ? (
-                <Skull className="w-7 h-7 text-rose-500" />
+                <Skull className="w-7 h-7 text-[#e0525c]" />
               ) : (
-                <Trophy className="w-7 h-7 text-amber-400" />
+                <Trophy className="w-7 h-7 text-[#e6c27a]" />
               )}
             </div>
 
             <div>
-              <h2 className="text-2xl font-semibold tracking-tight text-zinc-50">
-                {turn === 'victory'
-                  ? 'System Overthrown!'
-                  : turn === 'stage_clear'
-                  ? `${stageCfg.name} Cleared`
-                  : 'Flatlined'}
+              <h2 className="font-display text-2xl font-bold tracking-tight text-[#faf4e8]">
+                {turn === 'victory' ? (
+                  <>
+                    System <span className="font-serif italic font-normal text-[#e6c27a]">Overthrown!</span>
+                  </>
+                ) : turn === 'stage_clear' ? (
+                  <>
+                    {stageCfg.name} <span className="font-serif italic font-normal text-[#e6c27a]">Cleared</span>
+                  </>
+                ) : (
+                  <span className="text-[#e0525c]">Flatlined</span>
+                )}
               </h2>
-              <p className="text-xs font-mono text-zinc-400 mt-1.5">
-                Score: <strong className="text-amber-400">{score}</strong> · Best: {bestScore}
+              <p className="text-xs font-mono text-[#b3a692] mt-1.5">
+                Score: <strong className="text-[#e6c27a]">{score}</strong> · Best: {bestScore}
               </p>
             </div>
 
@@ -913,7 +939,7 @@ export function GlitchRouletteArena() {
                 <button
                   type="button"
                   onClick={handleNextStage}
-                  className="flex-1 py-3 rounded-xl bg-zinc-50 hover:bg-white text-zinc-950 font-semibold text-xs transition-colors"
+                  className="btn-brass flex-1 py-3 rounded-xl font-display font-bold text-xs"
                 >
                   Enter Stage {stageIdx + 2}
                 </button>
@@ -921,7 +947,7 @@ export function GlitchRouletteArena() {
                 <button
                   type="button"
                   onClick={handleRestartMatch}
-                  className="flex-1 py-3 rounded-xl bg-zinc-50 hover:bg-white text-zinc-950 font-semibold text-xs inline-flex items-center justify-center gap-1.5 transition-colors"
+                  className="btn-brass flex-1 py-3 rounded-xl font-display font-bold text-xs inline-flex items-center justify-center gap-1.5"
                 >
                   <RotateCcw className="w-3.5 h-3.5" />
                   <span>Run Again</span>
@@ -929,7 +955,7 @@ export function GlitchRouletteArena() {
               )}
               <Link
                 href="/tactical-games"
-                className="flex-1 py-3 rounded-xl border border-zinc-800 bg-zinc-900 hover:bg-zinc-800 text-zinc-200 font-medium text-xs flex items-center justify-center transition-colors"
+                className="btn-obsidian flex-1 py-3 rounded-xl font-medium text-xs flex items-center justify-center"
               >
                 Arenas
               </Link>
@@ -947,26 +973,31 @@ export function GlitchRouletteArena() {
           <motion.div
             initial={{ scale: 0.96, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="w-full max-w-md bg-[#111113] border border-zinc-800 rounded-2xl p-5 text-zinc-100 space-y-3.5"
+            className="w-full max-w-md atelier-card rounded-2xl p-5 text-[#f5efe2] space-y-3.5 border border-[#e6c27a]/30"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between pb-2.5 border-b border-zinc-800">
-              <h2 className="text-base font-semibold tracking-tight text-zinc-50">
-                How to Play Glitch Roulette
+            <div className="flex items-center justify-between pb-2.5 border-b border-[#e6c27a]/15">
+              <h2 className="font-display text-base font-bold tracking-tight text-[#faf4e8]">
+                How to Play <span className="font-serif italic font-normal text-[#e6c27a]">Glitch Roulette</span>
               </h2>
-              <button type="button" onClick={() => setShowRules(false)} className="text-zinc-400 hover:text-zinc-100">
+              <button type="button" onClick={() => setShowRules(false)} className="text-[#a89b86] hover:text-[#faf4e8]">
                 <X className="w-4 h-4" />
               </button>
             </div>
-            <ul className="space-y-2.5 text-xs text-zinc-300 leading-relaxed">
+            <ul className="space-y-2.5 text-xs text-[#cfc4b2] leading-relaxed">
               <li>
-                <strong className="text-zinc-50">Loaded Cylinder:</strong> Each magazine loads a random mix of <span className="text-rose-400 font-semibold">LIVE</span> and <span className="text-zinc-200 font-semibold">BLANK</span> shells. Track remaining counts in Telemetry.
+                <strong className="text-[#faf4e8]">Loaded Cylinder:</strong> Each magazine loads a random mix of{' '}
+                <span className="text-[#f87171] font-semibold">LIVE</span> and{' '}
+                <span className="text-[#faf4e8] font-semibold">BLANK</span> shells. Track remaining counts in Telemetry.
               </li>
               <li>
-                <strong className="text-zinc-50">Russian Gamble:</strong> Shooting the Dealer passes the turn. Shooting yourself with a <span className="text-zinc-200 font-semibold">BLANK</span> gives you an <strong className="text-amber-400">Extra Turn</strong>!
+                <strong className="text-[#faf4e8]">Russian Gamble:</strong> Shooting the Dealer passes the turn. Shooting
+                yourself with a <span className="text-[#faf4e8] font-semibold">BLANK</span> gives you an{' '}
+                <strong className="text-[#e6c27a]">Extra Turn</strong>!
               </li>
               <li>
-                <strong className="text-zinc-50">Reality Mod Chips:</strong> Combine X-Ray, Overclock (2× DMG), Polarity Flip, Pump Eject, Cuff Lock, and Siphon (+1 HP) to rig the odds and defeat all 3 AI bosses.
+                <strong className="text-[#faf4e8]">Reality Mod Chips:</strong> Combine X-Ray, Overclock (2× DMG),
+                Polarity Flip, Pump Eject, Cuff Lock, and Siphon (+1 HP) to rig the odds and defeat all 3 AI bosses.
               </li>
             </ul>
           </motion.div>

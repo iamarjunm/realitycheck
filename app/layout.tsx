@@ -1,15 +1,29 @@
 import type { Metadata } from 'next';
-import { Inter, Space_Grotesk, JetBrains_Mono } from 'next/font/google';
+import {
+  Plus_Jakarta_Sans,
+  Syne,
+  Playfair_Display,
+  JetBrains_Mono,
+} from 'next/font/google';
 import './globals.css';
 
-const inter = Inter({
+const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ['latin'],
+  weight: ['400', '500', '600', '700', '800'],
   variable: '--font-sans',
 });
 
-const spaceGrotesk = Space_Grotesk({
+const syne = Syne({
   subsets: ['latin'],
+  weight: ['600', '700', '800'],
   variable: '--font-display',
+});
+
+const playfairDisplay = Playfair_Display({
+  subsets: ['latin'],
+  style: ['normal', 'italic'],
+  weight: ['600', '700'],
+  variable: '--font-serif',
 });
 
 const jetbrainsMono = JetBrains_Mono({
@@ -18,20 +32,20 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Reality Check — Multiplayer Strategy & Mindgames',
+  title: 'Reality Check — High-Stakes Strategy & Mindgames',
   description:
-    'Real-time 1v1 tactical arenas, high-stakes card tables, quizzes, and interactive experiments.',
+    '1v1 tactical duels, surreal mindgames, casino card tables, quizzes, and arcade gauntlets.',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable}`}
+      className={`${plusJakartaSans.variable} ${syne.variable} ${playfairDisplay.variable} ${jetbrainsMono.variable}`}
     >
       <body
         suppressHydrationWarning
-        className="bg-[#09090b] text-zinc-50 font-sans antialiased overflow-x-hidden selection:bg-zinc-700 selection:text-white"
+        className="bg-[#0c0b0e] text-[#f5f0e6] font-sans antialiased overflow-x-hidden selection:bg-[#e6c27a]/30 selection:text-[#fff8e7]"
       >
         {children}
       </body>

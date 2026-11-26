@@ -45,8 +45,8 @@ interface PortalNavItem {
 
 const PORTALS: PortalNavItem[] = [
   { key: 'home', label: 'Home', href: '/', icon: Home },
-  { key: 'tactical', label: 'Arenas', href: '/tactical-games', icon: Crosshair },
-  { key: 'cards', label: 'Cards', href: '/card-games', icon: Spade },
+  { key: 'tactical', label: '1v1 Arenas', href: '/tactical-games', icon: Crosshair },
+  { key: 'cards', label: 'Card Tables', href: '/card-games', icon: Spade },
   { key: 'quizzes', label: 'Quizzes', href: '/quizzes', icon: Brain },
   { key: 'experiences', label: 'Lab', href: '/experiences', icon: FlaskConical },
   { key: 'rage', label: 'Rage', href: '/rage-games', icon: Flame },
@@ -296,8 +296,8 @@ const LAUNCH_ITEMS: LaunchItem[] = [
 
 const CATEGORY_TABS: { key: PaletteCategory; label: string }[] = [
   { key: 'all', label: 'All' },
-  { key: 'tactical', label: 'Arenas' },
-  { key: 'cards', label: 'Cards' },
+  { key: 'tactical', label: '1v1 Arenas' },
+  { key: 'cards', label: 'Card Tables' },
   { key: 'hubs', label: 'Hubs' },
 ];
 
@@ -507,23 +507,52 @@ export default function GlobalNav({ activePortal = 'home' }: { activePortal?: Po
 
   return (
     <>
-      <header className="sticky top-0 z-40 w-full border-b border-zinc-800/80 bg-[#09090b]/85 backdrop-blur-md">
-        <div className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">
-          {/* Left: Brand Mark */}
+      <header className="sticky top-0 z-40 w-full border-b border-[#e6c27a]/15 bg-[#0c0b0e]/90 backdrop-blur-xl">
+        {/* Warm brass bottom hairline sheen */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-[#e6c27a]/40 to-transparent"
+        />
+
+        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">
+          {/* Left: Sculptural Noir Atelier Brand Mark */}
           <Link
             href="/"
             onClick={() => playSound('tick')}
-            className="flex shrink-0 items-center gap-2.5 rounded-md py-1 transition-opacity hover:opacity-90"
+            className="group flex shrink-0 items-center gap-2.5 rounded-lg py-1 transition-opacity hover:opacity-95"
           >
-            <span className="flex h-6 w-6 items-center justify-center rounded-md bg-zinc-100 font-display text-[11px] font-black tracking-tighter text-zinc-950">
-              RC
+            <span className="relative flex h-8 w-8 items-center justify-center rounded-lg border border-[#e6c27a]/40 bg-gradient-to-b from-[#231d15] to-[#120f15] shadow-[inset_0_1px_0_rgba(255,245,215,0.22),0_4px_12px_rgba(0,0,0,0.6)] transition-transform duration-200 group-hover:scale-[1.03]">
+              <svg viewBox="0 0 24 24" className="h-4.5 w-4.5" aria-hidden="true">
+                <defs>
+                  <linearGradient id="rc-crest-gold" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#fff2c2" />
+                    <stop offset="50%" stopColor="#e6c27a" />
+                    <stop offset="100%" stopColor="#a6772b" />
+                  </linearGradient>
+                </defs>
+                <polygon
+                  points="12,2 21,12 12,22 3,12"
+                  fill="url(#rc-crest-gold)"
+                  fillOpacity="0.16"
+                  stroke="url(#rc-crest-gold)"
+                  strokeWidth="1.6"
+                />
+                <polygon points="12,6.5 16.5,12 12,17.5 7.5,12" fill="url(#rc-crest-gold)" />
+                <circle cx="12" cy="12" r="2" fill="#141008" />
+              </svg>
             </span>
-            <span className="font-display text-sm font-semibold tracking-tight text-zinc-100">
-              Reality Check
+
+            <span className="flex items-baseline gap-1.5 leading-none">
+              <span className="font-display text-[15px] font-extrabold tracking-tight text-[#f5f0e6]">
+                REALITY
+              </span>
+              <span className="font-serif text-[17px] font-semibold italic text-[#e6c27a]">
+                Check
+              </span>
             </span>
           </Link>
 
-          {/* Center: Desktop Navigation */}
+          {/* Center: Desktop Portal Switcher */}
           <nav aria-label="Primary navigation" className="hidden items-center gap-1 lg:flex">
             {PORTALS.map((portal) => {
               const Icon = portal.icon;
@@ -533,20 +562,22 @@ export default function GlobalNav({ activePortal = 'home' }: { activePortal?: Po
                   key={portal.key}
                   href={portal.href}
                   onClick={() => playSound('tick')}
-                  className={`relative flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
-                    isActive ? 'text-white' : 'text-zinc-400 hover:text-zinc-100'
+                  className={`relative flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-[13px] font-medium transition-colors ${
+                    isActive
+                      ? 'text-[#f5d996]'
+                      : 'text-[#a89f91] hover:text-[#f5f0e6]'
                   }`}
                 >
                   {isActive && (
                     <motion.span
                       layoutId="globalNavActive"
                       transition={{ type: 'spring', stiffness: 460, damping: 36 }}
-                      className="absolute inset-0 rounded-lg bg-zinc-800/80 ring-1 ring-inset ring-zinc-700/60"
+                      className="absolute inset-0 rounded-lg border border-[#e6c27a]/40 bg-[#e6c27a]/15 shadow-[inset_0_1px_0_rgba(255,245,215,0.16)]"
                     />
                   )}
                   <Icon
                     className={`relative z-10 h-3.5 w-3.5 ${
-                      isActive ? 'text-zinc-100' : 'text-zinc-500'
+                      isActive ? 'text-[#e6c27a]' : 'text-[#7c7368]'
                     }`}
                   />
                   <span className="relative z-10 whitespace-nowrap">{portal.label}</span>
@@ -555,8 +586,8 @@ export default function GlobalNav({ activePortal = 'home' }: { activePortal?: Po
             })}
           </nav>
 
-          {/* Right: Search & Callsign */}
-          <div className="flex shrink-0 items-center gap-2">
+          {/* Right: Quick Jump Trigger & Callsign Badge */}
+          <div className="flex shrink-0 items-center gap-2.5">
             <button
               type="button"
               onClick={() => {
@@ -564,19 +595,19 @@ export default function GlobalNav({ activePortal = 'home' }: { activePortal?: Po
                 setCallsignOpen(false);
                 setPaletteOpen(true);
               }}
-              aria-label="Search games and hubs"
-              className="flex h-8 items-center gap-2 rounded-lg border border-zinc-800 bg-[#111113] px-2.5 text-xs font-medium text-zinc-400 transition-colors hover:border-zinc-700 hover:bg-zinc-900 hover:text-zinc-200 sm:w-44 sm:justify-between"
+              aria-label="Quick jump to games and hubs"
+              className="flex h-9 items-center gap-2 rounded-lg border border-[#e6c27a]/20 bg-[#16141b] px-3 text-xs font-medium text-[#c7beb0] shadow-[inset_0_1px_0_rgba(255,245,220,0.06)] transition-all hover:border-[#e6c27a]/45 hover:bg-[#1d1a24] hover:text-[#f5f0e6] sm:w-44 sm:justify-between"
             >
               <span className="flex items-center gap-2">
-                <Search className="h-3.5 w-3.5 text-zinc-500" />
-                <span className="hidden sm:inline">Search...</span>
+                <Search className="h-3.5 w-3.5 text-[#e6c27a]/80" />
+                <span className="hidden sm:inline">Quick Jump</span>
               </span>
-              <kbd className="inline-flex items-center rounded border border-zinc-800 bg-zinc-950 px-1.5 py-0.5 font-mono text-[10px] text-zinc-500">
+              <kbd className="inline-flex items-center rounded border border-[#e6c27a]/25 bg-[#0e0c12] px-1.5 py-0.5 font-mono text-[10px] text-[#e6c27a]">
                 ⌘K
               </kbd>
             </button>
 
-            {/* Editable Callsign Button & Popover */}
+            {/* Editable Callsign Badge & Popover */}
             <div ref={callsignContainerRef} className="relative">
               <button
                 type="button"
@@ -586,15 +617,17 @@ export default function GlobalNav({ activePortal = 'home' }: { activePortal?: Po
                 }}
                 aria-expanded={callsignOpen}
                 aria-label="Edit multiplayer callsign"
-                className="flex h-8 max-w-[140px] items-center gap-2 rounded-lg border border-zinc-800 bg-[#111113] px-2.5 text-xs font-medium text-zinc-300 transition-colors hover:border-zinc-700 hover:bg-zinc-900 hover:text-zinc-100 sm:max-w-[172px]"
+                className="flex h-9 max-w-[144px] items-center gap-2 rounded-lg border border-[#e6c27a]/20 bg-[#16141b] px-3 text-xs font-medium text-[#e9e0d0] shadow-[inset_0_1px_0_rgba(255,245,220,0.06)] transition-all hover:border-[#e6c27a]/45 hover:bg-[#1d1a24] sm:max-w-[176px]"
               >
                 <span
-                  className={`h-1.5 w-1.5 shrink-0 rounded-full ${
-                    callsign ? 'bg-amber-500' : 'bg-zinc-600'
+                  className={`h-2 w-2 shrink-0 rounded-full ${
+                    callsign
+                      ? 'bg-[#e6c27a] shadow-[0_0_8px_rgba(230,194,122,0.75)]'
+                      : 'bg-[#e6c27a]/35'
                   }`}
                 />
-                <User className="h-3.5 w-3.5 shrink-0 text-zinc-400" />
-                <span className="truncate font-mono text-[11px] text-zinc-200">
+                <User className="h-3.5 w-3.5 shrink-0 text-[#b8ae9e]" />
+                <span className="truncate font-mono text-[11px] text-[#f5f0e6]">
                   {callsign || 'Callsign'}
                 </span>
               </button>
@@ -606,24 +639,24 @@ export default function GlobalNav({ activePortal = 'home' }: { activePortal?: Po
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: 4, scale: 0.98 }}
                     transition={{ duration: 0.14, ease: 'easeOut' }}
-                    className="absolute right-0 mt-2 w-72 rounded-xl border border-zinc-800 bg-[#111113] p-4 shadow-2xl"
+                    className="absolute right-0 mt-2.5 w-72 rounded-xl border border-[#e6c27a]/25 bg-[#15131a] p-4 shadow-[0_24px_60px_rgba(0,0,0,0.85),inset_0_1px_0_rgba(255,245,220,0.08)]"
                   >
                     <div className="mb-1.5 flex items-center justify-between">
-                      <span className="text-xs font-semibold text-zinc-100">
+                      <span className="font-display text-xs font-bold tracking-wide text-[#f5f0e6]">
                         Player Callsign
                       </span>
                       <button
                         type="button"
                         onClick={() => setCallsignOpen(false)}
-                        className="rounded-md p-1 text-zinc-500 transition-colors hover:bg-zinc-800 hover:text-zinc-200"
+                        className="rounded-md p-1 text-[#8f8578] transition-colors hover:bg-[#24202c] hover:text-[#f5f0e6]"
                         aria-label="Close callsign editor"
                       >
                         <X className="h-3.5 w-3.5" />
                       </button>
                     </div>
 
-                    <p className="mb-3 text-xs leading-relaxed text-zinc-400">
-                      Synced across all 1v1 arenas and multiplayer card lobbies.
+                    <p className="mb-3 text-xs leading-relaxed text-[#a89f91]">
+                      Synced across all 1v1 arenas and multiplayer card tables.
                     </p>
 
                     <form onSubmit={saveCallsign} className="space-y-3">
@@ -634,25 +667,25 @@ export default function GlobalNav({ activePortal = 'home' }: { activePortal?: Po
                         value={draftCallsign}
                         onChange={(e) => setDraftCallsign(e.target.value)}
                         placeholder="e.g. GHOST_07"
-                        className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 font-mono text-xs text-zinc-100 placeholder-zinc-600 transition-colors focus:border-zinc-600 focus:outline-none"
+                        className="w-full rounded-lg border border-[#e6c27a]/20 bg-[#0d0c11] px-3 py-2 font-mono text-xs text-[#f5f0e6] placeholder-[#686058] transition-colors focus:border-[#e6c27a]/55 focus:outline-none"
                       />
                       <div className="flex items-center justify-between gap-2">
                         {callsign ? (
                           <button
                             type="button"
                             onClick={clearCallsign}
-                            className="rounded-md px-2 py-1 text-xs font-medium text-zinc-400 transition-colors hover:bg-zinc-800/80 hover:text-zinc-200"
+                            className="rounded-md px-2 py-1 text-xs font-medium text-[#a89f91] transition-colors hover:bg-[#24202c] hover:text-[#f5f0e6]"
                           >
                             Clear
                           </button>
                         ) : (
-                          <span className="font-mono text-[11px] text-zinc-500">
+                          <span className="font-mono text-[11px] text-[#7c7368]">
                             Max 20 chars
                           </span>
                         )}
                         <button
                           type="submit"
-                          className="inline-flex items-center gap-1.5 rounded-lg bg-zinc-50 px-3 py-1.5 text-xs font-semibold text-zinc-950 transition-colors hover:bg-white active:scale-[0.98]"
+                          className="btn-brass inline-flex items-center gap-1.5 rounded-lg px-3.5 py-1.5 text-xs"
                         >
                           {justSaved ? (
                             <>
@@ -675,7 +708,7 @@ export default function GlobalNav({ activePortal = 'home' }: { activePortal?: Po
         {/* Mobile & Tablet Horizontal Scrollable Nav Strip */}
         <nav
           aria-label="Mobile navigation"
-          className="no-scrollbar flex items-center gap-1 overflow-x-auto border-t border-zinc-800/70 bg-[#09090b]/95 px-4 py-1.5 lg:hidden"
+          className="no-scrollbar flex items-center gap-1 overflow-x-auto border-t border-[#e6c27a]/10 bg-[#0c0b0e]/95 px-4 py-1.5 lg:hidden"
         >
           {PORTALS.map((portal) => {
             const Icon = portal.icon;
@@ -686,19 +719,19 @@ export default function GlobalNav({ activePortal = 'home' }: { activePortal?: Po
                 href={portal.href}
                 onClick={() => playSound('tick')}
                 className={`relative flex shrink-0 items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
-                  isActive ? 'text-white' : 'text-zinc-400 hover:text-zinc-100'
+                  isActive ? 'text-[#f5d996]' : 'text-[#a89f91] hover:text-[#f5f0e6]'
                 }`}
               >
                 {isActive && (
                   <motion.span
                     layoutId="globalNavActiveMobile"
                     transition={{ type: 'spring', stiffness: 460, damping: 36 }}
-                    className="absolute inset-0 rounded-lg bg-zinc-800/80 ring-1 ring-inset ring-zinc-700/60"
+                    className="absolute inset-0 rounded-lg border border-[#e6c27a]/40 bg-[#e6c27a]/15"
                   />
                 )}
                 <Icon
                   className={`relative z-10 h-3.5 w-3.5 ${
-                    isActive ? 'text-zinc-100' : 'text-zinc-500'
+                    isActive ? 'text-[#e6c27a]' : 'text-[#7c7368]'
                   }`}
                 />
                 <span className="relative z-10 whitespace-nowrap">{portal.label}</span>
@@ -708,7 +741,7 @@ export default function GlobalNav({ activePortal = 'home' }: { activePortal?: Po
         </nav>
       </header>
 
-      {/* Command Palette Modal */}
+      {/* Noir Atelier Command Palette Modal */}
       <AnimatePresence>
         {paletteOpen && (
           <motion.div
@@ -717,7 +750,7 @@ export default function GlobalNav({ activePortal = 'home' }: { activePortal?: Po
             exit={{ opacity: 0 }}
             transition={{ duration: 0.14 }}
             onClick={() => setPaletteOpen(false)}
-            className="fixed inset-0 z-50 flex items-start justify-center bg-black/70 px-4 pt-[8vh] backdrop-blur-sm sm:pt-[12vh]"
+            className="fixed inset-0 z-50 flex items-start justify-center bg-[#060508]/80 px-4 pt-[8vh] backdrop-blur-md sm:pt-[12vh]"
             role="dialog"
             aria-modal="true"
             aria-label="Command Palette"
@@ -728,11 +761,11 @@ export default function GlobalNav({ activePortal = 'home' }: { activePortal?: Po
               exit={{ opacity: 0, y: -6, scale: 0.98 }}
               transition={{ duration: 0.16, ease: 'easeOut' }}
               onClick={(e) => e.stopPropagation()}
-              className="relative w-full max-w-xl overflow-hidden rounded-xl border border-zinc-800 bg-[#111113] shadow-2xl"
+              className="relative w-full max-w-xl overflow-hidden rounded-2xl border border-[#e6c27a]/25 bg-[#15131a] shadow-[0_30px_90px_rgba(0,0,0,0.9),inset_0_1px_0_rgba(255,245,220,0.09)]"
             >
               {/* Search Bar */}
-              <div className="flex items-center gap-3 border-b border-zinc-800/90 px-4 py-3">
-                <Search className="h-4 w-4 shrink-0 text-zinc-500" />
+              <div className="flex items-center gap-3 border-b border-[#e6c27a]/15 px-4 py-3.5">
+                <Search className="h-4 w-4 shrink-0 text-[#e6c27a]" />
                 <input
                   ref={searchInputRef}
                   type="text"
@@ -740,7 +773,7 @@ export default function GlobalNav({ activePortal = 'home' }: { activePortal?: Po
                   onChange={(e) => setQuery(e.target.value)}
                   onKeyDown={handlePaletteKeyDown}
                   placeholder="Jump to any arena, card table, or hub..."
-                  className="w-full bg-transparent text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none"
+                  className="w-full bg-transparent text-sm text-[#f5f0e6] placeholder-[#7c7368] focus:outline-none"
                 />
                 {query && (
                   <button
@@ -749,7 +782,7 @@ export default function GlobalNav({ activePortal = 'home' }: { activePortal?: Po
                       setQuery('');
                       searchInputRef.current?.focus();
                     }}
-                    className="rounded-md p-1 text-zinc-500 transition-colors hover:bg-zinc-800 hover:text-zinc-200"
+                    className="rounded-md p-1 text-[#8f8578] transition-colors hover:bg-[#24202c] hover:text-[#f5f0e6]"
                     aria-label="Clear search"
                   >
                     <X className="h-3.5 w-3.5" />
@@ -758,14 +791,14 @@ export default function GlobalNav({ activePortal = 'home' }: { activePortal?: Po
                 <button
                   type="button"
                   onClick={() => setPaletteOpen(false)}
-                  className="hidden rounded border border-zinc-800 bg-zinc-900 px-1.5 py-0.5 font-mono text-[10px] text-zinc-400 transition-colors hover:text-zinc-200 sm:inline-flex"
+                  className="hidden rounded border border-[#e6c27a]/20 bg-[#100e14] px-1.5 py-0.5 font-mono text-[10px] text-[#c7beb0] transition-colors hover:border-[#e6c27a]/45 hover:text-[#f5f0e6] sm:inline-flex"
                 >
                   ESC
                 </button>
               </div>
 
               {/* Category Filter Strip */}
-              <div className="flex items-center gap-1 border-b border-zinc-800/80 bg-[#0d0d0f] px-4 py-2">
+              <div className="flex items-center gap-1 border-b border-[#e6c27a]/10 bg-[#100e14] px-4 py-2">
                 {CATEGORY_TABS.map((tab) => {
                   const active = category === tab.key;
                   return (
@@ -778,15 +811,15 @@ export default function GlobalNav({ activePortal = 'home' }: { activePortal?: Po
                       }}
                       className={`rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${
                         active
-                          ? 'bg-zinc-800 text-zinc-50'
-                          : 'text-zinc-400 hover:bg-zinc-900 hover:text-zinc-200'
+                          ? 'border border-[#e6c27a]/35 bg-[#e6c27a]/15 text-[#f5d996]'
+                          : 'text-[#a89f91] hover:bg-[#1b1822] hover:text-[#f5f0e6]'
                       }`}
                     >
                       {tab.label}
                     </button>
                   );
                 })}
-                <span className="ml-auto font-mono text-[11px] text-zinc-500">
+                <span className="ml-auto font-mono text-[11px] text-[#8f8578]">
                   {filteredItems.length} {filteredItems.length === 1 ? 'result' : 'results'}
                 </span>
               </div>
@@ -795,17 +828,17 @@ export default function GlobalNav({ activePortal = 'home' }: { activePortal?: Po
               <div className="max-h-[55vh] overflow-y-auto p-2">
                 {groupedSections.length === 0 ? (
                   <div className="flex flex-col items-center justify-center py-12 text-center">
-                    <Search className="mb-2.5 h-5 w-5 text-zinc-600" />
-                    <p className="text-sm font-medium text-zinc-300">No matching games or hubs</p>
-                    <p className="mt-1 text-xs text-zinc-500">
+                    <Search className="mb-2.5 h-5 w-5 text-[#7c7368]" />
+                    <p className="text-sm font-medium text-[#e9e0d0]">No matching games or hubs</p>
+                    <p className="mt-1 text-xs text-[#8f8578]">
                       Try Mind Heist, Reality Draft, Equilibrium, Poker, or Quizzes.
                     </p>
                   </div>
                 ) : (
-                  <div className="divide-y divide-zinc-800/70">
+                  <div className="divide-y divide-[#e6c27a]/10">
                     {groupedSections.map((section) => (
                       <div key={section.key} className="py-1.5 first:pt-0.5 last:pb-0.5">
-                        <div className="px-2.5 py-1.5 text-[11px] font-medium tracking-wide text-zinc-500">
+                        <div className="px-2.5 py-1.5 font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-[#9e917d]">
                           {section.heading}
                         </div>
                         <ul className="space-y-0.5">
@@ -818,15 +851,17 @@ export default function GlobalNav({ activePortal = 'home' }: { activePortal?: Po
                                   type="button"
                                   onMouseEnter={() => setSelectedIndex(flatIndex)}
                                   onClick={() => launchRoute(item.href)}
-                                  className={`group flex w-full items-center gap-3 rounded-lg px-2.5 py-2 text-left transition-colors ${
-                                    isSelected ? 'bg-zinc-800/80' : 'hover:bg-zinc-900/70'
+                                  className={`group flex w-full items-center gap-3 rounded-xl px-2.5 py-2 text-left transition-colors ${
+                                    isSelected
+                                      ? 'border border-[#e6c27a]/30 bg-[#e6c27a]/12'
+                                      : 'border border-transparent hover:bg-[#1d1a24]'
                                   }`}
                                 >
                                   <div
-                                    className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-md border transition-colors ${
+                                    className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border transition-colors ${
                                       isSelected
-                                        ? 'border-zinc-700 bg-zinc-900 text-zinc-100'
-                                        : 'border-zinc-800/90 bg-zinc-950 text-zinc-400'
+                                        ? 'border-[#e6c27a]/45 bg-[#241e18] text-[#f5d996]'
+                                        : 'border-[#e6c27a]/14 bg-[#100e14] text-[#9e9486]'
                                     }`}
                                   >
                                     <Icon className="h-4 w-4" />
@@ -834,33 +869,33 @@ export default function GlobalNav({ activePortal = 'home' }: { activePortal?: Po
 
                                   <div className="min-w-0 flex-1">
                                     <div className="flex items-center gap-2">
-                                      <span className="truncate text-sm font-medium text-zinc-100">
+                                      <span className="truncate text-sm font-semibold text-[#f5f0e6]">
                                         {item.title}
                                       </span>
                                       <span
                                         className={`rounded border px-1.5 py-0.5 font-mono text-[10px] font-medium tracking-wide ${
                                           item.isNew
-                                            ? 'border-amber-500/25 bg-amber-500/10 text-amber-400'
-                                            : 'border-zinc-800 bg-zinc-900/90 text-zinc-400'
+                                            ? 'border-[#e6c27a]/40 bg-[#e6c27a]/15 text-[#f5d996]'
+                                            : 'border-[#e6c27a]/15 bg-[#100e14] text-[#a89f91]'
                                         }`}
                                       >
                                         {item.tag}
                                       </span>
                                     </div>
-                                    <p className="truncate text-xs text-zinc-400">
+                                    <p className="truncate text-xs text-[#a89f91]">
                                       {item.subtitle}
                                     </p>
                                   </div>
 
                                   <div className="flex shrink-0 items-center gap-2">
-                                    <span className="hidden font-mono text-[11px] text-zinc-500 sm:inline">
+                                    <span className="hidden font-mono text-[11px] text-[#7c7368] sm:inline">
                                       {item.href}
                                     </span>
                                     <ArrowRight
                                       className={`h-3.5 w-3.5 transition-transform ${
                                         isSelected
-                                          ? 'translate-x-0.5 text-zinc-200'
-                                          : 'text-zinc-600 group-hover:text-zinc-400'
+                                          ? 'translate-x-0.5 text-[#e6c27a]'
+                                          : 'text-[#6c645a] group-hover:text-[#c7beb0]'
                                       }`}
                                     />
                                   </div>
@@ -876,20 +911,20 @@ export default function GlobalNav({ activePortal = 'home' }: { activePortal?: Po
               </div>
 
               {/* Footer Hints */}
-              <div className="flex items-center justify-between border-t border-zinc-800/80 bg-[#0d0d0f] px-4 py-2 font-mono text-[11px] text-zinc-500">
+              <div className="flex items-center justify-between border-t border-[#e6c27a]/12 bg-[#100e14] px-4 py-2.5 font-mono text-[11px] text-[#8f8578]">
                 <div className="flex items-center gap-3">
                   <span className="inline-flex items-center gap-1.5">
-                    <kbd className="rounded border border-zinc-800 bg-zinc-900 px-1 text-zinc-400">
+                    <kbd className="rounded border border-[#e6c27a]/20 bg-[#191620] px-1 text-[#d7c6a5]">
                       ↑↓
                     </kbd>
                     navigate
                   </span>
                   <span className="inline-flex items-center gap-1.5">
-                    <CornerDownLeft className="h-3 w-3 text-zinc-400" />
+                    <CornerDownLeft className="h-3 w-3 text-[#d7c6a5]" />
                     open
                   </span>
                 </div>
-                <span className="text-zinc-500">Reality Check</span>
+                <span className="font-serif italic text-[#e6c27a]/80">Reality Check</span>
               </div>
             </motion.div>
           </motion.div>
