@@ -31,5 +31,11 @@ service cloud.firestore {
     match /void_step_games/{gameId} {
       allow read, write: if true;
     }
+    match /equilibrium_games/{gameId} {
+      allow read, write: if true;
+    }
+    match /quantum_matrix_games/{gameId} {
+      allow read, write: if true;
+    }
   }
 }

@@ -1,11 +1,11 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import Link from 'next/link';
 import { motion, AnimatePresence } from 'motion/react';
 import { ChevronRight, AlertTriangle, ArrowLeft } from 'lucide-react';
 import { QUIZZES } from '../../lib/quizzes';
 import { clearLorSession } from '../../lib/lor-session';
+import GlobalNav from '@/components/GlobalNav';
 import {
   QuizVibeBackground,
   QuizSelectScreen,
@@ -177,25 +177,24 @@ export default function QuizzesPage() {
   };
 
   return (
-    <main className="min-h-[100dvh] w-screen relative flex flex-col items-center justify-start p-4 overflow-x-hidden overflow-y-auto pt-16 sm:pt-4 crt-flicker bg-black text-white">
+    <main
+      className={`min-h-[100dvh] w-full relative flex flex-col items-center justify-start overflow-x-hidden overflow-y-auto bg-[#04050a] text-white ${
+        gameState === 'select' ? 'p-0' : 'p-4 pt-16 sm:pt-4 crt-flicker'
+      }`}
+    >
       <QuizVibeBackground quizId={activeQuizId} gameState={gameState} abyssDepth={currentDepth} />
-      <div className="absolute inset-0 extreme-noise pointer-events-none" />
+      {gameState !== 'select' && <div className="absolute inset-0 extreme-noise pointer-events-none" />}
 
       {gameState === 'select' ? (
-        <Link
-          href="/"
-          className="absolute top-4 left-4 z-50 text-zinc-400 hover:text-white font-mono text-sm flex items-center bg-black/40 px-3 py-1.5 rounded-full border border-white/10 backdrop-blur-md transition-all"
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          <span className="hidden sm:inline">REALITY CHECK</span>
-          <span className="sm:hidden">HOME</span>
-        </Link>
+        <div className="w-full relative z-[60]">
+          <GlobalNav activePortal="quizzes" />
+        </div>
       ) : (
         <button
           onClick={backToSelect}
-          className="absolute top-4 left-4 z-50 text-cyan-500 hover:text-cyan-400 font-mono text-sm flex items-center bg-black/40 px-3 py-1.5 rounded-full border border-cyan-500/30 backdrop-blur-md transition-all"
+          className="fixed top-4 left-4 z-50 text-cyan-300 hover:text-white font-mono text-xs uppercase tracking-wider font-bold flex items-center gap-2 bg-[#070912]/85 hover:bg-cyan-500/15 px-3.5 py-2 rounded-full border border-cyan-500/35 hover:border-cyan-400/75 backdrop-blur-xl shadow-[0_4px_20px_rgba(0,0,0,0.5)] transition-all"
         >
-          <ArrowLeft className="w-4 h-4 mr-2" />
+          <ArrowLeft className="w-3.5 h-3.5" />
           <span className="hidden sm:inline">QUIZ MENU</span>
           <span className="sm:hidden">MENU</span>
         </button>
@@ -203,11 +202,12 @@ export default function QuizzesPage() {
 
       <AnimatePresence mode="wait">
         {gameState === 'select' && (
-          <QuizSelectScreen
-            key="select"
-            onSelect={selectQuiz}
-            onViewCollection={() => setGameState('collection')}
-          />
+          <div key="select" className="relative flex-1 w-full min-h-[calc(100dvh-60px)] [transform:translateZ(0)]">
+            <QuizSelectScreen
+              onSelect={selectQuiz}
+              onViewCollection={() => setGameState('collection')}
+            />
+          </div>
         )}
 
         {gameState === 'collection' && <CollectionScreen key="collection" />}

@@ -13,14 +13,14 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Reality Check: NPC Stat Card',
-  description: 'Ego destruction simulator. Generate your true role.',
+  title: 'Reality Check // Tactical Arcade & Mindgames',
+  description: 'High-stakes 1v1 tactical arenas, psychological card tables, diagnostic quizzes, and dark-OS mindgames.',
 };
 
 export default function RootLayout({children}: {children: React.ReactNode}) {
   return (
     <html lang="en" className={`${spaceGrotesk.variable} ${jetbrainsMono.variable}`}>
-      <body suppressHydrationWarning className="bg-zinc-950 text-white font-sans antialiased overflow-x-hidden selection:bg-cyan-500/30">
+      <body suppressHydrationWarning className="bg-[#04050a] text-white font-sans antialiased overflow-x-hidden selection:bg-cyan-500/30">
         <div className="scanlines"></div>
         {children}
       </body>
