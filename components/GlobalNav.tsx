@@ -16,10 +16,12 @@ import {
   Flame,
   FlaskConical,
   Footprints,
+  Gem,
   HelpCircle,
   Home,
   KeyRound,
   Layers,
+  Orbit,
   Search,
   Shield,
   Spade,
@@ -112,6 +114,60 @@ interface LaunchItem {
 
 const LAUNCH_ITEMS: LaunchItem[] = [
   // Tactical 1v1 Arenas
+  {
+    id: 'mind-heist',
+    title: 'Mind Heist',
+    subtitle: '3-Ring Astral Vault duel, Phantom Traps & 6 Surreal Relics',
+    href: '/mind-heist',
+    category: 'tactical',
+    categoryLabel: 'Tactical 1v1',
+    tag: 'NEW · 1v1',
+    icon: Orbit,
+    accentClass: 'text-rose-300 bg-rose-500/15 border-rose-400/35',
+    keywords: [
+      'mind',
+      'heist',
+      'astral',
+      'vault',
+      'rings',
+      'phantom',
+      'traps',
+      'relics',
+      'surreal',
+      'mirage',
+      'paranoia',
+      'tactical',
+      '1v1',
+      'duel',
+    ],
+  },
+  {
+    id: 'reality-draft',
+    title: 'Reality Draft',
+    subtitle: 'Cosmic 3D Anomaly Cards, World Distortions & Double Stakes',
+    href: '/reality-draft',
+    category: 'tactical',
+    categoryLabel: 'Tactical 1v1',
+    tag: 'NEW · 1v1',
+    icon: Gem,
+    accentClass: 'text-amber-300 bg-fuchsia-500/15 border-amber-400/35',
+    keywords: [
+      'reality',
+      'draft',
+      'cosmic',
+      'anomaly',
+      'cards',
+      'holographic',
+      'distortions',
+      'double',
+      'stakes',
+      'ward',
+      'surreal',
+      'tactical',
+      '1v1',
+      'duel',
+    ],
+  },
   {
     id: 'equilibrium',
     title: 'Equilibrium',
@@ -809,7 +865,7 @@ export default function GlobalNav({ activePortal = 'home' }: { activePortal?: Po
                     <Sparkles className="mb-2 h-6 w-6 text-zinc-600" />
                     <p className="text-sm font-medium text-zinc-300">No matching modules</p>
                     <p className="mt-1 text-xs text-zinc-500">
-                      Try searching for Equilibrium, Poker, Quizzes, or Rage.
+                      Try searching for Mind Heist, Reality Draft, Equilibrium, Poker, or Quizzes.
                     </p>
                   </div>
                 ) : (

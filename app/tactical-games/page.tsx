@@ -4,6 +4,8 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'motion/react';
 import {
+  Orbit,
+  Gem,
   Sigma,
   Cpu,
   Clock,
@@ -19,16 +21,53 @@ import {
 import GlobalNav from '@/components/GlobalNav';
 import { playSound } from '@/lib/sounds';
 
-type Category = 'all' | 'math' | 'mindgame' | 'grid';
+type Category = 'all' | 'surreal' | 'mindgame' | 'math' | 'grid';
 
 const FILTERS: { id: Category; label: string }[] = [
-  { id: 'all', label: 'All (7)' },
-  { id: 'math', label: 'Math & IQ' },
+  { id: 'all', label: 'All (9)' },
+  { id: 'surreal', label: 'Surreal & Wild' },
   { id: 'mindgame', label: 'Mindgames' },
+  { id: 'math', label: 'Math & IQ' },
   { id: 'grid', label: 'Grid Warfare' },
 ];
 
 const TACTICAL_GAMES = [
+  {
+    href: '/mind-heist',
+    title: 'Mind Heist',
+    category: 'surreal' as const,
+    tagline: 'Rotating 3-ring astral vault duel',
+    description:
+      'Split 12 Energy across 3 rotating Mind Chambers, plant hidden Phantom Traps, Mind-Read counter-call rival ambushes, and slam 6 Surreal Relics like Mirage Split, Paranoia Glitch & Time Freeze.',
+    icon: Orbit,
+    gradient: 'from-rose-600/25 via-violet-950/40 to-transparent',
+    border: 'border-rose-400/45 hover:border-fuchsia-300/90',
+    glow: 'hover:shadow-[0_0_38px_rgba(244,63,94,0.28)]',
+    accent: 'text-rose-300',
+    badgeBg: 'bg-rose-500/15 border-rose-400/45 text-rose-200',
+    players: '1v1 + Solo AI',
+    mode: 'NEW · Surreal',
+    isNew: true,
+    highlights: ['3-Ring Astral Vault', 'Phantom Traps', '6 Surreal Relics'],
+  },
+  {
+    href: '/reality-draft',
+    title: 'Reality Draft',
+    category: 'surreal' as const,
+    tagline: 'Cosmic 3D anomaly card dueler',
+    description:
+      'Draft 12 reality-warping 3D holographic Anomaly Cards (Glass Titan, Zero Void, Bluff Phantom, Chaos Dice, Vampire Sigil) across rotating World Distortions with Double Stakes bluffs & Ward Shields.',
+    icon: Gem,
+    gradient: 'from-fuchsia-600/25 via-purple-950/35 to-amber-950/20',
+    border: 'border-fuchsia-400/45 hover:border-amber-300/90',
+    glow: 'hover:shadow-[0_0_38px_rgba(217,70,239,0.28)]',
+    accent: 'text-amber-300',
+    badgeBg: 'bg-fuchsia-500/15 border-amber-400/45 text-amber-200',
+    players: '1v1 + Solo AI',
+    mode: 'NEW · Surreal',
+    isNew: true,
+    highlights: ['12 Anomaly Cards', 'World Distortions', 'Double Stakes'],
+  },
   {
     href: '/equilibrium',
     title: 'Equilibrium',
@@ -182,7 +221,7 @@ export default function TacticalGamesHub() {
           <div>
             <div className="inline-flex items-center gap-2 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-3 py-1 text-[10px] font-mono uppercase tracking-[0.25em] text-cyan-300 mb-3">
               <Layers className="w-3 h-3" />
-              7 Live 1v1 Tactical Arenas
+              9 Live 1v1 Tactical Arenas
             </div>
             <h1 className="text-4xl sm:text-5xl font-black uppercase tracking-tighter leading-none">
               Tactical{' '}

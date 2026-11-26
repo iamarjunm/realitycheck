@@ -37,5 +37,11 @@ service cloud.firestore {
     match /quantum_matrix_games/{gameId} {
       allow read, write: if true;
     }
+    match /mind_heist_games/{gameId} {
+      allow read, write: if true;
+    }
+    match /reality_draft_games/{gameId} {
+      allow read, write: if true;
+    }
   }
 }

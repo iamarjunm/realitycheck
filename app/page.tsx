@@ -3,6 +3,8 @@
 import Link from 'next/link';
 import { motion } from 'motion/react';
 import {
+  Orbit,
+  Gem,
   Sigma,
   Cpu,
   Clock,
@@ -30,38 +32,44 @@ import { playSound } from '@/lib/sounds';
 
 const SPOTLIGHT_GAMES = [
   {
-    href: '/equilibrium',
-    title: 'Equilibrium',
-    badge: 'NEW · MATH & IQ 1V1',
-    subtitle: 'Keynesian Nash Mindgame',
+    href: '/mind-heist',
+    title: 'Mind Heist',
+    badge: 'SURREAL FLAGSHIP · 1V1',
+    subtitle: 'Rotating 3-Ring Astral Vault Duel',
     description:
-      'Out-think your rival in dynamic Nash equations & 0–100 number showdowns. Bait the 100-crushes-0 trap, land Prime strikes, experiment in the Live Nash Sandbox, and conquer 3 IQ Protocols.',
-    icon: Sigma,
-    accentText: 'text-cyan-300',
-    accentBorder: 'border-cyan-400/35 hover:border-cyan-300/80',
-    accentGlow: 'hover:shadow-[0_0_55px_rgba(34,211,238,0.22)]',
-    bgGrad: 'from-cyan-500/20 via-indigo-950/35 to-[#070912]',
-    badgeStyle: 'bg-cyan-500/15 border-cyan-400/40 text-cyan-200',
-    ctaStyle: 'bg-cyan-400/15 border-cyan-400/40 text-cyan-200 group-hover:bg-cyan-400 group-hover:text-black',
-    chips: ['0–100 Showdown', '100 Crushes 0', 'Prime Strikes', 'Nash Sandbox', '3 IQ Protocols'],
-    formulaPreview: 'T = μ × 0.8 + Δ',
+      'Split 12 Energy across 3 rotating Mind Chambers, plant hidden Phantom Traps, Mind-Read counter-call rival ambushes, and slam 6 Surreal Relics including Mirage Split, Paranoia Glitch, Time Freeze & Doppelganger.',
+    icon: Orbit,
+    accentText: 'text-rose-300',
+    accentBorder: 'border-rose-400/45 hover:border-fuchsia-300/90',
+    accentGlow: 'shadow-[0_0_40px_rgba(244,63,94,0.14)] hover:shadow-[0_0_65px_rgba(217,70,239,0.3)]',
+    bgGrad: 'from-rose-600/25 via-violet-950/45 to-[#070512]',
+    topSheen: 'from-transparent via-rose-400/75 to-violet-400/75',
+    orbOne: 'bg-rose-500/25',
+    orbTwo: 'bg-violet-500/25',
+    badgeStyle: 'bg-gradient-to-r from-rose-500/20 to-violet-500/20 border-rose-400/50 text-rose-200',
+    ctaStyle: 'bg-gradient-to-r from-rose-500/20 to-violet-500/20 border-rose-400/50 text-rose-100 group-hover:from-rose-400 group-hover:to-violet-400 group-hover:text-black',
+    chips: ['3-Ring Astral Vault', '12 Energy Split', 'Phantom Traps', 'Mind-Read Counter', '6 Surreal Relics'],
+    formulaPreview: '3 RINGS · 12 ENERGY · 6 RELICS',
   },
   {
-    href: '/quantum-matrix',
-    title: 'Quantum Matrix',
-    badge: 'NEW · SPATIAL MATH 1V1',
-    subtitle: '4×4 Power Core Warfare',
+    href: '/reality-draft',
+    title: 'Reality Draft',
+    badge: 'SURREAL FLAGSHIP · 1V1',
+    subtitle: 'Cosmic 3D Holographic Anomaly Dueler',
     description:
-      'Claim high-voltage sectors on a 4×4 Power Core grid. Chain Exact-10 Hijack combos to steal rival territory, drop 2× Amplifiers, trigger Polarity Invert, and duel Minimax AI or Live PvP.',
-    icon: Cpu,
-    accentText: 'text-violet-300',
-    accentBorder: 'border-violet-400/35 hover:border-violet-300/80',
-    accentGlow: 'hover:shadow-[0_0_55px_rgba(167,139,250,0.22)]',
-    bgGrad: 'from-violet-500/20 via-fuchsia-950/30 to-[#070912]',
-    badgeStyle: 'bg-violet-500/15 border-violet-400/40 text-violet-200',
-    ctaStyle: 'bg-violet-400/15 border-violet-400/40 text-violet-200 group-hover:bg-violet-400 group-hover:text-black',
-    chips: ['4×4 Power Cores', 'Exact-10 Hijack', '2× Amplifiers', 'Polarity Invert', 'Minimax AI'],
-    formulaPreview: 'Σ(row, col) = 10 → HIJACK',
+      'Wield 12 reality-warping 3D Anomaly Cards — Glass Titan, Zero Void, Bluff Phantom, Chaos Dice & Vampire Sigil — across rotating World Distortions with Double Stakes bluffs and Ward Shields.',
+    icon: Gem,
+    accentText: 'text-amber-300',
+    accentBorder: 'border-fuchsia-400/45 hover:border-amber-300/90',
+    accentGlow: 'shadow-[0_0_40px_rgba(217,70,239,0.14)] hover:shadow-[0_0_65px_rgba(251,191,36,0.28)]',
+    bgGrad: 'from-fuchsia-600/25 via-purple-950/40 to-amber-950/25',
+    topSheen: 'from-transparent via-fuchsia-400/75 to-amber-300/80',
+    orbOne: 'bg-fuchsia-500/25',
+    orbTwo: 'bg-amber-400/20',
+    badgeStyle: 'bg-gradient-to-r from-fuchsia-500/20 to-amber-500/20 border-amber-400/50 text-amber-200',
+    ctaStyle: 'bg-gradient-to-r from-fuchsia-500/20 to-amber-500/20 border-amber-400/50 text-amber-100 group-hover:from-fuchsia-400 group-hover:to-amber-300 group-hover:text-black',
+    chips: ['12 Anomaly Cards', 'World Distortions', 'Double Stakes', 'Ward Shields', '3D Holographic'],
+    formulaPreview: '12 ANOMALIES · 2× STAKES',
   },
 ] as const;
 
@@ -69,10 +77,10 @@ const PORTALS = [
   {
     href: '/tactical-games',
     title: 'Tactical Arenas',
-    count: '7 1v1 Games',
+    count: '9 1v1 Games',
     subtitle: 'Live PvP & Tactical AI',
     description:
-      'Equilibrium, Quantum Matrix, Chronos Assassin, Glitch Roulette, Blind Vault, Void Step & Shadow Strike. Instant 6-char 1v1 rooms + solo AI sparring.',
+      'Mind Heist, Reality Draft, Equilibrium, Quantum Matrix, Chronos Assassin, Glitch Roulette, Blind Vault, Void Step & Shadow Strike. Instant 6-char 1v1 rooms + solo AI sparring.',
     icon: Layers,
     span: 'md:col-span-3',
     gradient: 'from-cyan-500/18 via-sky-950/20 to-transparent',
@@ -149,8 +157,10 @@ const PORTALS = [
 ] as const;
 
 const QUICK_LAUNCH_TACTICAL = [
-  { href: '/equilibrium', label: 'Equilibrium', icon: Sigma, style: 'border-cyan-400/40 bg-cyan-500/15 text-cyan-200 hover:border-cyan-300 hover:bg-cyan-500/25', isNew: true },
-  { href: '/quantum-matrix', label: 'Quantum Matrix', icon: Cpu, style: 'border-violet-400/40 bg-violet-500/15 text-violet-200 hover:border-violet-300 hover:bg-violet-500/25', isNew: true },
+  { href: '/mind-heist', label: 'Mind Heist', icon: Orbit, style: 'border-rose-400/50 bg-gradient-to-r from-rose-500/20 to-violet-500/20 text-rose-100 hover:border-fuchsia-300 hover:from-rose-500/30 hover:to-violet-500/30', isNew: true },
+  { href: '/reality-draft', label: 'Reality Draft', icon: Gem, style: 'border-amber-400/50 bg-gradient-to-r from-fuchsia-500/20 to-amber-500/20 text-amber-100 hover:border-amber-300 hover:from-fuchsia-500/30 hover:to-amber-500/30', isNew: true },
+  { href: '/equilibrium', label: 'Equilibrium', icon: Sigma, style: 'border-cyan-400/35 bg-cyan-500/12 text-cyan-200 hover:border-cyan-300 hover:bg-cyan-500/25', isNew: false },
+  { href: '/quantum-matrix', label: 'Quantum Matrix', icon: Cpu, style: 'border-violet-400/35 bg-violet-500/12 text-violet-200 hover:border-violet-300 hover:bg-violet-500/25', isNew: false },
   { href: '/chronos', label: 'Chronos Assassin', icon: Clock, style: 'border-sky-500/30 bg-sky-500/10 text-sky-300 hover:border-sky-400 hover:bg-sky-500/20', isNew: false },
   { href: '/glitch-roulette', label: 'Glitch Roulette 1v1', icon: Skull, style: 'border-rose-500/30 bg-rose-500/10 text-rose-300 hover:border-rose-400 hover:bg-rose-500/20', isNew: false },
   { href: '/blind-vault', label: 'Blind Vault', icon: Vault, style: 'border-amber-500/30 bg-amber-500/10 text-amber-300 hover:border-amber-400 hover:bg-amber-500/20', isNew: false },
@@ -210,40 +220,40 @@ export default function HomePage() {
           {/* Dual Primary CTAs */}
           <div className="flex flex-wrap items-center justify-center gap-3.5">
             <Link
-              href="/equilibrium"
+              href="/mind-heist"
               onClick={() => playSound('card_pick')}
-              className="group inline-flex items-center gap-2.5 rounded-xl bg-gradient-to-r from-cyan-400 via-sky-300 to-violet-400 px-6 py-3.5 text-xs sm:text-sm font-black uppercase tracking-wider text-black shadow-[0_0_32px_rgba(34,211,238,0.32)] hover:shadow-[0_0_44px_rgba(34,211,238,0.5)] hover:-translate-y-0.5 transition-all"
+              className="group inline-flex items-center gap-2.5 rounded-xl bg-gradient-to-r from-rose-400 via-fuchsia-400 to-amber-300 px-6 py-3.5 text-xs sm:text-sm font-black uppercase tracking-wider text-black shadow-[0_0_36px_rgba(244,63,94,0.38)] hover:shadow-[0_0_52px_rgba(217,70,239,0.55)] hover:-translate-y-0.5 transition-all"
             >
-              <Sparkles className="w-4 h-4" />
-              Play Equilibrium 1v1
+              <Orbit className="w-4 h-4" />
+              Play Mind Heist 1v1
               <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </Link>
 
             <Link
               href="/tactical-games"
               onClick={() => playSound('chip')}
-              className="group inline-flex items-center gap-2.5 rounded-xl border border-white/15 bg-white/[0.04] hover:bg-white/[0.09] hover:border-cyan-400/50 backdrop-blur-md px-6 py-3.5 text-xs sm:text-sm font-bold uppercase tracking-wider text-white hover:-translate-y-0.5 transition-all"
+              className="group inline-flex items-center gap-2.5 rounded-xl border border-white/15 bg-white/[0.04] hover:bg-white/[0.09] hover:border-fuchsia-400/50 backdrop-blur-md px-6 py-3.5 text-xs sm:text-sm font-bold uppercase tracking-wider text-white hover:-translate-y-0.5 transition-all"
             >
-              <Trophy className="w-4 h-4 text-cyan-400" />
-              Explore All 1v1 Arenas
-              <ChevronRight className="w-4 h-4 text-zinc-400 group-hover:text-cyan-300 group-hover:translate-x-1 transition-transform" />
+              <Trophy className="w-4 h-4 text-amber-300" />
+              Explore 9 Live 1v1 Arenas
+              <ChevronRight className="w-4 h-4 text-zinc-400 group-hover:text-amber-300 group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
         </motion.section>
 
-        {/* Flagship Spotlight Row (Equilibrium + Quantum Matrix) */}
+        {/* Surreal Flagship Spotlight Row (Mind Heist + Reality Draft) */}
         <section className="mb-12 sm:mb-14">
           <div className="flex items-center justify-between mb-4 px-1">
-            <div className="flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.25em] text-zinc-400">
-              <Zap className="w-3.5 h-3.5 text-cyan-400" />
-              <span>Flagship Spotlight · New 1v1 Releases</span>
+            <div className="flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.25em] text-zinc-300">
+              <Zap className="w-3.5 h-3.5 text-fuchsia-400" />
+              <span>Surreal Flagship Spotlight · New 1v1 Releases</span>
             </div>
             <Link
               href="/tactical-games"
               onClick={() => playSound('chip')}
-              className="text-[11px] font-mono uppercase tracking-widest text-cyan-400 hover:text-cyan-300 inline-flex items-center gap-1 transition-colors"
+              className="text-[11px] font-mono uppercase tracking-widest text-fuchsia-300 hover:text-amber-200 inline-flex items-center gap-1 transition-colors"
             >
-              All 7 Arenas <ChevronRight className="w-3.5 h-3.5" />
+              All 9 Arenas <ChevronRight className="w-3.5 h-3.5" />
             </Link>
           </div>
 
@@ -260,29 +270,31 @@ export default function HomePage() {
                   <Link
                     href={game.href}
                     onClick={() => playSound('card_pick')}
-                    className={`group relative flex flex-col justify-between h-full rounded-3xl border bg-[#070912]/90 backdrop-blur-xl p-6 sm:p-7 overflow-hidden transition-all duration-300 hover:-translate-y-1 ${game.accentBorder} ${game.accentGlow}`}
+                    className={`group relative flex flex-col justify-between h-full rounded-3xl border bg-[#070612]/92 backdrop-blur-xl p-6 sm:p-7 overflow-hidden transition-all duration-300 hover:-translate-y-1.5 ${game.accentBorder} ${game.accentGlow}`}
                   >
-                    <div className={`absolute inset-0 bg-gradient-to-br ${game.bgGrad} opacity-80 group-hover:opacity-100 transition-opacity pointer-events-none`} />
-                    <div className="absolute -right-10 -top-10 w-44 h-44 rounded-full bg-white/[0.03] blur-2xl pointer-events-none" />
+                    <div className={`absolute inset-x-0 top-0 h-px bg-gradient-to-r ${game.topSheen} opacity-80 group-hover:opacity-100 transition-opacity pointer-events-none`} />
+                    <div className={`absolute inset-0 bg-gradient-to-br ${game.bgGrad} opacity-85 group-hover:opacity-100 transition-opacity pointer-events-none`} />
+                    <div className={`absolute -right-12 -top-12 w-52 h-52 rounded-full blur-3xl animate-pulse pointer-events-none ${game.orbOne}`} />
+                    <div className={`absolute -left-14 -bottom-16 w-48 h-48 rounded-full blur-3xl opacity-70 group-hover:opacity-100 transition-opacity pointer-events-none ${game.orbTwo}`} />
 
                     <div className="relative z-10">
                       <div className="flex flex-wrap items-center justify-between gap-2 mb-5">
                         <div className="flex items-center gap-3">
-                          <div className={`p-3 rounded-2xl border border-white/15 bg-black/60 shadow-inner ${game.accentText}`}>
-                            <Icon className="w-6 h-6" />
+                          <div className={`p-3 rounded-2xl border border-white/15 bg-black/65 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] ${game.accentText}`}>
+                            <Icon className="w-6 h-6 transition-transform duration-500 group-hover:rotate-12 group-hover:scale-110" />
                           </div>
                           <div>
                             <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border text-[10px] font-mono font-bold uppercase tracking-widest ${game.badgeStyle}`}>
                               <Sparkles className="w-3 h-3" />
                               {game.badge}
                             </span>
-                            <p className="text-[11px] font-mono uppercase tracking-widest text-zinc-400 mt-1">
+                            <p className="text-[11px] font-mono uppercase tracking-widest text-zinc-300/80 mt-1">
                               {game.subtitle}
                             </p>
                           </div>
                         </div>
 
-                        <div className="hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-lg border border-white/10 bg-black/60 font-mono text-[11px] text-zinc-300">
+                        <div className="hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-lg border border-white/15 bg-black/65 font-mono text-[11px] text-zinc-200">
                           {game.formulaPreview}
                         </div>
                       </div>
@@ -291,7 +303,7 @@ export default function HomePage() {
                         {game.title}
                       </h2>
 
-                      <p className="text-sm text-zinc-300/90 leading-relaxed mb-5">
+                      <p className="text-sm text-zinc-200/90 leading-relaxed mb-5">
                         {game.description}
                       </p>
 
@@ -299,7 +311,7 @@ export default function HomePage() {
                         {game.chips.map((chip) => (
                           <span
                             key={chip}
-                            className="px-2.5 py-1 rounded-lg border border-white/10 bg-black/55 text-[10px] font-mono uppercase tracking-wider text-zinc-300"
+                            className="px-2.5 py-1 rounded-lg border border-white/12 bg-black/60 text-[10px] font-mono uppercase tracking-wider text-zinc-200"
                           >
                             {chip}
                           </span>
@@ -308,8 +320,8 @@ export default function HomePage() {
                     </div>
 
                     <div className="relative z-10 pt-4 border-t border-white/10 flex items-center justify-between gap-3">
-                      <span className="inline-flex items-center gap-1.5 text-[11px] font-mono uppercase tracking-wider text-zinc-400">
-                        <Users className="w-3.5 h-3.5 text-zinc-300" />
+                      <span className="inline-flex items-center gap-1.5 text-[11px] font-mono uppercase tracking-wider text-zinc-300">
+                        <Users className="w-3.5 h-3.5 text-zinc-200" />
                         Live 1v1 PvP + Solo AI
                       </span>
                       <span className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-xl border text-xs font-black uppercase tracking-widest transition-all ${game.ctaStyle}`}>
@@ -398,11 +410,11 @@ export default function HomePage() {
             <div className="flex items-center gap-2">
               <span className="h-2 w-2 rounded-full bg-cyan-400" />
               <h3 className="text-xs font-mono font-bold uppercase tracking-[0.25em] text-zinc-300">
-                Direct Quick-Launch · 12 Live Multiplayer Rooms
+                Direct Quick-Launch · 14 Live Multiplayer Rooms
               </h3>
             </div>
             <span className="text-[10px] font-mono uppercase tracking-widest text-zinc-500">
-              7 Tactical Arenas · 5 Card Tables
+              9 Tactical Arenas · 5 Card Tables
             </span>
           </div>
 
